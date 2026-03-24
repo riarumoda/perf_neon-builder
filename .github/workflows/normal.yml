@@ -187,9 +187,13 @@ jobs:
           body: |
             > [!NOTE]   
             > - The kernel supports Android 11 to 16.   
-            > - This build have KernelSU integration with ZakoSU/ReSukiSU.   
             > - ReSukiSU latest manager can be found in [here](https://resukisu.github.io/guide/install.html#Get-manager).    
                
+            > [!IMPORTANT]
+            > - "zako" build contains ReSukiSU (Recommended).   
+            > - "zako_susfs" build contains ReSukiSU + SUSFS.   
+            > - "none" build does not contain any KernelSU.   
+
             > [!CAUTION]   
             > - Always backup your boot & dtbo image first before proceeding!   
           files: |
