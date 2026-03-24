@@ -208,10 +208,10 @@ setup_specific() {
             wget -qO- $SUSFS_PATCH | patch -s -p1 --fuzz=5
         fi
         # Baseband Guard exports
-        export BBG_SETUP_URI="https://github.com/vc-teahouse/Baseband-guard/raw/main/setup.sh"
+        # export BBG_SETUP_URI="https://github.com/vc-teahouse/Baseband-guard/raw/main/setup.sh"
         # Apply Baseband Guard
-        curl -LSs $BBG_SETUP_URI | bash
-        echo "CONFIG_BBG=y" >> $MAIN_DEFCONFIG
+        # curl -LSs $BBG_SETUP_URI | bash
+        # echo "CONFIG_BBG=y" >> $MAIN_DEFCONFIG
     elif [[ "$SELECTED_DEVICE" == "mi89x7" ]]; then
         # KernelSU umount patch
         export KSU_UMOUNT_PATCH="https://github.com/zeta96/android_kernel_xiaomi_msm8937/commit/d6c848e0891c9d25ff747c11027c205ac788db46.patch"
