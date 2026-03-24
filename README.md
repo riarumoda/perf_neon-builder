@@ -29,7 +29,7 @@ Patches & buildscript
 - [zeta96](https://github.com/zeta96) for kernel umount patches for 4.19 devices.  
 - [xiaomi-sm6150](https://github.com/xiaomi-sm6150) for the dtbo patches.   
 - [crdroidandroid](https://github.com/crdroidandroid) for the ln8000 patches.   
-- [JackA1ltMan](https://github.com/JackA1ltman) for syscall hook script, susfs inline hookscript, and SUSFS patches.   
+- [JackA1ltMan](https://github.com/JackA1ltman) for syscall hook script, susfs inline hook script, and SUSFS patches.   
 - [TheSillyOk](https://github.com/TheSillyOk) for LTO fixup for 4.14 devices.  
 
 Projects   
