@@ -152,6 +152,7 @@ setup_specific() {
         echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> $MAIN_DEFCONFIG
         echo "CONFIG_KSU_SUSFS_SUS_MAP=y" >> $MAIN_DEFCONFIG
         echo "CONFIG_KSU_SUSFS_TRY_UMOUNT=n" >> $MAIN_DEFCONFIG
+        echo "CONFIG_KSU_SUSFS_IS_INODE_OPEN_REDIRECT_WITHOUT_UID_CHECK=y" >> $MAIN_DEFCONFIG
     else
         echo "No specific patches to apply for $SELECTED_DEVICE."
     fi
