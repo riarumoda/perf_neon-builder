@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         build-type: [sweet]
-        ksu-type: [blxx, next, none]
+        ksu-type: [blxx, zako, none]
 
     steps:
       - uses: actions/checkout@v6
@@ -53,9 +53,9 @@ jobs:
           if [[ "${{ matrix.ksu-type }}" == "blxx" ]]; then
             echo "Using KSU_BLXX"
             export KSU_CHOICE="KSU_BLXX"
-          elif [[ "${{ matrix.ksu-type }}" == "next" ]]; then
-            echo "Using KSU_NEXT"
-            export KSU_CHOICE="KSU_NEXT"
+          elif [[ "${{ matrix.ksu-type }}" == "zako" ]]; then
+            echo "Using KSU_ZAKO"
+            export KSU_CHOICE="KSU_ZAKO"
           elif [[ "${{ matrix.ksu-type }}" == "none" ]]; then
             echo "No KSU will be used"
             export KSU_CHOICE="NONE"
