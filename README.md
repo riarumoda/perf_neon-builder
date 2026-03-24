@@ -2,7 +2,7 @@
 <p align="center" style="font-size: 1.25rem;"><strong><em>This project is not affiliated with LineageOS.</em></strong></p>
    
 # Background
-The naming, Perf Neon, is inspired by a Linux Distribution called KDE Neon, where KDE take latest Ubuntu LTS as a base system and then put Latest KDE on top of it. Same thing as Perf Neon, where i take whatever the world the LineageOS team put under [LineageOS/android_kernel_xiaomi_sm6150](https://github.com/LineageOS/android_kernel_xiaomi_sm6150) and then put minimal patches on top of it.
+The naming, Perf Neon, is inspired by a Linux Distribution called KDE Neon, where KDE take latest Ubuntu LTS as a base system and then put Latest KDE on top of it. Same thing as Perf Neon, where i take whatever the world the LineageOS team put under their kernel source and then put minimal patches on top of it.
 
 # What is it for?
 While it's mostly used for another kernel developers to compare their work with a literal close-to-stock kernel, it's also fulfill the dream of a purists, where they want everything stable but also wanted extra spices on top of it.
@@ -10,13 +10,28 @@ While it's mostly used for another kernel developers to compare their work with 
 # Release schedules
 This kernel follows weekly builds of LineageOS, you will get a new kernel build every sunday. You might need to check out the GitHub repo for new releases.
 
+# Features
+Currently added features:
+- KernelSU support (ReSukiSU) & SUSFS support (separate build)
+- Baseband Guard support
+- Compiled with -O3, LTO, LLVM=1
+
 # Compatibility
-Compatible with official LineageOS builds of [devices/davinci/builds](https://download.lineageos.org/devices/davinci/builds), [devices/sweet/builds](https://download.lineageos.org/devices/sweet/builds), [devices/tucana/builds](https://download.lineageos.org/devices/tucana/builds), [devices/violet/builds](https://download.lineageos.org/devices/violet/builds), but since this kernel strictly follows [LineageOS/android_kernel_xiaomi_sm6150](https://github.com/LineageOS/android_kernel_xiaomi_sm6150), the compatibility may vary between each releases. Always make sure you have a kernel backup before proceeding. This kernel might gonna work on non-lineage based roms but it is not guaranteed.
+Currently supported device:   
+- Redmi Note 10 Pro/Pro Max (sweet)   
+- Redmi Note 8/8T (ginkgo/willow)   
+- Redmi 3/3S/4/4X/Note 5A Prime/Y1 Prime (mi8937)   
 
 # Credits
-[TBYOOL](https://github.com/tbyool) for the buildscripts & kernel patches.   
-[xiaomi-sm6150](https://github.com/xiaomi-sm6150) for the dtbo patches.   
-[crdroidandroid](https://github.com/crdroidandroid) for the ln8000 patches.   
-[backslashxx](https://github.com/backslashxx) for KernelSU & KernelSU scope-minimized manual hooks.   
-[KernelSU-Next](https://github.com/KernelSU-Next) for KernelSU-Next.   
-[TheSillyOk](https://github.com/TheSillyOk) for kpatch fixup & susfs patches.    
+Patches & buildscript
+- [TBYOOL](https://github.com/tbyool) for the buildscripts & kernel patches. 
+- [zeta96](https://github.com/zeta96) for kernel umount patches for 4.19 devices.  
+- [xiaomi-sm6150](https://github.com/xiaomi-sm6150) for the dtbo patches.   
+- [crdroidandroid](https://github.com/crdroidandroid) for the ln8000 patches.   
+- [JackA1ltMan](https://github.com/JackA1ltman) for syscall hook script, susfs inline hookscript, and SUSFS patches.   
+- [TheSillyOk](https://github.com/TheSillyOk) for LTO fixup for 4.14 devices.  
+
+Projects   
+- [ReSukiSU](https://github.com/ReSukiSU) for ReSukiSU.
+- [vc-teahouse](https://github.com/vc-teahouse) for Baseband Guard.   
+- [LineageOS](https://github.com/LineageOS) for kernel sources.
