@@ -38,17 +38,17 @@ setup_environment() {
     if [[ "$KERNELSU_SELECTOR" == "--ksu=KSU_BLXX" ]]; then
         export KSU_SETUP_URI="https://github.com/backslashxx/KernelSU/raw/refs/heads/master/kernel/setup.sh"
         export KSU_BRANCH="master"
-        export KSU_GENERAL_PATCH="https://github.com/JackA1ltman/NonGKI_Kernel_Build_2nd/raw/refs/heads/mainline/Patches/susfs_inline_hook_patches.sh"
-    elif [[ "$KERNELSU_SELECTOR" == "--ksu=KSU_NEXT" ]]; then
-        export KSU_SETUP_URI="https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh"
-        export KSU_BRANCH="legacy_susfs"
-        export KSU_GENERAL_PATCH="https://github.com/JackA1ltman/NonGKI_Kernel_Build_2nd/raw/refs/heads/mainline/Patches/susfs_inline_hook_patches.sh"
+        export KSU_GENERAL_PATCH="https://github.com/JackA1ltman/NonGKI_Kernel_Build_2nd/raw/refs/heads/mainline/Patches/syscall_hook_patches.sh"
+    elif [[ "$KERNELSU_SELECTOR" == "--ksu=KSU_ZAKO" ]]; then
+        export KSU_SETUP_URI="https://github.com/ReSukiSU/ReSukiSU/raw/refs/heads/main/kernel/setup.sh"
+        export KSU_BRANCH="main"
+        export KSU_GENERAL_PATCH="https://github.com/JackA1ltman/NonGKI_Kernel_Build_2nd/raw/refs/heads/mainline/Patches/syscall_hook_patches.sh"
     elif [[ "$KERNELSU_SELECTOR" == "--ksu=NONE" ]]; then
         export KSU_SETUP_URI=""
         export KSU_BRANCH=""
         export KSU_GENERAL_PATCH=""
     else
-        echo "Invalid KernelSU selector. Use --ksu=KSU_BLXX, --ksu=KSU_NEXT, or --ksu=NONE."
+        echo "Invalid KernelSU selector. Use --ksu=KSU_BLXX, --ksu=KSU_ZAKO, or --ksu=NONE."
         exit 1
     fi
 }
@@ -127,25 +127,10 @@ setup_specific() {
         echo "Tuning the rest of default configs..."
         echo "CONFIG_EROFS_FS=y" >> $MAIN_DEFCONFIG
         echo "CONFIG_SECURITY_SELINUX_DEVELOP=y" >> $MAIN_DEFCONFIG
-        # SUSFS Patch
-        export SUSFS_PATCH="https://github.com/JackA1ltman/NonGKI_Kernel_Build_2nd/raw/refs/heads/mainline/Patches/Patch/susfs_patch_to_4.14.patch"
         # KernelSU umount patch
         export KSU_UMOUNT_PATCH="https://github.com/tbyool/android_kernel_xiaomi_sm6150/commit/64db0dfa2f8aa6c519dbf21eb65c9b89643cda3d.patch"
         # Apply umount backport and susfs
         wget -qO- $KSU_UMOUNT_PATCH | patch -s -p1
-        wget -qO- $SUSFS_PATCH | patch -s -p1 --fuzz=5
-        # Apply susfs configs
-        echo "CONFIG_KSU_SUSFS=y" >> $MAIN_DEFCONFIG
-        echo "CONFIG_KSU_SUSFS_SUS_PATH=y" >> $MAIN_DEFCONFIG
-        echo "CONFIG_KSU_SUSFS_SUS_MOUNT=y" >> $MAIN_DEFCONFIG
-        echo "CONFIG_KSU_SUSFS_SUS_KSTAT=y" >> $MAIN_DEFCONFIG
-        echo "CONFIG_KSU_SUSFS_SPOOF_UNAME=y" >> $MAIN_DEFCONFIG
-        echo "CONFIG_KSU_SUSFS_ENABLE_LOG=y" >> $MAIN_DEFCONFIG
-        echo "CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y" >> $MAIN_DEFCONFIG
-        echo "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y" >> $MAIN_DEFCONFIG
-        echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=n" >> $MAIN_DEFCONFIG
-        echo "CONFIG_KSU_SUSFS_SUS_MAP=n" >> $MAIN_DEFCONFIG
-        echo "CONFIG_KSU_SUSFS_TRY_UMOUNT=n" >> $MAIN_DEFCONFIG
     else
         echo "No specific patches to apply for $SELECTED_DEVICE."
     fi
@@ -168,18 +153,17 @@ setup_ksu() {
             echo "CONFIG_KPROBE_EVENTS=y" >> $MAIN_DEFCONFIG
             echo "CONFIG_KRETPROBES=y" >> $MAIN_DEFCONFIG
             echo "CONFIG_HAVE_SYSCALL_TRACEPOINTS=y" >> $MAIN_DEFCONFIG
-        elif [[ "$KSU_SETUP_URI" == *"KernelSU-Next/KernelSU-Next"* ]]; then
+        elif [[ "$KSU_SETUP_URI" == *"ReSukiSU/ReSukiSU"* ]]; then
             # Apply manual hook
-            # curl -LSs $KSU_GENERAL_PATCH | bash
+            curl -LSs $KSU_GENERAL_PATCH | bash
             # Run Setup Script
             curl -LSs $KSU_SETUP_URI | bash -s $KSU_BRANCH
             # Manual Config Enablement
             echo "CONFIG_KSU=y" >> $MAIN_DEFCONFIG
-            echo "CONFIG_KSU_KPROBES_HOOK=y" >> $MAIN_DEFCONFIG
-            echo "CONFIG_KPROBES=y" >> $MAIN_DEFCONFIG
-            echo "CONFIG_HAVE_KPROBES=y" >> $MAIN_DEFCONFIG
-            echo "CONFIG_KPROBE_EVENTS=y" >> $MAIN_DEFCONFIG
-            echo "CONFIG_KRETPROBES=y" >> $MAIN_DEFCONFIG
+            echo "CONFIG_KSU_MULTI_MANAGER_SUPPORT=y" >> $MAIN_DEFCONFIG
+            echo "CONFIG_KPM=n" >> $MAIN_DEFCONFIG
+            echo "CONFIG_KSU_MANUAL_HOOK=y" >> $MAIN_DEFCONFIG
+            echo "CONFIG_KSU_SUSFS=n" >> $MAIN_DEFCONFIG
             echo "CONFIG_HAVE_SYSCALL_TRACEPOINTS=y" >> $MAIN_DEFCONFIG
         fi
     else
