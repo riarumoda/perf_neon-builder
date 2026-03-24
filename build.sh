@@ -141,10 +141,10 @@ setup_ksu() {
     if [ -n "$KSU_SETUP_URI" ]; then
         echo "Setting up KernelSU..."
         if [[ "$KSU_SETUP_URI" == *"backslashxx/KernelSU"* ]]; then
-            # Apply manual hook
-            # curl -LSs $KSU_GENERAL_PATCH | bash
             # Run Setup Script
             curl -LSs $KSU_SETUP_URI | bash -s $KSU_BRANCH
+            # Apply manual hook
+            # curl -LSs $KSU_GENERAL_PATCH | bash
             # Manual Config Enablement
             echo "CONFIG_KSU=y" >> $MAIN_DEFCONFIG
             echo "CONFIG_KSU_TAMPER_SYSCALL_TABLE=y" >> $MAIN_DEFCONFIG
@@ -154,10 +154,10 @@ setup_ksu() {
             echo "CONFIG_KRETPROBES=y" >> $MAIN_DEFCONFIG
             echo "CONFIG_HAVE_SYSCALL_TRACEPOINTS=y" >> $MAIN_DEFCONFIG
         elif [[ "$KSU_SETUP_URI" == *"ReSukiSU/ReSukiSU"* ]]; then
-            # Apply manual hook
-            curl -LSs $KSU_GENERAL_PATCH | bash
             # Run Setup Script
             curl -LSs $KSU_SETUP_URI | bash -s $KSU_BRANCH
+            # Apply manual hook
+            curl -LSs $KSU_GENERAL_PATCH | bash
             # Manual Config Enablement
             echo "CONFIG_KSU=y" >> $MAIN_DEFCONFIG
             echo "CONFIG_KSU_MULTI_MANAGER_SUPPORT=y" >> $MAIN_DEFCONFIG
