@@ -163,11 +163,12 @@ setup_specific() {
         # Apply Baseband Guard
         curl -LSs $BBG_SETUP_URI | bash
         echo "CONFIG_BBG=y" >> $MAIN_DEFCONFIG
-        # HideStuff Exports
-        export HIDESTUFF_PATCH="https://github.com/WildKernels/kernel_patches/raw/refs/heads/main/69_hide_stuff.patch"
-        # Apply HideStuff
-        echo "Applying HideStuff patches..."
-        wget -qO- $HIDESTUFF_PATCH | patch -s -p1 --fuzz=5
+        # BORE Scheduler Export
+        export BORE_PATCH="https://github.com/ximi-mojito-test/android_kernel_xiaomi_mojito/commit/2220322065591df5ff7ae27cc1fff386d3631bd0.patch"
+        # Apply BORE Scheduler patch
+        echo "Applying BORE Scheduler patch..."
+        wget -qO- $BORE_PATCH | patch -s -p1 --fuzz=5
+        echo "CONFIG_SCHED_BORE=y" >> $MAIN_DEFCONFIG
     elif [[ "$SELECTED_DEVICE" == "ginkgo" ]]; then
         # DTC Upgrade Exports
         export DTC_PATCH1="https://github.com/LineageOS/android_kernel_xiaomi_sm6150/commit/e207247aa4553fff7190dde5dabb50aec400b513.patch"
@@ -217,11 +218,12 @@ setup_specific() {
         # Apply Baseband Guard
         curl -LSs $BBG_SETUP_URI | bash
         echo "CONFIG_BBG=y" >> $MAIN_DEFCONFIG
-        # HideStuff Exports
-        export HIDESTUFF_PATCH="https://github.com/WildKernels/kernel_patches/raw/refs/heads/main/69_hide_stuff.patch"
-        # Apply HideStuff
-        echo "Applying HideStuff patches..."
-        wget -qO- $HIDESTUFF_PATCH | patch -s -p1 --fuzz=5
+        # BORE Scheduler Export
+        export BORE_PATCH="https://github.com/ximi-mojito-test/android_kernel_xiaomi_mojito/commit/2220322065591df5ff7ae27cc1fff386d3631bd0.patch"
+        # Apply BORE Scheduler patch
+        echo "Applying BORE Scheduler patch..."
+        wget -qO- $BORE_PATCH | patch -s -p1 --fuzz=5
+        echo "CONFIG_SCHED_BORE=y" >> $MAIN_DEFCONFIG
     elif [[ "$SELECTED_DEVICE" == "mi89x7" ]]; then
         # KernelSU umount patch
         export KSU_UMOUNT_PATCH="https://github.com/zeta96/android_kernel_xiaomi_msm8937/commit/d6c848e0891c9d25ff747c11027c205ac788db46.patch"
@@ -240,11 +242,14 @@ setup_specific() {
         curl -LSs $BBG_SETUP_URI | bash
         echo "CONFIG_BBG=y" >> $MAIN_DEFCONFIG
         sed -i '/CONFIG_LSM=/s/"$/ ,baseband_guard"/' $MAIN_DEFCONFIG
-        # HideStuff Exports
-        export HIDESTUFF_PATCH="https://github.com/WildKernels/kernel_patches/raw/refs/heads/main/69_hide_stuff.patch"
-        # Apply HideStuff
-        echo "Applying HideStuff patches..."
-        wget -qO- $HIDESTUFF_PATCH | patch -s -p1 --fuzz=5
+        # BORE Scheduler Export
+        export BORE_PATCH="https://github.com/firelzrd/bore-scheduler/raw/refs/heads/main/patches/legacy/linux-4.19-bore/0001-linux4.19.y-bore5.1.0r2.patch"
+        export BORE_VANILLA_PATCH="https://github.com/firelzrd/bore-scheduler/raw/refs/heads/main/patches/legacy/linux-4.19-bore/0002-constgran-vanilla-max.patch"
+        # Apply BORE Scheduler patch
+        echo "Applying BORE Scheduler patch..."
+        wget -qO- $BORE_PATCH | patch -s -p1 --fuzz=5
+        wget -qO- $BORE_VANILLA_PATCH | patch -s -p1 --fuzz=5
+        echo "CONFIG_SCHED_BORE=y" >> $MAIN_DEFCONFIG
     else
         echo "No specific patches to apply for $SELECTED_DEVICE."
     fi
