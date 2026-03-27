@@ -14,6 +14,7 @@ This kernel follows weekly builds of LineageOS, you will get a new kernel build 
 Currently added features:
 - KernelSU support (ReSukiSU) & SUSFS support (separate build)
 - Baseband Guard support
+- [BORE CPU Scheduler](https://github.com/firelzrd/bore-scheduler#bore-burst-oriented-response-enhancer-cpu-scheduler) support
 - Compiled with -O3, LTO, LLVM=1
 
 # Compatibility
@@ -30,7 +31,8 @@ Patches & buildscript
 - [xiaomi-sm6150](https://github.com/xiaomi-sm6150) for the dtbo patches.   
 - [crdroidandroid](https://github.com/crdroidandroid) for the ln8000 patches.   
 - [JackA1ltMan](https://github.com/JackA1ltman) for syscall hook script, susfs inline hook script, and SUSFS patches.   
-- [TheSillyOk](https://github.com/TheSillyOk) for LTO fixup for 4.14 devices.  
+- [TheSillyOk](https://github.com/TheSillyOk) for LTO fixup for 4.14 devices.   
+- [backslashxx](https://github.com/backslashxx) and [rystX-OpenSource](https://github.com/rystX-OpenSource) for BORE Sched patches.
 
 Projects   
 - [ReSukiSU](https://github.com/ReSukiSU) for ReSukiSU.
