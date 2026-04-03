@@ -60,7 +60,7 @@ setup_environment() {
         export KSU_SELECTED="zako_susfs"
         export KSU_SETUP_URI="https://github.com/ReSukiSU/ReSukiSU/raw/refs/heads/main/kernel/setup.sh"
         export KSU_BRANCH="main"
-        export KSU_GENERAL_PATCH="https://github.com/JackA1ltman/NonGKI_Kernel_Build_2nd/raw/refs/heads/mainline/Patches/syscall_hook_patches.sh"
+        export KSU_GENERAL_PATCH="https://github.com/JackA1ltman/NonGKI_Kernel_Build_2nd/raw/refs/heads/mainline/Patches/susfs_inline_hook_patches.sh"
         export KSU_BACKPORT_PATCH="https://github.com/JackA1ltman/NonGKI_Kernel_Build_2nd/raw/refs/heads/mainline/Patches/backport_patches.sh"
     elif [[ "$KERNELSU_SELECTOR" == "--ksu=NONE" ]]; then
         export KSU_SELECTED=""
