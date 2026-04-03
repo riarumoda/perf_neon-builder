@@ -55,16 +55,19 @@ setup_environment() {
         export KSU_SETUP_URI="https://github.com/ReSukiSU/ReSukiSU/raw/refs/heads/main/kernel/setup.sh"
         export KSU_BRANCH="main"
         export KSU_GENERAL_PATCH="https://github.com/JackA1ltman/NonGKI_Kernel_Build_2nd/raw/refs/heads/mainline/Patches/syscall_hook_patches.sh"
+        export KSU_BACKPORT_PATCH="https://github.com/JackA1ltman/NonGKI_Kernel_Build_2nd/raw/refs/heads/mainline/Patches/backport_patches.sh"
     elif [[ "$KERNELSU_SELECTOR" == "--ksu=KSU_ZAKO_SUSFS" ]]; then
         export KSU_SELECTED="zako_susfs"
         export KSU_SETUP_URI="https://github.com/ReSukiSU/ReSukiSU/raw/refs/heads/main/kernel/setup.sh"
         export KSU_BRANCH="main"
-        export KSU_GENERAL_PATCH="https://github.com/JackA1ltman/NonGKI_Kernel_Build_2nd/raw/refs/heads/mainline/Patches/susfs_inline_hook_patches.sh"
+        export KSU_GENERAL_PATCH="https://github.com/JackA1ltman/NonGKI_Kernel_Build_2nd/raw/refs/heads/mainline/Patches/syscall_hook_patches.sh"
+        export KSU_BACKPORT_PATCH="https://github.com/JackA1ltman/NonGKI_Kernel_Build_2nd/raw/refs/heads/mainline/Patches/backport_patches.sh"
     elif [[ "$KERNELSU_SELECTOR" == "--ksu=NONE" ]]; then
         export KSU_SELECTED=""
         export KSU_SETUP_URI=""
         export KSU_BRANCH=""
         export KSU_GENERAL_PATCH=""
+        export KSU_BACKPORT_PATCH=""
     else
         echo "Invalid KernelSU selector. Use, --ksu=KSU_ZAKO, --ksu=KSU_ZAKO_SUSFS, or --ksu=NONE."
         exit 1
@@ -263,8 +266,6 @@ setup_ksu() {
     if [[ "$KSU_SELECTED" == "zako" ]]; then
         # Run Setup Script
         curl -LSs $KSU_SETUP_URI | bash -s $KSU_BRANCH
-        # Apply manual hook
-        curl -LSs $KSU_GENERAL_PATCH | bash
         # Manual Config Enablement
         echo "CONFIG_KSU=y" >> $MAIN_DEFCONFIG
         echo "CONFIG_KSU_MULTI_MANAGER_SUPPORT=y" >> $MAIN_DEFCONFIG
@@ -272,11 +273,12 @@ setup_ksu() {
         echo "CONFIG_KSU_MANUAL_HOOK=y" >> $MAIN_DEFCONFIG
         echo "CONFIG_KSU_SUSFS=n" >> $MAIN_DEFCONFIG
         echo "CONFIG_HAVE_SYSCALL_TRACEPOINTS=y" >> $MAIN_DEFCONFIG
+        # Apply manual hook
+        curl -LSs $KSU_BACKPORT_PATCH | bash
+        curl -LSs $KSU_GENERAL_PATCH | bash
     elif [[ "$KSU_SELECTED" == "zako_susfs" ]]; then
         # Run Setup Script
         curl -LSs $KSU_SETUP_URI | bash -s $KSU_BRANCH
-        # Apply manual hook
-        curl -LSs $KSU_GENERAL_PATCH | bash
         # Manual Config Enablement
         echo "CONFIG_KSU=y" >> $MAIN_DEFCONFIG
         echo "CONFIG_KSU_MULTI_MANAGER_SUPPORT=y" >> $MAIN_DEFCONFIG
@@ -294,6 +296,9 @@ setup_ksu() {
         echo "CONFIG_KSU_SUSFS_SUS_MAP=n" >> $MAIN_DEFCONFIG
         echo "CONFIG_KSU_SUSFS_TRY_UMOUNT=n" >> $MAIN_DEFCONFIG
         echo "CONFIG_HAVE_SYSCALL_TRACEPOINTS=y" >> $MAIN_DEFCONFIG
+        # Apply manual hook
+        curl -LSs $KSU_BACKPORT_PATCH | bash
+        curl -LSs $KSU_GENERAL_PATCH | bash
     elif [[ "$KSU_SELECTED" == "" ]]; then
         echo "No KernelSU to set up."
     fi
