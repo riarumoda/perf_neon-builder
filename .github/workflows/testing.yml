@@ -15,7 +15,8 @@ jobs:
     strategy:
       matrix:
         build-type: [sweet, ginkgo, mi89x7]
-        ksu-type: [zako, none]
+        ksu-type: [zako, zako-kpm, none]
+        bbg-type: [bbg, none]
 
     steps:
       - uses: actions/checkout@v6
@@ -73,29 +74,18 @@ jobs:
 
       - name: Compile the kernel
         run: |
-          echo "Determining KSU type..."
-          if [[ "${{ matrix.ksu-type }}" == "zako" ]]; then
-            echo "Using KSU_ZAKO"
-            export KSU_CHOICE="KSU_ZAKO"
-          elif [[ "${{ matrix.ksu-type }}" == "none" ]]; then
-            echo "No KSU will be used"
-            export KSU_CHOICE="NONE"
-          else
-            echo "Invalid KSU type: ${{ matrix.ksu-type }}"
-            exit 1
-          fi
           echo "Starting to compile..."
           if [[ "${{ matrix.build-type }}" == "sweet" ]]; then
             cd android_kernel_xiaomi_sm6150/
-            ./build.sh sweet --ksu=$KSU_CHOICE
+            ./build.sh sweet ${{ matrix.ksu-type }} ${{ matrix.bbg-type }}
             cd ..
           elif [[ "${{ matrix.build-type }}" == "ginkgo" ]]; then
             cd android_kernel_xiaomi_sm6125/
-            ./build.sh ginkgo --ksu=$KSU_CHOICE
+            ./build.sh ginkgo ${{ matrix.ksu-type }} ${{ matrix.bbg-type }}
             cd ..
           elif [[ "${{ matrix.build-type }}" == "mi89x7" ]]; then
             cd android_kernel_xiaomi_msm8937/
-            ./build.sh mi89x7 --ksu=$KSU_CHOICE
+            ./build.sh mi89x7 ${{ matrix.ksu-type }} ${{ matrix.bbg-type }}
             cd ..
           else
             echo "Invalid build type: ${{ matrix.build-type }}"
@@ -139,6 +129,6 @@ jobs:
       - name: Pack & upload artifacts (All builds)
         uses: actions/upload-artifact@v6
         with:
-          name: perf-neon-${{ matrix.build-type }}-${{ matrix.ksu-type }}-testing-${{ steps.ts.outputs.DATE }}-${{ steps.ts.outputs.TIME }}
+          name: perf-neon-${{ matrix.build-type }}-${{ matrix.ksu-type }}-${{ matrix.bbg-type }}-testing-${{ steps.ts.outputs.DATE }}-${{ steps.ts.outputs.TIME }}
           path: |
             AnyKernel3/*
