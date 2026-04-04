@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Banner
+echo " "
 echo "==============================================="
 echo "  ____            __   _   _                   "
 echo " |  _ \ ___ _ __ / _| | \ | | ___  ___  _ __   "
@@ -44,6 +45,7 @@ chmod +x scripts/compile-it.sh
 source scripts/before-compile.sh
 source scripts/compile-it.sh
 
+# Finalize
 echo "- Build process finished, listed below are the build artifacts:"
 echo "==============================================="
 ls -alHz out/arch/arm64/boot/
