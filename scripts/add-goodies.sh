@@ -45,7 +45,7 @@ else
 fi
 
 # KernelSU setup
-if [[ "$KSU_SELECTED" == "zako" ]]; then
+if [[ "$KERNELSU_SELECTOR" == "zako" ]]; then
     # Setup
     curl -LSs $KSU_SETUP_URI | bash -s $KSU_BRANCH
     # Add configs
@@ -58,7 +58,7 @@ if [[ "$KSU_SELECTED" == "zako" ]]; then
     curl -LSs $BACKPORT_GENERAL_PATCH | bash
     curl -LSs $BACKPORT_SELINUX_PATCH | bash
     curl -LSs $KSU_HOOK | bash
-elif [[ "$KSU_SELECTED" == "zako-kpm" ]]; then
+elif [[ "$KERNELSU_SELECTOR" == "zako-kpm" ]]; then
     # Setup
     curl -LSs $KSU_SETUP_URI | bash -s $KSU_BRANCH
     # Add configs
@@ -71,7 +71,7 @@ elif [[ "$KSU_SELECTED" == "zako-kpm" ]]; then
     curl -LSs $BACKPORT_GENERAL_PATCH | bash
     curl -LSs $BACKPORT_SELINUX_PATCH | bash
     curl -LSs $KSU_HOOK | bash
-elif [[ "$KSU_SELECTED" == "" ]]; then
+elif [[ "$KERNELSU_SELECTOR" == "" ]]; then
     echo "No KernelSU to set up."
 fi
 

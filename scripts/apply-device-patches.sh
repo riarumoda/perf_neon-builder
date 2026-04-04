@@ -1,7 +1,7 @@
 #!/bin/bash
-echo "- Applying device specific patches for $SELECTED_DEVICE..."
+echo "- Applying device specific patches for $DEVICE_IMPORT..."
 
-if [[ "$SELECTED_DEVICE" == "sweet" ]]; then
+if [[ "$DEVICE_IMPORT" == "sweet" ]]; then
     # Main LN8K Exports
     export LN8K_PATCH1="https://github.com/crdroidandroid/android_kernel_xiaomi_sm6150/commit/7b73f853977d2c016e30319dffb1f49957d30b40.patch"
     export LN8K_PATCH2="https://github.com/crdroidandroid/android_kernel_xiaomi_sm6150/commit/63dddc108d57dc43e1cd0da0f1445875f760cf97.patch"
@@ -58,7 +58,7 @@ if [[ "$SELECTED_DEVICE" == "sweet" ]]; then
     wget -qO- $BORE_PATCH | patch -s -p1 --fuzz=5
     echo "CONFIG_SCHED_BORE=y" >> $MAIN_DEFCONFIG
 
-elif [[ "$SELECTED_DEVICE" == "ginkgo" ]]; then
+elif [[ "$DEVICE_IMPORT" == "ginkgo" ]]; then
     # DTC Upgrade Exports
     export DTC_PATCH1="https://github.com/LineageOS/android_kernel_xiaomi_sm6150/commit/e207247aa4553fff7190dde5dabb50aec400b513.patch"
     export DTC_PATCH2="https://github.com/LineageOS/android_kernel_xiaomi_sm6150/commit/ae58bbd8f7af4c3c290e63ddcd4112559c5fc240.patch"
@@ -96,12 +96,12 @@ elif [[ "$SELECTED_DEVICE" == "ginkgo" ]]; then
     wget -qO- $BORE_PATCH | patch -s -p1 --fuzz=5
     echo "CONFIG_SCHED_BORE=y" >> $MAIN_DEFCONFIG
 
-elif [[ "$SELECTED_DEVICE" == "mi89x7" ]]; then
+elif [[ "$DEVICE_IMPORT" == "mi89x7" ]]; then
     # BORE Scheduler Export
     export BORE_PATCH="https://github.com/rystX-OpenSource/rystx-kernel_asus_sdm660/commit/dfdf4d2fd3c1d0a9ad4dfbeaf2878e65dc87022b.patch"
     echo "-- Applying BORE Scheduler patch..."
     wget -qO- $BORE_PATCH | filterdiff -x "arch/arm64/configs/asus/*" | patch -s -p1 --fuzz=5
     echo "CONFIG_SCHED_BORE=y" >> $MAIN_DEFCONFIG
 else
-    echo "No specific patches to apply for $SELECTED_DEVICE."
+    echo "No specific patches to apply for $DEVICE_IMPORT."
 fi
