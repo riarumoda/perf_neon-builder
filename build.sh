@@ -48,5 +48,5 @@ source scripts/compile-it.sh
 # Finalize
 echo "- Build process finished, listed below are the build artifacts:"
 echo "==============================================="
-ls -alHz out/arch/arm64/boot/
+ls -alhZ out/arch/arm64/boot/
 echo "==============================================="
