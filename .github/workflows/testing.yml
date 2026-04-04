@@ -47,6 +47,7 @@ jobs:
             git clone https://github.com/LineageOS/android_kernel_xiaomi_sm6150.git -b "lineage-23.2" --depth=1 android_kernel_xiaomi_sm6150
             echo "Copying buildscript..."
             cp build.sh android_kernel_xiaomi_sm6150/
+            cp -r scripts android_kernel_xiaomi_sm6150/
             chmod +x ./android_kernel_xiaomi_sm6150/build.sh
           elif [[ "${{ matrix.build-type }}" == "ginkgo" ]]; then
             if [ -d "$PWD/android_kernel_xiaomi_sm6125" ]; then
@@ -56,6 +57,7 @@ jobs:
             git clone https://github.com/LineageOS/android_kernel_xiaomi_sm6125.git -b "lineage-23.2" --depth=1 android_kernel_xiaomi_sm6125
             echo "Copying buildscript..."
             cp build.sh android_kernel_xiaomi_sm6125/
+            cp -r scripts android_kernel_xiaomi_sm6125/
             chmod +x ./android_kernel_xiaomi_sm6125/build.sh
           elif [[ "${{ matrix.build-type }}" == "mi89x7" ]]; then
             if [ -d "$PWD/android_kernel_xiaomi_msm8937" ]; then
@@ -65,6 +67,7 @@ jobs:
             git clone https://github.com/LineageOS/android_kernel_xiaomi_msm8937.git -b "lineage-23.2" --depth=1 android_kernel_xiaomi_msm8937
             echo "Copying buildscript..."
             cp build.sh android_kernel_xiaomi_msm8937/
+            cp -r scripts android_kernel_xiaomi_msm8937/
             chmod +x ./android_kernel_xiaomi_msm8937/build.sh
           else
             echo "Invalid build type: ${{ matrix.build-type }}"
