@@ -17,7 +17,8 @@ jobs:
     strategy:
       matrix:
         build-type: [sweet, ginkgo, mi89x7]
-        ksu-type: [zako, zako_susfs, none]
+        ksu-type: [zako, none]
+        bbg-type: [bbg, none]
 
     steps:
       - uses: actions/checkout@v6
@@ -48,6 +49,7 @@ jobs:
             git clone https://github.com/LineageOS/android_kernel_xiaomi_sm6150.git -b "lineage-23.2" --depth=1 android_kernel_xiaomi_sm6150
             echo "Copying buildscript..."
             cp build.sh android_kernel_xiaomi_sm6150/
+            cp -r scripts android_kernel_xiaomi_sm6150/
             chmod +x ./android_kernel_xiaomi_sm6150/build.sh
           elif [[ "${{ matrix.build-type }}" == "ginkgo" ]]; then
             if [ -d "$PWD/android_kernel_xiaomi_sm6125" ]; then
@@ -57,6 +59,7 @@ jobs:
             git clone https://github.com/LineageOS/android_kernel_xiaomi_sm6125.git -b "lineage-23.2" --depth=1 android_kernel_xiaomi_sm6125
             echo "Copying buildscript..."
             cp build.sh android_kernel_xiaomi_sm6125/
+            cp -r scripts android_kernel_xiaomi_sm6125/
             chmod +x ./android_kernel_xiaomi_sm6125/build.sh
           elif [[ "${{ matrix.build-type }}" == "mi89x7" ]]; then
             if [ -d "$PWD/android_kernel_xiaomi_msm8937" ]; then
@@ -66,6 +69,7 @@ jobs:
             git clone https://github.com/LineageOS/android_kernel_xiaomi_msm8937.git -b "lineage-23.2" --depth=1 android_kernel_xiaomi_msm8937
             echo "Copying buildscript..."
             cp build.sh android_kernel_xiaomi_msm8937/
+            cp -r scripts android_kernel_xiaomi_msm8937/
             chmod +x ./android_kernel_xiaomi_msm8937/build.sh
           else
             echo "Invalid build type: ${{ matrix.build-type }}"
@@ -74,32 +78,18 @@ jobs:
 
       - name: Compile the kernel
         run: |
-          echo "Determining KSU type..."
-          if [[ "${{ matrix.ksu-type }}" == "zako" ]]; then
-            echo "Using KSU_ZAKO"
-            export KSU_CHOICE="KSU_ZAKO"
-          elif [[ "${{ matrix.ksu-type }}" == "zako_susfs" ]]; then
-            echo "Using KSU_ZAKO_SUSFS"
-            export KSU_CHOICE="KSU_ZAKO_SUSFS"
-          elif [[ "${{ matrix.ksu-type }}" == "none" ]]; then
-            echo "No KSU will be used"
-            export KSU_CHOICE="NONE"
-          else
-            echo "Invalid KSU type: ${{ matrix.ksu-type }}"
-            exit 1
-          fi
           echo "Starting to compile..."
           if [[ "${{ matrix.build-type }}" == "sweet" ]]; then
             cd android_kernel_xiaomi_sm6150/
-            ./build.sh sweet --ksu=$KSU_CHOICE
+            ./build.sh sweet ${{ matrix.ksu-type }} ${{ matrix.bbg-type }}
             cd ..
           elif [[ "${{ matrix.build-type }}" == "ginkgo" ]]; then
             cd android_kernel_xiaomi_sm6125/
-            ./build.sh ginkgo --ksu=$KSU_CHOICE
+            ./build.sh ginkgo ${{ matrix.ksu-type }} ${{ matrix.bbg-type }}
             cd ..
           elif [[ "${{ matrix.build-type }}" == "mi89x7" ]]; then
             cd android_kernel_xiaomi_msm8937/
-            ./build.sh mi89x7 --ksu=$KSU_CHOICE
+            ./build.sh mi89x7 ${{ matrix.ksu-type }} ${{ matrix.bbg-type }}
             cd ..
           else
             echo "Invalid build type: ${{ matrix.build-type }}"
@@ -134,7 +124,7 @@ jobs:
             sed -i 's/device.name1=sweet/device.name1=mi8937/' AnyKernel3/anykernel.sh
             sed -i 's/device.name2=sweetin/device.name2=mi8917/' AnyKernel3/anykernel.sh
             sed -i '/device.name2=mi8917/a device.name3=santoni\ndevice.name4=prada\ndevice.name5=rolex\ndevice.name6=ugglite\ndevice.name7=riva\ndevice.name8=ugg' AnyKernel3/anykernel.sh
-            sed -i 's/sweet (sm6150)/mi8937 (msm8937)/g' AnyKernel3/banner
+            sed -i 's/sweet (sm6150)/mi8937 and mi8917 (msm8937)/g' AnyKernel3/banner
           else
             echo "Invalid build type: ${{ matrix.build-type }}"
             exit 1
@@ -142,7 +132,7 @@ jobs:
 
       - name: Pack kernel with AnyKernel3
         run: |
-          ZIPNAME="perf-neon-${{ matrix.build-type }}-weekly-${{ matrix.ksu-type }}-${{ steps.ts.outputs.DATE }}-${{ steps.ts.outputs.TIME }}.zip"
+          ZIPNAME="perf-neon-${{ matrix.build-type }}-weekly-${{ matrix.ksu-type }}-${{ matrix.bbg-type }}-${{ steps.ts.outputs.DATE }}-${{ steps.ts.outputs.TIME }}.zip"
           cd AnyKernel3
           zip -rq9 "../$ZIPNAME" ./*
           cd ..
@@ -150,7 +140,7 @@ jobs:
       - name: Upload artifacts (All builds)
         uses: actions/upload-artifact@v6
         with:
-          name: ${{ matrix.build-type }}-${{ matrix.ksu-type }}
+          name: ${{ matrix.build-type }}-${{ matrix.ksu-type }}-${{ matrix.bbg-type }}
           path: |
             *.zip
 
@@ -190,9 +180,12 @@ jobs:
             > - ReSukiSU latest manager can be found in [here](https://resukisu.github.io/guide/install.html#Get-manager).    
                
             > [!IMPORTANT]
-            > - "zako" build contains ReSukiSU (Recommended).   
-            > - "zako_susfs" build contains ReSukiSU + SUSFS.   
-            > - "none" build does not contain any KernelSU.   
+            > - "zako-bbg" build contains ReSukiSU + Baseband Guard (Recommended).   
+            > - "zako-susfs-bbg" build contains ReSukiSU + SUSFS + Baseband Guard.   
+            > - "none-bbg" build does not contain KernelSU but contains Baseband Guard.   
+            > - "zako-none" build contains ReSukiSU w/o Baseband Guard.
+            > - "zako-susfs-none" build contains ReSukiSU + SUSFS w/o Baseband Guard.
+            > - "none-none" build does not contain KernelSU nor Baseband Guard.
 
             > [!CAUTION]   
             > - Always backup your boot & dtbo image first before proceeding!   
