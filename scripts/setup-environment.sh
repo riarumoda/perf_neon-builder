@@ -44,6 +44,18 @@ if [[ "$DEVICE_IMPORT" == "sweet" ]]; then
     export KBUILD_BUILD_HOST=riaru.com
     # Kernel Version
     export KERNEL_VERSION="4.14"
+elif [[ "$DEVICE_IMPORT" == "davinci" ]]; then
+    # Defconfigs
+    export MAIN_DEFCONFIG="arch/arm64/configs/vendor/sdmsteppe-perf_defconfig"
+    export ACTUAL_MAIN_DEFCONFIG="vendor/sdmsteppe-perf_defconfig"
+    export COMMON_DEFCONFIG="vendor/debugfs.config"
+    export DEVICE_DEFCONFIG="vendor/davinci.config"
+    export FEATURE_DEFCONFIG=""
+    # Maintainer
+    export KBUILD_BUILD_USER=riarumoda-compile
+    export KBUILD_BUILD_HOST=riaru.com
+    # Kernel Version
+    export KERNEL_VERSION="4.14"
 elif [[ "$DEVICE_IMPORT" == "ginkgo" ]]; then
     # Defconfigs
     export MAIN_DEFCONFIG="arch/arm64/configs/vendor/trinket-perf_defconfig"

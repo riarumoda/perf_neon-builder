@@ -57,7 +57,37 @@ if [[ "$DEVICE_IMPORT" == "sweet" ]]; then
     wget -qO- $REWEIGHT_TASK_BACKPORT | patch -s -p1 --fuzz=5
     wget -qO- $BORE_PATCH | patch -s -p1 --fuzz=5
     echo "CONFIG_SCHED_BORE=y" >> $MAIN_DEFCONFIG
-
+if [[ "$DEVICE_IMPORT" == "davinci" ]]; then
+    # DTBO Exports
+    export DTBO_PATCH1="https://github.com/xiaomi-sm6150/android_kernel_xiaomi_sm6150/commit/e517bc363a19951ead919025a560f843c2c03ad3.patch"
+    export DTBO_PATCH2="https://github.com/xiaomi-sm6150/android_kernel_xiaomi_sm6150/commit/a62a3b05d0f29aab9c4bf8d15fe786a8c8a32c98.patch"
+    export DTBO_PATCH3="https://github.com/xiaomi-sm6150/android_kernel_xiaomi_sm6150/commit/4b89948ec7d610f997dd1dab813897f11f403a06.patch"
+    export DTBO_PATCH4="https://github.com/xiaomi-sm6150/android_kernel_xiaomi_sm6150/commit/fade7df36b01f2b170c78c63eb8fe0d11c613c4a.patch"
+    export DTBO_PATCH5="https://github.com/xiaomi-sm6150/android_kernel_xiaomi_sm6150/commit/2628183db0d96be8dae38a21f2b09cb10978f423.patch"
+    export DTBO_PATCH6="https://github.com/xiaomi-sm6150/android_kernel_xiaomi_sm6150/commit/31f4577af3f8255ae503a5b30d8f68906edde85f.patch"
+    echo "-- Applying DTBO patches..."
+    wget -qO- $DTBO_PATCH1 | patch -s -p1
+    wget -qO- $DTBO_PATCH2 | patch -s -p1
+    wget -qO- $DTBO_PATCH3 | patch -s -p1
+    wget -qO- $DTBO_PATCH4 | patch -s -p1
+    wget -qO- $DTBO_PATCH5 | patch -s -p1
+    wget -qO- $DTBO_PATCH6 | patch -s -p1
+    # LTO Exports
+    export LTO_PATCH="https://github.com/TheSillyOk/kernel_ls_patches/raw/refs/heads/master/fix_lto.patch"
+    echo "-- Applying LTO patches..."
+    wget -qO- $LTO_PATCH | patch -s -p1
+    echo "CONFIG_LTO_CLANG=y" >> $MAIN_DEFCONFIG
+    # Apply general config patches
+    echo "-- Tuning the rest of default configs..."
+    echo "CONFIG_EROFS_FS=y" >> $MAIN_DEFCONFIG
+    echo "CONFIG_SECURITY_SELINUX_DEVELOP=y" >> $MAIN_DEFCONFIG
+    # BORE Scheduler Export
+    export REWEIGHT_TASK_BACKPORT="https://github.com/ximi-mojito-test/android_kernel_xiaomi_mojito/commit/eff756aaf5d666a15d8ac19743b582c2ce0fe3aa.patch"
+    export BORE_PATCH="https://github.com/ximi-mojito-test/android_kernel_xiaomi_mojito/commit/2220322065591df5ff7ae27cc1fff386d3631bd0.patch"
+    echo "-- Applying BORE Scheduler patch..."
+    wget -qO- $REWEIGHT_TASK_BACKPORT | patch -s -p1 --fuzz=5
+    wget -qO- $BORE_PATCH | patch -s -p1 --fuzz=5
+    echo "CONFIG_SCHED_BORE=y" >> $MAIN_DEFCONFIG
 elif [[ "$DEVICE_IMPORT" == "ginkgo" ]]; then
     # DTC Upgrade Exports
     export DTC_PATCH1="https://github.com/LineageOS/android_kernel_xiaomi_sm6150/commit/e207247aa4553fff7190dde5dabb50aec400b513.patch"
@@ -95,7 +125,6 @@ elif [[ "$DEVICE_IMPORT" == "ginkgo" ]]; then
     wget -qO- $REWEIGHT_TASK_BACKPORT | patch -s -p1 --fuzz=5
     wget -qO- $BORE_PATCH | patch -s -p1 --fuzz=5
     echo "CONFIG_SCHED_BORE=y" >> $MAIN_DEFCONFIG
-
 elif [[ "$DEVICE_IMPORT" == "mi89x7" ]]; then
     # BORE Scheduler Export
     export BORE_PATCH="https://github.com/rystX-OpenSource/rystx-kernel_asus_sdm660/commit/dfdf4d2fd3c1d0a9ad4dfbeaf2878e65dc87022b.patch"
