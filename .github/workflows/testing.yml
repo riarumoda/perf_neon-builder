@@ -123,7 +123,7 @@ jobs:
             sed -i 's/device.name1=sweet/device.name1=mi8937/' AnyKernel3/anykernel.sh
             sed -i 's/device.name2=sweetin/device.name2=mi8917/' AnyKernel3/anykernel.sh
             sed -i '/device.name2=mi8917/a device.name3=santoni\ndevice.name4=prada\ndevice.name5=rolex\ndevice.name6=ugglite\ndevice.name7=riva\ndevice.name8=ugg' AnyKernel3/anykernel.sh
-            sed -i 's/sweet (sm6150)/mi8937 (msm8937)/g' AnyKernel3/banner
+            sed -i 's/sweet (sm6150)/mi8937 and mi8917 (msm8937)/g' AnyKernel3/banner
           else
             echo "Invalid build type: ${{ matrix.build-type }}"
             exit 1
