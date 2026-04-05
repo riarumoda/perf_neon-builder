@@ -57,7 +57,7 @@ if [[ "$DEVICE_IMPORT" == "sweet" ]]; then
     wget -qO- $REWEIGHT_TASK_BACKPORT | patch -s -p1 --fuzz=5
     wget -qO- $BORE_PATCH | patch -s -p1 --fuzz=5
     echo "CONFIG_SCHED_BORE=y" >> $MAIN_DEFCONFIG
-if [[ "$DEVICE_IMPORT" == "davinci" ]]; then
+elif [[ "$DEVICE_IMPORT" == "davinci" ]]; then
     # DTBO Exports
     export DTBO_PATCH1="https://github.com/xiaomi-sm6150/android_kernel_xiaomi_sm6150/commit/e517bc363a19951ead919025a560f843c2c03ad3.patch"
     export DTBO_PATCH2="https://github.com/xiaomi-sm6150/android_kernel_xiaomi_sm6150/commit/a62a3b05d0f29aab9c4bf8d15fe786a8c8a32c98.patch"
