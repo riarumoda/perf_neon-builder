@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Banner
 echo " "
@@ -9,7 +10,7 @@ echo " | |_) / _ \ '__| |_  |  \| |/ _ \/ _ \| '_ \  "
 echo " |  __/  __/ |  |  _| | |\  |  __/ (_) | | | | "
 echo " |_|   \___|_|  |_|   |_| \_|\___|\___/|_| |_| "
 echo "==============================================="
-echo " Build Script 1.0 - by Riaru Moda"
+echo " Build Script 1.1 - by Riaru Moda"
 echo " https://t.me/trrflex"
 echo " "
 
@@ -46,7 +47,11 @@ source scripts/before-compile.sh
 source scripts/compile-it.sh
 
 # Finalize
-echo "- Build process finished, listed below are the build artifacts:"
-echo "==============================================="
-ls -alhZ out/arch/arm64/boot/
-echo "==============================================="
+if [ -d "out/arch/arm64/boot" ]; then
+    echo "- Build process finished, listed below are the build artifacts:"
+    echo "==============================================="
+    ls -alhZ out/arch/arm64/boot/
+    echo "==============================================="
+else
+    echo "- Build process either failed during pre-compile or uring compile."
+fi
