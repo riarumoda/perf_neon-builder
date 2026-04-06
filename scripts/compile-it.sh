@@ -2,10 +2,18 @@
 echo "- Starting kernel compilation..."
 
 # Warning start banner
-echo -e "\n================================\n   COMPILING PROCESS HAVE BEEN STARTED   \n================================\n"
+echo " "
+echo "====================================="
+echo " COMPILING PROCESS HAVE BEEN STARTED "
+echo "====================================="
+echo " "
 
 # Compile the kernel
 make -j$(nproc --all) O=out "${MAKE_ARGS[@]}"
 
 # WWarning finish banner
-echo -e "\n================================\n   COMPILING PROCESS HAVE BEEN STARTED   \n================================\n"
+echo " "
+echo "======================================"
+echo " COMPILING PROCESS HAVE BEEN FINISHED "
+echo "======================================"
+echo " "
