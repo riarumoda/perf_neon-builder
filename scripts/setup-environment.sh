@@ -2,22 +2,18 @@
 echo "- Setting up build environment..."
 
 # GCC and Clang settings
-REPOS=(
+export CLANG_ROOT="$PWD/clang"
+export GCC64_ROOT="$PWD/gcc64"
+export GCC32_ROOT="$PWD/gcc32"
+export PATH="$CLANG_ROOT/bin:$GCC64_ROOT/bin:$GCC32_ROOT/bin:/usr/bin:$PATH"
+TC_URLS=(
     "clang|https://github.com/LineageOS/android_prebuilts_clang_kernel_linux-x86_clang-r416183b.git"
     "gcc64|https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9.git"
     "gcc32|https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9.git"
 )
-export PATH="$CLANG_DIR/bin/:$GCC64_DIR/bin/:$GCC32_DIR/bin/:/usr/bin:$PATH"
-
-# toolchain setup
-for repo in "${REPOS[@]}"; do
-    dir="${repo%%|*}"
-    url="${repo##*|}"
-    if [ ! -d "$PWD/$dir" ]; then
-        git clone "$url" --depth=1 "$dir" &> /dev/null
-    else
-        echo "Local $dir dir found, using it."
-    fi
+for tc in "${TC_URLS[@]}"; do
+    dir="${tc%%|*}"; url="${tc##*|}"
+    [ ! -d "$dir" ] && git clone "$url" --depth=1 "$dir" &> /dev/null || echo "-- Using local $dir"
 done
 
 # Device Default Exports
