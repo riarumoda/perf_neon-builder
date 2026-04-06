@@ -39,8 +39,8 @@ case "$KERNELSU_SELECTOR" in
             KSU_HOOK="https://github.com/JackA1ltman/NonGKI_Kernel_Build_2nd/raw/refs/heads/mainline/Patches/syscall_hook_patches.sh"
         fi
         # Apply backport and hooks
-        curl -LSs "$BACKPORT_GENERAL_PATCH" | bash
-        curl -LSs "$KSU_HOOK" | bash
+        curl -LSs "$BACKPORT_GENERAL_PATCH" | bash &> /dev/null
+        curl -LSs "$KSU_HOOK" | bash &> /dev/null
         ;;
     none|"")
         echo "No KernelSU to set up."
