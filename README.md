@@ -21,7 +21,10 @@ Currently added features:
 Currently supported device:   
 - Redmi K20/Mi 9T ([davinci](https://download.lineageos.org/devices/davinci/builds)) 
 - Redmi Note 10 Pro/Pro Max ([sweet](https://download.lineageos.org/devices/sweet/builds))   
+- Xiaomi Mi Note 10/Note 10 Pro/CC9 Pro ([tucana](https://download.lineageos.org/devices/tucana/builds))   
+- Redmi Note 7 Pro ([violet](https://download.lineageos.org/devices/violet/builds))   
 - Redmi Note 8/8T ([ginkgo/willow](https://download.lineageos.org/devices/ginkgo/builds))   
+- Xiaomi Mi A3 ([laurel_sprout](https://download.lineageos.org/devices/laurel_sprout/builds))   
 - Redmi 4A/5A/Note 5A Lite/Y1 Lite ([mi8917](https://download.lineageos.org/devices/Mi8917/builds))
 - Redmi 3/3S/4/4X/Note 5A Prime/Y1 Prime ([mi8937](https://download.lineageos.org/devices/Mi8937/builds))   
 
@@ -31,7 +34,7 @@ Patches & buildscript
 - [xiaomi-sm6150](https://github.com/xiaomi-sm6150) for the dtbo patches.   
 - [crdroidandroid](https://github.com/crdroidandroid) for the ln8000 patches.   
 - [JackA1ltMan](https://github.com/JackA1ltman) for syscall hook script, susfs inline hook script, and SUSFS patches.   
-- [TheSillyOk](https://github.com/TheSillyOk) for LTO fixup for 4.14 devices.   
+- [TheSillyOk](https://github.com/TheSillyOk) for LTO & kpatch fixup for 4.14 devices.   
 - [backslashxx](https://github.com/backslashxx) and [rystX-OpenSource](https://github.com/rystX-OpenSource) for BORE Sched patches.
 
 Projects   
