@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         build-type: [a52s]
-        ksu-type: [zako, zako-susfs, none]
+        ksu-type: [zako, none]
         bbg-type: [bbg, none]
 
     steps:
