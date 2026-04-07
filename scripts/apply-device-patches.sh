@@ -24,7 +24,7 @@ BORE_PATCH_SHARED="https://github.com/ximi-mojito-test/android_kernel_xiaomi_moj
 
 # Patcher - 1.0
 case "$DEVICE_IMPORT" in
-    sweet|davinci|tucana|violet|ginkgo|laurel_sprout)
+    sweet|davinci|tucana|violet|ginkgo|laurel_sprout|a52q|a72q)
         if [[ "$DEVICE_IMPORT" == "sweet" ]]; then
             echo "-- Applying LN8K patches..."
             LN8K_PATCHES=(
@@ -41,7 +41,7 @@ case "$DEVICE_IMPORT" in
             )
             apply_patches "${LN8K_PATCHES[@]}"
             echo "CONFIG_CHARGER_LN8000=y" >> $MAIN_DEFCONFIG
-        elif [[ "$DEVICE_IMPORT" == "ginkgo" ]] || [[ "$DEVICE_IMPORT" == "laurel_sprout" ]]; then
+        elif [[ "$DEVICE_IMPORT" == "ginkgo" ]] || [[ "$DEVICE_IMPORT" == "laurel_sprout" ]] || [[ "$DEVICE_IMPORT" == "a52q" ]] || [[ "$DEVICE_IMPORT" == "a72q" ]]; then
             echo "-- Applying DTC patches..."
             apply_patches \
                 "https://github.com/LineageOS/android_kernel_xiaomi_sm6150/commit/e207247aa4553fff7190dde5dabb50aec400b513.patch" \

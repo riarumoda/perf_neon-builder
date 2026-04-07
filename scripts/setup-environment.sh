@@ -37,6 +37,12 @@ case "$DEVICE_IMPORT" in
         export DEVICE_DEFCONFIG="vendor/${DEVICE_IMPORT}.config"
         export KBUILD_BUILD_USER=hiyorun-compile
         ;;
+    a52q|a72q)
+        export MAIN_DEFCONFIG="arch/arm64/configs/vendor/lineage-${DEVICE_IMPORT}_defconfig"
+        export ACTUAL_MAIN_DEFCONFIG="vendor/lineage-${DEVICE_IMPORT}_defconfig"
+        export DEVICE_DEFCONFIG=""
+        export KBUILD_BUILD_USER=isaiah-compile
+        ;;
     mi89x7)
         export MAIN_DEFCONFIG="arch/arm64/configs/vendor/msm8937-perf_defconfig"
         export ACTUAL_MAIN_DEFCONFIG="vendor/msm8937-perf_defconfig"
