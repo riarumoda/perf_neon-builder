@@ -69,7 +69,6 @@ jobs:
             cp build.sh android_kernel_xiaomi_msm8937/
             cp -r scripts android_kernel_xiaomi_msm8937/
             chmod +x ./android_kernel_xiaomi_msm8937/build.sh
-          else
           elif [[ "${{ matrix.build-type }}" == "on7xelte" ]]; then
             if [ -d "$PWD/android_kernel_samsung_exynos7870" ]; then
               rm -rf android_kernel_samsung_exynos7870
