@@ -4,7 +4,7 @@ echo "- Applying device specific patches for $DEVICE_IMPORT..."
 # Patcher helper - 1.0
 apply_patches() {
     for patch_url in "$@"; do
-        wget -qO- "$patch_url" | patch -s -p1
+        wget -qO- "$patch_url" | patch -s -p1 --fuzz=5
     done
 }
 
