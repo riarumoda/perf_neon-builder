@@ -37,12 +37,6 @@ case "$DEVICE_IMPORT" in
         export DEVICE_DEFCONFIG="vendor/${DEVICE_IMPORT}.config"
         export KBUILD_BUILD_USER=hiyorun-compile
         ;;
-    a52q|a72q)
-        export MAIN_DEFCONFIG="arch/arm64/configs/vendor/lineage-${DEVICE_IMPORT}_defconfig"
-        export ACTUAL_MAIN_DEFCONFIG="vendor/lineage-${DEVICE_IMPORT}_defconfig"
-        export DEVICE_DEFCONFIG=""
-        export KBUILD_BUILD_USER=isaiah-compile
-        ;;
     mi89x7)
         export MAIN_DEFCONFIG="arch/arm64/configs/vendor/msm8937-perf_defconfig"
         export ACTUAL_MAIN_DEFCONFIG="vendor/msm8937-perf_defconfig"
@@ -50,14 +44,6 @@ case "$DEVICE_IMPORT" in
         export DEVICE_DEFCONFIG="vendor/xiaomi/msm8937/common.config vendor/xiaomi/msm8937/mi8937.config"
         export FEATURE_DEFCONFIG="vendor/feature/lineageos.config vendor/feature/android-12.config vendor/feature/erofs.config vendor/feature/exfat.config vendor/feature/lmkd.config vendor/feature/lto.config vendor/feature/ntfs.config vendor/feature/wireguard.config"
         export KERNEL_VERSION="4.19"
-        ;;
-    on7xelte)
-        export MAIN_DEFCONFIG="arch/arm64/configs/exynos7870-on7xelte_defconfig"
-        export ACTUAL_MAIN_DEFCONFIG="exynos7870-on7xelte_defconfig"
-        export COMMON_DEFCONFIG=""
-        export DEVICE_DEFCONFIG=""
-        export FEATURE_DEFCONFIG=""
-        export KERNEL_VERSION="3.18"
         ;;
     a52s)
         export MAIN_DEFCONFIG="arch/arm64/configs/vendor/lineage-a52sxq_defconfig"
@@ -68,7 +54,7 @@ case "$DEVICE_IMPORT" in
         export KERNEL_VERSION="5.4"
         ;;
     *)
-        echo "- Invalid DEVICE_IMPORT. Valid options: sweet, davinci, ginkgo, mi89x7, on7xelte, a52s. Yours: $DEVICE_IMPORT."
+        echo "- Invalid DEVICE_IMPORT. Valid options: sweet, davinci, ginkgo, laurel_sprout, mi89x7, a52s. Yours: $DEVICE_IMPORT."
         exit 1
         ;;
 esac

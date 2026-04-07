@@ -24,7 +24,7 @@ BORE_PATCH_SHARED="https://github.com/ximi-mojito-test/android_kernel_xiaomi_moj
 
 # Patcher - 1.0
 case "$DEVICE_IMPORT" in
-    sweet|davinci|tucana|violet|ginkgo|laurel_sprout|a52q|a72q)
+    sweet|davinci|tucana|violet|ginkgo|laurel_sprout)
         if [[ "$DEVICE_IMPORT" == "sweet" ]]; then
             echo "-- Applying LN8K patches..."
             LN8K_PATCHES=(
@@ -66,9 +66,6 @@ case "$DEVICE_IMPORT" in
         BORE_PATCH="https://github.com/rystX-OpenSource/rystx-kernel_asus_sdm660/commit/dfdf4d2fd3c1d0a9ad4dfbeaf2878e65dc87022b.patch"
         wget -qO- "$BORE_PATCH" | filterdiff -x "arch/arm64/configs/asus/*" | patch -s -p1 --fuzz=5 &> /dev/null
         echo "CONFIG_SCHED_BORE=y" >> $MAIN_DEFCONFIG
-        ;;
-    on7xelte)
-        echo "-- STUB Entry for on7xelte. Nothing added yet."
         ;;
     a52s)
         echo "-- STUB Entry for a52s. Nothing added yet."
