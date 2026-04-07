@@ -167,11 +167,6 @@ jobs:
             echo "Invalid build type: ${{ matrix.build-type }}"
             exit 1
           fi
-            sed -i 's/sweet (sm6150)/mi8937 and mi8917 (msm8937)/g' AnyKernel3/banner
-          else
-            echo "Invalid build type: ${{ matrix.build-type }}"
-            exit 1
-          fi
       
       - name: Pack & upload artifacts (All builds)
         uses: actions/upload-artifact@v6
