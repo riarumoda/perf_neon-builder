@@ -52,6 +52,7 @@ case "$DEVICE_IMPORT" in
         export DEVICE_DEFCONFIG=""
         export FEATURE_DEFCONFIG=""
         export KERNEL_VERSION="3.18"
+        ;;
     *)
         echo "- Invalid DEVICE_IMPORT. Valid options: sweet, davinci, ginkgo, mi89x7, on7xelte. Yours: $DEVICE_IMPORT."
         exit 1
