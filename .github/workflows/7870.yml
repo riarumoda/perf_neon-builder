@@ -35,7 +35,7 @@ jobs:
           sudo apt-get install -y \
             bc build-essential bison flex zip p7zip-full \
             libc6 curl libstdc++6 git wget libssl-dev zstd \
-            lld python3 patchutils
+            lld python3 patchutils ccache
 
       - name: Preparing kernel sources
         run: |
