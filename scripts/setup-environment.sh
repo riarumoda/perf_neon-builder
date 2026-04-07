@@ -53,8 +53,16 @@ case "$DEVICE_IMPORT" in
         export FEATURE_DEFCONFIG=""
         export KERNEL_VERSION="3.18"
         ;;
+    a52s)
+        export MAIN_DEFCONFIG="arch/arm64/configs/vendor/lineage-a52sxq_defconfig"
+        export ACTUAL_MAIN_DEFCONFIG="vendor/lineage-a52sxq_defconfig"
+        export COMMON_DEFCONFIG=""
+        export DEVICE_DEFCONFIG=""
+        export FEATURE_DEFCONFIG=""
+        export KERNEL_VERSION="5.4"
+        ;;
     *)
-        echo "- Invalid DEVICE_IMPORT. Valid options: sweet, davinci, ginkgo, mi89x7, on7xelte. Yours: $DEVICE_IMPORT."
+        echo "- Invalid DEVICE_IMPORT. Valid options: sweet, davinci, ginkgo, mi89x7, on7xelte, a52s. Yours: $DEVICE_IMPORT."
         exit 1
         ;;
 esac
