@@ -14,7 +14,7 @@ jobs:
       date: ${{ steps.ts.outputs.DATE }}
     strategy:
       matrix:
-        build-type: [sweet, davinci, tucana, violet, ginkgo, laurel_sprout, a52q, a72q, mi89x7]
+        build-type: [sweet, davinci, tucana, violet, ginkgo, laurel_sprout, mi89x7]
         ksu-type: [zako, zako-susfs, none]
         bbg-type: [bbg, none]
 
@@ -59,16 +59,6 @@ jobs:
             cp build.sh android_kernel_xiaomi_sm6125/
             cp -r scripts android_kernel_xiaomi_sm6125/
             chmod +x ./android_kernel_xiaomi_sm6125/build.sh
-          elif [[ "${{ matrix.build-type }}" == "a52q" ]] || [[ "${{ matrix.build-type }}" == "a72q" ]]; then
-            if [ -d "$PWD/android_kernel_samsung_sm7125" ]; then
-              rm -rf android_kernel_samsung_sm7125
-            fi
-            echo "Cloning kernel sources..."
-            git clone https://github.com/LineageOS/android_kernel_samsung_sm7125.git -b "lineage-23.2" --depth=1 android_kernel_samsung_sm7125
-            echo "Copying buildscript..."
-            cp build.sh android_kernel_samsung_sm7125/
-            cp -r scripts android_kernel_samsung_sm7125/
-            chmod +x ./android_kernel_samsung_sm7125/build.sh
           elif [[ "${{ matrix.build-type }}" == "mi89x7" ]]; then
             if [ -d "$PWD/android_kernel_xiaomi_msm8937" ]; then
               rm -rf android_kernel_xiaomi_msm8937
@@ -94,10 +84,6 @@ jobs:
             cd ..
           elif [[ "${{ matrix.build-type }}" == "ginkgo" || "${{ matrix.build-type }}" == "laurel_sprout" ]]; then
             cd android_kernel_xiaomi_sm6125/
-            ./build.sh ${{ matrix.build-type }} ${{ matrix.ksu-type }} ${{ matrix.bbg-type }}
-            cd ..
-          elif [[ "${{ matrix.build-type }}" == "a52q" ]] || [[ "${{ matrix.build-type }}" == "a72q" ]]; then
-            cd android_kernel_samsung_sm7125/
             ./build.sh ${{ matrix.build-type }} ${{ matrix.ksu-type }} ${{ matrix.bbg-type }}
             cd ..
           elif [[ "${{ matrix.build-type }}" == "mi89x7" ]]; then
@@ -150,20 +136,6 @@ jobs:
               sed -i 's/device.name1=sweet/device.name1=laurel_sprout/' AnyKernel3/anykernel.sh
               sed -i 's/device.name2=sweetin/device.name2=laurel_sproutin/' AnyKernel3/anykernel.sh
               sed -i 's/sweet (sm6150)/laurel_sprout (sm6125)/g' AnyKernel3/banner
-            fi
-          elif [[ "${{ matrix.build-type }}" == "a52q" || "${{ matrix.build-type }}" == "a72q" ]]; then
-            cp android_kernel_samsung_sm7125/out/arch/arm64/boot/Image.gz AnyKernel3/
-            cp android_kernel_samsung_sm7125/out/arch/arm64/boot/dtb.img AnyKernel3/
-            cp android_kernel_samsung_sm7125/out/arch/arm64/boot/dtbo.img AnyKernel3/
-            sed -i 's/supported.versions=11-16/supported.versions=11-16/' AnyKernel3/anykernel.sh
-            if [[ "${{ matrix.build-type }}" == "a52q" ]]; then
-              sed -i 's/device.name1=sweet/device.name1=a52q/' AnyKernel3/anykernel.sh
-              sed -i 's/device.name2=sweetin/device.name2=a52qxx/' AnyKernel3/anykernel.sh
-              sed -i 's/sweet (sm6150)/a52q (sm7125)/g' AnyKernel3/banner
-            elif [[ "${{ matrix.build-type }}" == "a72q" ]]; then
-              sed -i 's/device.name1=sweet/device.name1=a72q/' AnyKernel3/anykernel.sh
-              sed -i 's/device.name2=sweetin/device.name2=a72qxx/' AnyKernel3/anykernel.sh
-              sed -i 's/sweet (sm6150)/a72q (sm7125)/g' AnyKernel3/banner
             fi
           elif [[ "${{ matrix.build-type }}" == "mi89x7" ]]; then
             cp android_kernel_xiaomi_msm8937/out/arch/arm64/boot/Image.gz-dtb AnyKernel3/
