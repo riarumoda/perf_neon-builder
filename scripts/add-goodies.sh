@@ -6,7 +6,7 @@ export BACKPORT_GENERAL_PATCH="https://github.com/JackA1ltman/NonGKI_Kernel_Buil
 export KSU_SETUP_URI="https://github.com/ReSukiSU/ReSukiSU/raw/refs/heads/main/kernel/setup.sh"
 export BBG_SETUP_URI="https://github.com/vc-teahouse/Baseband-guard/raw/main/setup.sh"
 export SUSFS_PATCH="https://github.com/JackA1ltman/NonGKI_Kernel_Build_2nd/raw/refs/heads/mainline/Patches/Patch/susfs_patch_to_${KERNEL_VERSION}.patch"
-export NOMOUNT_PATCH="https://github.com/maxsteeel/nomount/blob/master/patches/experimental/nomount-kernel-${KERNEL_VERSION}.patch"
+export NOMOUNT_PATCH="https://github.com/maxsteeel/nomount/raw/refs/heads/master/patches/experimental/nomount-kernel-${KERNEL_VERSION}.patch"
 
 # KernelSU setup
 echo "-- Setting up KernelSU..."
