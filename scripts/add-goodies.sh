@@ -60,7 +60,7 @@ case "$BBG_SELECTOR" in
         # Enable the necessary Baseband Guard configs
         echo "CONFIG_BBG=y" >> $MAIN_DEFCONFIG
         # Kernel Settings for Baseband Guard
-        if [[ "$KERNEL_VERSION" == "4.19" ] || [ "$KERNEL_VERSION" == "5.4" ]]; then
+        if [[ "$KERNEL_VERSION" == "4.19" ]] || [[ "$KERNEL_VERSION" == "5.4" ]]; then
             sed -i '/CONFIG_LSM=/s/"$/ ,baseband_guard"/' $MAIN_DEFCONFIG
         fi
         ;;
