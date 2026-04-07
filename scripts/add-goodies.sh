@@ -6,6 +6,7 @@ export BACKPORT_GENERAL_PATCH="https://github.com/JackA1ltman/NonGKI_Kernel_Buil
 export KSU_SETUP_URI="https://github.com/ReSukiSU/ReSukiSU/raw/refs/heads/main/kernel/setup.sh"
 export BBG_SETUP_URI="https://github.com/vc-teahouse/Baseband-guard/raw/main/setup.sh"
 export SUSFS_PATCH="https://github.com/JackA1ltman/NonGKI_Kernel_Build_2nd/raw/refs/heads/mainline/Patches/Patch/susfs_patch_to_${KERNEL_VERSION}.patch"
+export NOMOUNT_PATCH="https://github.com/maxsteeel/nomount/blob/master/patches/experimental/nomount-kernel-${KERNEL_VERSION}.patch"
 
 # KernelSU setup
 echo "-- Setting up KernelSU..."
@@ -69,6 +70,24 @@ case "$BBG_SELECTOR" in
         ;;
     *)
         echo "- Invalid BBG_SELECTOR: $BBG_SELECTOR. Valid options: bbg, none."
+        exit 1
+        ;;
+esac
+
+# Nomount setup
+case "$NOMOUNT_SELECTOR" in
+    nomount)
+        # Setup nomount
+        echo "-- Setting up Nomount..."
+        wget -qO- $NOMOUNT_PATCH | patch -s -p1 --fuzz=5
+        # Enable the necessary Nomount configs
+        echo "CONFIG_NOMOUNT=y" >> $MAIN_DEFCONFIG
+        ;;
+    none|"")
+        echo "No Nomount to set up."
+        ;;
+    *)
+        echo "- Invalid NOMOUNT_SELECTOR: $NOMOUNT_SELECTOR. Valid options: nomount, none."
         exit 1
         ;;
 esac
