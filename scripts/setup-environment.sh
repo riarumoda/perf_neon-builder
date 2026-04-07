@@ -45,8 +45,15 @@ case "$DEVICE_IMPORT" in
         export FEATURE_DEFCONFIG="vendor/feature/lineageos.config vendor/feature/android-12.config vendor/feature/erofs.config vendor/feature/exfat.config vendor/feature/lmkd.config vendor/feature/lto.config vendor/feature/ntfs.config vendor/feature/wireguard.config"
         export KERNEL_VERSION="4.19"
         ;;
+    on7xelte)
+        export MAIN_DEFCONFIG="arch/arm64/configs/exynos7870-on7xelte_defconfig"
+        export ACTUAL_MAIN_DEFCONFIG="exynos7870-on7xelte_defconfig"
+        export COMMON_DEFCONFIG=""
+        export DEVICE_DEFCONFIG=""
+        export FEATURE_DEFCONFIG=""
+        export KERNEL_VERSION="3.18"
     *)
-        echo "- Invalid DEVICE_IMPORT. Valid options: sweet, davinci, ginkgo, mi89x7. Yours: $DEVICE_IMPORT."
+        echo "- Invalid DEVICE_IMPORT. Valid options: sweet, davinci, ginkgo, mi89x7, on7xelte. Yours: $DEVICE_IMPORT."
         exit 1
         ;;
 esac

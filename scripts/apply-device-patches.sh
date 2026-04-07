@@ -67,6 +67,11 @@ case "$DEVICE_IMPORT" in
         wget -qO- "$BORE_PATCH" | filterdiff -x "arch/arm64/configs/asus/*" | patch -s -p1 --fuzz=5 &> /dev/null
         echo "CONFIG_SCHED_BORE=y" >> $MAIN_DEFCONFIG
         ;;
+    
+    on7xelte)
+        echo "-- STUB Entry for on7xelte. Nothing added yet."
+        ;;
+
     *)
         echo "No specific patches to apply for $DEVICE_IMPORT."
         ;;
