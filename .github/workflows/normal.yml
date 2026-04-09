@@ -153,9 +153,9 @@ jobs:
 
       - name: Pack kernel with AnyKernel3
         run: |
-          if [[${{ matrix.ksu-type }} == "zako" ]]; then
+          if [[ "${{ matrix.ksu-type }}" == "zako" ]]; then
             export KSUTYPE="normal"
-          elif [[${{ matrix.ksu-type }} == "zako-susfs" ]]; then
+          elif [[ "${{ matrix.ksu-type }}" == "zako-susfs" ]]; then
             export KSUTYPE="susfs"
           fi
           ZIPNAME="perf-neon-${{ matrix.build-type }}-weekly-$KSUTYPE-${{ steps.ts.outputs.DATE }}.zip"
