@@ -149,7 +149,7 @@ jobs:
             echo "Invalid build type: ${{ matrix.build-type }}"
             exit 1
           fi
-          sed -i '$a Build timestamp: ${{ steps.ts.outputs.TIME }}' AnyKernel3/banner
+          sed -i '$a  Build timestamp: ${{ steps.ts.outputs.TIME }}' AnyKernel3/banner
 
       - name: Pack kernel with AnyKernel3
         run: |
