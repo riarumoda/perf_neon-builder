@@ -56,7 +56,9 @@ case "$DEVICE_IMPORT" in
         echo "CONFIG_SECURITY_SELINUX_DEVELOP=y" >> $MAIN_DEFCONFIG
         ;;
     mi89x7)
-        echo "-- STUB Entry for mi89x7. Nothing added yet."
+        # Common configs for 4.19
+        echo "-- Tuning default configs..."
+        echo "CONFIG_SECURITY_SELINUX_DEVELOP=y" >> $MAIN_DEFCONFIG
         ;;
     a52s)
         echo "-- STUB Entry for a52s. Nothing added yet."
