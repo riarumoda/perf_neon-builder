@@ -15,9 +15,9 @@ echo " "
 
 # Validate input arguments
 echo "- Validating input arguments..."
-if [ $# -ne 4 ]; then
+if [ $# -ne 3 ]; then
     echo "Usage: $0 [device] [kernelsu_options] [bbg_options]"
-    echo "Example: $0 sweet zako bbg nomount"
+    echo "Example: $0 sweet zako bbg"
     exit 1
 fi
 
