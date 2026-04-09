@@ -19,12 +19,11 @@ DTBO_PATCHES=(
 )
 LTO_PATCH="https://github.com/TheSillyOk/kernel_ls_patches/raw/refs/heads/master/fix_lto.patch"
 KPATCH_PATCH="https://github.com/TheSillyOk/kernel_ls_patches/raw/refs/heads/master/kpatch_fix.patch"
-REWEIGHT_BACKPORT="https://github.com/ximi-mojito-test/android_kernel_xiaomi_mojito/commit/eff756aaf5d666a15d8ac19743b582c2ce0fe3aa.patch"
-BORE_PATCH_SHARED="https://github.com/ximi-mojito-test/android_kernel_xiaomi_mojito/commit/2220322065591df5ff7ae27cc1fff386d3631bd0.patch"
 
 # Patcher - 1.0
 case "$DEVICE_IMPORT" in
     sweet|davinci|tucana|violet|ginkgo|laurel_sprout)
+        # Device specific for 4.14
         if [[ "$DEVICE_IMPORT" == "sweet" ]]; then
             echo "-- Applying LN8K patches..."
             LN8K_PATCHES=(
@@ -41,31 +40,23 @@ case "$DEVICE_IMPORT" in
             )
             apply_patches "${LN8K_PATCHES[@]}"
             echo "CONFIG_CHARGER_LN8000=y" >> $MAIN_DEFCONFIG
-        elif [[ "$DEVICE_IMPORT" == "ginkgo" ]] || [[ "$DEVICE_IMPORT" == "laurel_sprout" ]] || [[ "$DEVICE_IMPORT" == "a52q" ]] || [[ "$DEVICE_IMPORT" == "a72q" ]]; then
+        elif [[ "$DEVICE_IMPORT" == "ginkgo" ]] || [[ "$DEVICE_IMPORT" == "laurel_sprout" ]]; then
             echo "-- Applying DTC patches..."
             apply_patches \
                 "https://github.com/LineageOS/android_kernel_xiaomi_sm6150/commit/e207247aa4553fff7190dde5dabb50aec400b513.patch" \
                 "https://github.com/LineageOS/android_kernel_xiaomi_sm6150/commit/ae58bbd8f7af4c3c290e63ddcd4112559c5fc240.patch"
         fi
-
+        # Shared patches for 4.14
         echo "-- Applying shared patches (DTBO, LTO, KPATCH)..."
         apply_patches "${DTBO_PATCHES[@]}" "$LTO_PATCH" "$KPATCH_PATCH"
-
-        echo "-- Applying BORE Scheduler patches..."
-        wget -qO- "$REWEIGHT_BACKPORT" | patch -s -p1 --fuzz=5
-        wget -qO- "$BORE_PATCH_SHARED" | patch -s -p1 --fuzz=5
-        echo "CONFIG_SCHED_BORE=y" >> $MAIN_DEFCONFIG
-
+        # Common configs for 4.14
         echo "-- Tuning default configs..."
         echo "CONFIG_LTO_CLANG=y" >> $MAIN_DEFCONFIG
         echo "CONFIG_EROFS_FS=y" >> $MAIN_DEFCONFIG
         echo "CONFIG_SECURITY_SELINUX_DEVELOP=y" >> $MAIN_DEFCONFIG
         ;;
     mi89x7)
-        echo "-- Applying BORE Scheduler patches..."
-        BORE_PATCH="https://github.com/rystX-OpenSource/rystx-kernel_asus_sdm660/commit/dfdf4d2fd3c1d0a9ad4dfbeaf2878e65dc87022b.patch"
-        wget -qO- "$BORE_PATCH" | filterdiff -x "arch/arm64/configs/asus/*" | patch -s -p1 --fuzz=5 &> /dev/null
-        echo "CONFIG_SCHED_BORE=y" >> $MAIN_DEFCONFIG
+        echo "-- STUB Entry for mi89x7. Nothing added yet."
         ;;
     a52s)
         echo "-- STUB Entry for a52s. Nothing added yet."

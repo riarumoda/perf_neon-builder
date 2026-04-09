@@ -9,14 +9,14 @@ echo " | |_) / _ \ '__| |_  |  \| |/ _ \/ _ \| '_ \  "
 echo " |  __/  __/ |  |  _| | |\  |  __/ (_) | | | | "
 echo " |_|   \___|_|  |_|   |_| \_|\___|\___/|_| |_| "
 echo "==============================================="
-echo " Build Script 1.1 - by Riaru Moda"
+echo " Build Script 1.2 - by Riaru Moda"
 echo " https://t.me/trrflex"
 echo " "
 
 # Validate input arguments
 echo "- Validating input arguments..."
 if [ $# -ne 4 ]; then
-    echo "Usage: $0 [device] [kernelsu_options] [bbg_options] [nomount_options]"
+    echo "Usage: $0 [device] [kernelsu_options] [bbg_options]"
     echo "Example: $0 sweet zako bbg nomount"
     exit 1
 fi
@@ -26,7 +26,6 @@ echo "- Exporting input arguments..."
 export DEVICE_IMPORT="$1"
 export KERNELSU_SELECTOR="$2"
 export BBG_SELECTOR="$3"
-export NOMOUNT_SELECTOR="$4"
 
 # Setup Environment
 chmod +x scripts/setup-environment.sh
