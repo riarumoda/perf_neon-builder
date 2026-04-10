@@ -8,6 +8,13 @@ apply_patches() {
     done
 }
 
+# Commit reverter - 1.0
+revert_commit() {
+    for patch_url in "$@"; do
+        wget -qO- "$patch_url" | patch -R -s -p1
+    done
+}
+
 # Shared patches for 4.14
 DTBO_PATCHES=(
     "https://github.com/xiaomi-sm6150/android_kernel_xiaomi_sm6150/commit/e517bc363a19951ead919025a560f843c2c03ad3.patch"
@@ -23,6 +30,20 @@ KPATCH_PATCH="https://github.com/TheSillyOk/kernel_ls_patches/raw/refs/heads/mas
 # Patcher - 1.0
 case "$DEVICE_IMPORT" in
     sweet|davinci|tucana|violet|ginkgo|laurel_sprout)
+        # F2FS Compression patches
+        echo "-- Applying F2FS compression patches..."
+        if [[ "$DEVICE_IMPORT" == "sweet" ]] || [[ "$DEVICE_IMPORT" == "davinci" ]] || [[ "$DEVICE_IMPORT" == "tucana" ]] || [[ "$DEVICE_IMPORT" == "violet" ]]; then
+            REVERT_F2FS=(
+                "https://github.com/xiaomi-sm6150/android_kernel_xiaomi_sm6150/commit/212f6697ff90336cc993d163411775ec969deeb6.patch"
+                "https://github.com/xiaomi-sm6150/android_kernel_xiaomi_sm6150/commit/694585a55caa3e1873c889ab3aa1c47d93144fad.patch"
+            )
+            revert_commit "${REVERT_F2FS[@]}"
+            # Apply patch
+            apply_patches "https://github.com/tbyool/android_kernel_xiaomi_sm6150/commit/02baeab5aaf5319e5d68f2319516efed262533ea.patch"
+            # Enable config
+            echo "CONFIG_F2FS_FS_COMPRESSION=y" >> $MAIN_DEFCONFIG
+            echo "CONFIG_F2FS_FS_LZ4=y" >> $MAIN_DEFCONFIG
+        fi
         # Device specific for 4.14
         if [[ "$DEVICE_IMPORT" == "sweet" ]]; then
             echo "-- Applying LN8K patches..."
