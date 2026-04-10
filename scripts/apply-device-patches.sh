@@ -79,6 +79,9 @@ case "$DEVICE_IMPORT" in
     alioth|lmi|munch|mi89x7)
         # Device specific for 4.19
         if [[ "$DEVICE_IMPORT" == "alioth" ]] || [[ "$DEVICE_IMPORT" == "lmi" ]] || [[ "$DEVICE_IMPORT" == "munch" ]]; then
+            # Shared patches for 4.14
+            echo "-- Applying shared patches (DTBO)..."
+            apply_patches "${DTBO_PATCHES[@]}"
             echo "-- Enabling LTO and Shadow Call Stack..."
             # Enable configs
             echo "CONFIG_LTO_CLANG=y" >> $MAIN_DEFCONFIG
