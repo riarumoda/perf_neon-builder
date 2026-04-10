@@ -66,7 +66,6 @@ case "$BBG_SELECTOR" in
                 sed -i '/CONFIG_LSM=/s/"$/ ,baseband_guard"/' "$MAIN_DEFCONFIG"
                 echo "-- Appended baseband_guard to existing CONFIG_LSM."
             else
-                # Line does not exist: Add the full fallback string
                 echo "$LSM_FALLBACK" >> "$MAIN_DEFCONFIG"
                 echo "-- Added default CONFIG_LSM with baseband_guard."
             fi
