@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         build-type: [sweet, davinci, tucana, violet, ginkgo, laurel_sprout, mi89x7]
-        ksu-type: [zako, zako-susfs]
+        ksu-type: [zako, zako-susfs, none]
         bbg-type: [bbg]
 
     steps:
@@ -157,6 +157,8 @@ jobs:
             export KSUTYPE="normal"
           elif [[ "${{ matrix.ksu-type }}" == "zako-susfs" ]]; then
             export KSUTYPE="susfs"
+          elif [[ "${{ matrix.ksu-type }}" == "none" ]]; then
+            export KSUTYPE="noksu"
           fi
           ZIPNAME="perf-neon-${{ matrix.build-type }}-weekly-$KSUTYPE-${{ steps.ts.outputs.DATE }}.zip"
           cd AnyKernel3
@@ -208,6 +210,7 @@ jobs:
             > [!IMPORTANT]
             > - Normal build contains ReSukiSU + Baseband Guard (Recommended).   
             > - SUSFS build contains ReSukiSU + SUSFS + Baseband Guard.   
+            > - No-KSU build does not contain ReSukiSU. But it does contain Baseband Guard.
 
             > [!CAUTION]   
             > - Always backup your boot & dtbo image first before proceeding!   
