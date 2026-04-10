@@ -153,7 +153,7 @@ jobs:
               sed -i 's/sweet (sm6150)/laurel_sprout (sm6125)/g' AnyKernel3/banner
             fi
           elif [[ "${{ matrix.build-type }}" == "alioth" || "${{ matrix.build-type }}" == "lmi" || "${{ matrix.build-type }}" == "munch" ]]; then
-            cp android_kernel_xiaomi_sm8250/out/arch/arm64/boot/Image.gz AnyKernel3/
+            cp android_kernel_xiaomi_sm8250/out/arch/arm64/boot/Image AnyKernel3/
             cp android_kernel_xiaomi_sm8250/out/arch/arm64/boot/dtb.img AnyKernel3/
             cp android_kernel_xiaomi_sm8250/out/arch/arm64/boot/dtbo.img AnyKernel3/
             sed -i 's/supported.versions=11-16/supported.versions=11-16/' AnyKernel3/anykernel.sh
