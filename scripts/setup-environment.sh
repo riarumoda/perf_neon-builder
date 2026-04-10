@@ -37,6 +37,13 @@ case "$DEVICE_IMPORT" in
         export DEVICE_DEFCONFIG="vendor/${DEVICE_IMPORT}.config"
         export KBUILD_BUILD_USER=hiyorun-compile
         ;;
+    alioth|lmi|munch)
+        export MAIN_DEFCONFIG="arch/arm64/configs/vendor/kona-perf_defconfig"
+        export ACTUAL_MAIN_DEFCONFIG="vendor/kona-perf_defconfig"
+        export DEVICE_DEFCONFIG="vendor/xiaomi/sm8250-common.config vendor/xiaomi/${DEVICE_IMPORT}.config"
+        export KERNEL_VERSION="4.19"
+        export KBUILD_BUILD_USER=kebeletxd-compile
+        ;;
     mi89x7)
         export MAIN_DEFCONFIG="arch/arm64/configs/vendor/msm8937-perf_defconfig"
         export ACTUAL_MAIN_DEFCONFIG="vendor/msm8937-perf_defconfig"

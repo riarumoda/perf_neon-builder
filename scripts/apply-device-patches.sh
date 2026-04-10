@@ -76,7 +76,14 @@ case "$DEVICE_IMPORT" in
         echo "CONFIG_EROFS_FS=y" >> $MAIN_DEFCONFIG
         echo "CONFIG_SECURITY_SELINUX_DEVELOP=y" >> $MAIN_DEFCONFIG
         ;;
-    mi89x7)
+    alioth|lmi|munch|mi89x7)
+        # Device specific for 4.19
+        if [[ "$DEVICE_IMPORT" == "alioth" ]] || [[ "$DEVICE_IMPORT" == "lmi" ]] || [[ "$DEVICE_IMPORT" == "munch" ]]; then
+            echo "-- Enabling LTO and Shadow Call Stack..."
+            # Enable configs
+            echo "CONFIG_LTO_CLANG=y" >> $MAIN_DEFCONFIG
+            echo "CONFIG_SHADOW_CALL_STACK=y" >> $MAIN_DEFCONFIG
+        fi
         # Common configs for 4.19
         echo "-- Tuning default configs..."
         echo "CONFIG_SECURITY_SELINUX_DEVELOP=y" >> $MAIN_DEFCONFIG
