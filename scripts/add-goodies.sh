@@ -61,7 +61,15 @@ case "$BBG_SELECTOR" in
         echo "CONFIG_BBG=y" >> $MAIN_DEFCONFIG
         # Kernel Settings for Baseband Guard
         if [[ "$KERNEL_VERSION" == "4.19" ]] || [[ "$KERNEL_VERSION" == "5.4" ]]; then
-            sed -i '/CONFIG_LSM=/s/"$/ ,baseband_guard"/' $MAIN_DEFCONFIG
+            LSM_FALLBACK='CONFIG_LSM="lockdown,yama,loadpin,safesetid,integrity,selinux,smack,tomoyo,apparmor,bpf,baseband_guard"'
+            if grep -q "CONFIG_LSM=" "$MAIN_DEFCONFIG"; then
+                sed -i '/CONFIG_LSM=/s/"$/ ,baseband_guard"/' "$MAIN_DEFCONFIG"
+                echo "-- Appended baseband_guard to existing CONFIG_LSM."
+            else
+                # Line does not exist: Add the full fallback string
+                echo "$LSM_FALLBACK" >> "$MAIN_DEFCONFIG"
+                echo "-- Added default CONFIG_LSM with baseband_guard."
+            fi
         fi
         ;;
     none|"")
