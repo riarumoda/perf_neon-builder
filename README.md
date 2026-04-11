@@ -24,6 +24,9 @@ Currently supported device:
 - Redmi Note 7 Pro ([violet](https://download.lineageos.org/devices/violet/builds))   
 - Redmi Note 8/8T ([ginkgo/willow](https://download.lineageos.org/devices/ginkgo/builds))   
 - Xiaomi Mi A3 ([laurel_sprout](https://download.lineageos.org/devices/laurel_sprout/builds))   
+- POCO F3/Redmi K40/Mi 11X ([alioth](https://download.lineageos.org/devices/alioth/builds))   
+- POCO F2 Pro/Redmi K30 Pro ([lmi](https://download.lineageos.org/devices/lmi/builds))   
+- POCO F4/Redmi K40S ([munch](https://download.lineageos.org/devices/munch/builds))   
 - Redmi 4A/5A/Note 5A Lite/Y1 Lite ([mi8917](https://download.lineageos.org/devices/Mi8917/builds))
 - Redmi 3/3S/4/4X/Note 5A Prime/Y1 Prime ([mi8937](https://download.lineageos.org/devices/Mi8937/builds))   
 
