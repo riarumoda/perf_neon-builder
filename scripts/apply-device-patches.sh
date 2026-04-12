@@ -20,9 +20,8 @@ revert_commit() {
     for patch_url in "$@"; do
         echo "-- Reverting commit: $(basename "$patch_url")"
         curl -sL --fail --retry 3 "$patch_url" -o /tmp/temp_revert.patch
-        
         if [ -s /tmp/temp_revert.patch ]; then
-            patch -R -p1 < /tmp/temp_revert.patch || { echo "Fatal: Failed to revert commit!"; exit 1; }
+            patch -R -s -p1 < /tmp/temp_revert.patch || { echo "Fatal: Failed to revert commit!"; exit 1; }
         else
             echo "Fatal: Failed to download revert patch from $patch_url"
             exit 1
