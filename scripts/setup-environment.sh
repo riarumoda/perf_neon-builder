@@ -13,7 +13,13 @@ TC_URLS=(
 )
 for tc in "${TC_URLS[@]}"; do
     dir="${tc%%|*}"; url="${tc##*|}"
-    [ ! -d "$dir" ] && git clone "$url" --depth=1 "$dir" &> /dev/null || echo "-- Using local $dir"
+    if [ ! -d "$dir/.git" ]; then
+        echo "-- Cloning $dir..."
+        rm -rf "$dir" 
+        git clone "$url" --depth=1 "$dir" &> /dev/null || { echo "Fatal: Failed to clone $dir!"; exit 1; }
+    else
+        echo "-- Using local $dir"
+    fi
 done
 
 # Device Default Exports

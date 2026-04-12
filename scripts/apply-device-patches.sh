@@ -1,17 +1,32 @@
 #!/bin/bash
 echo "- Applying device specific patches for $DEVICE_IMPORT..."
 
-# Patcher helper - 1.0
+# Patcher helper - 1.5
 apply_patches() {
     for patch_url in "$@"; do
-        wget -qO- "$patch_url" | patch -s -p1 --fuzz=5
+        echo "-- Downloading patch: $(basename "$patch_url")"
+        curl -sL --fail --retry 3 "$patch_url" -o /tmp/temp_patch.patch
+        if [ -s /tmp/temp_patch.patch ]; then
+            patch -s -p1 --fuzz=5 < /tmp/temp_patch.patch || { echo "Fatal: Failed to apply patch!"; exit 1; }
+        else
+            echo "Fatal: Failed to download patch from $patch_url"
+            exit 1
+        fi
     done
 }
 
-# Commit reverter - 1.0
+# Commit reverter - 1.5
 revert_commit() {
     for patch_url in "$@"; do
-        wget -qO- "$patch_url" | patch -R -s -p1
+        echo "-- Reverting commit: $(basename "$patch_url")"
+        curl -sL --fail --retry 3 "$patch_url" -o /tmp/temp_revert.patch
+        
+        if [ -s /tmp/temp_revert.patch ]; then
+            patch -R -p1 < /tmp/temp_revert.patch || { echo "Fatal: Failed to revert commit!"; exit 1; }
+        else
+            echo "Fatal: Failed to download revert patch from $patch_url"
+            exit 1
+        fi
     done
 }
 
