@@ -69,12 +69,12 @@ case "$DEVICE_IMPORT" in
         fi
         # DTBO patches for 4.14
         if [[ "$DEVICE_IMPORT" != "sweet-pixelos" ]]; then
-            echo "-- Applying DTBO patches..."
-            apply_patches "${DTBO_PATCHES[@]}"
+            echo "-- Applying DTBO & LTO patches..."
+            apply_patches "${DTBO_PATCHES[@]}" "$LTO_PATCH"
         fi
         # Shared patches for 4.14
-        echo "-- Applying shared patches (LTO, KPATCH)..."
-        apply_patches "$LTO_PATCH" "$KPATCH_PATCH"
+        echo "-- Applying shared patches (KPATCH)..."
+        apply_patches "$KPATCH_PATCH"
         # Common configs for 4.14
         echo "-- Tuning default configs..."
         echo "CONFIG_LTO_CLANG=y" >> $MAIN_DEFCONFIG
