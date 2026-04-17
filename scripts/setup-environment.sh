@@ -31,8 +31,9 @@ export ACTUAL_MAIN_DEFCONFIG="vendor/sdmsteppe-perf_defconfig"
 export COMMON_DEFCONFIG="vendor/debugfs.config"
 export FEATURE_DEFCONFIG=""
 
-# Device Settings - v3.0
+# Device Settings - v3.5
 case "$DEVICE_IMPORT" in
+    # LineageOS
     sweet|davinci|tucana|violet)
         export DEVICE_DEFCONFIG="vendor/${DEVICE_IMPORT}.config"
         ;;
@@ -66,8 +67,15 @@ case "$DEVICE_IMPORT" in
         export FEATURE_DEFCONFIG=""
         export KERNEL_VERSION="5.4"
         ;;
+    # PixelOS
+    sweet-pixelos)
+        export MAIN_DEFCONFIG="arch/arm64/configs/sweet_defconfig"
+        export ACTUAL_MAIN_DEFCONFIG="sweet_defconfig"
+        export COMMON_DEFCONFIG="vendor/debugfs.config"
+        export DEVICE_DEFCONFIG=""
+        ;;
     *)
-        echo "- Invalid DEVICE_IMPORT. Valid options: sweet, davinci, ginkgo, laurel_sprout, mi89x7, a52s. Yours: $DEVICE_IMPORT."
+        echo "- Invalid DEVICE_IMPORT. Valid options: sweet, davinci, ginkgo, laurel_sprout, mi89x7, a52s, sweet-pixelos. Yours: $DEVICE_IMPORT."
         exit 1
         ;;
 esac
