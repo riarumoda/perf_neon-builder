@@ -15,8 +15,8 @@ jobs:
     strategy:
       matrix:
         build-type: [sweet-pixelos]
-        ksu-type: [zako, zako-susfs, none]
-        bbg-type: [bbg]
+        ksu-type: [ksunext, ksunext-susfs, none]
+        bbg-type: [none]
 
     steps:
       - uses: actions/checkout@v6
