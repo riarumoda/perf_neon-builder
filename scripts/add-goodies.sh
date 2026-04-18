@@ -12,7 +12,7 @@ echo "-- Setting up KernelSU..."
 case "$KERNELSU_SELECTOR" in
     zako|zako-susfs)
         # Setup KernelSU
-        curl -LSs --fail --retry 3 "$KSU_SETUP_URI" | bash -s main &> /dev/null || { echo "Fatal: KSU setup script failed to download/run!"; exit 1; }
+        curl -LSs --fail --retry 3 "$KSU_SETUP_URI" | bash -s dev &> /dev/null || { echo "Fatal: KSU setup script failed to download/run!"; exit 1; }
         # Enable the necessary KernelSU configs
         echo "CONFIG_KSU=y" >> $MAIN_DEFCONFIG
         echo "CONFIG_KSU_MULTI_MANAGER_SUPPORT=y" >> $MAIN_DEFCONFIG
