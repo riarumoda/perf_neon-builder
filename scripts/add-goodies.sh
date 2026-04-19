@@ -16,17 +16,6 @@ case "$KERNELSU_SELECTOR" in
         # SUSFS Settings
         if [[ "$KERNELSU_SELECTOR" == "zako-susfs" ]]; then
             export KSU_SETUP_BRANCH="main"
-            echo "CONFIG_KSU_SUSFS=y" >> $MAIN_DEFCONFIG
-            echo "CONFIG_KSU_SUSFS_SUS_PATH=y" >> $MAIN_DEFCONFIG
-            echo "CONFIG_KSU_SUSFS_SUS_MOUNT=y" >> $MAIN_DEFCONFIG
-            echo "CONFIG_KSU_SUSFS_SUS_KSTAT=y" >> $MAIN_DEFCONFIG
-            echo "CONFIG_KSU_SUSFS_SPOOF_UNAME=y" >> $MAIN_DEFCONFIG
-            echo "CONFIG_KSU_SUSFS_ENABLE_LOG=y" >> $MAIN_DEFCONFIG
-            echo "CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y" >> $MAIN_DEFCONFIG
-            echo "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y" >> $MAIN_DEFCONFIG
-            echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> $MAIN_DEFCONFIG
-            echo "CONFIG_KSU_SUSFS_SUS_MAP=y" >> $MAIN_DEFCONFIG
-            echo "CONFIG_KSU_SUSFS_TRY_UMOUNT=y" >> $MAIN_DEFCONFIG
             KSU_HOOK="https://github.com/JackA1ltman/NonGKI_Kernel_Build_2nd/raw/refs/heads/mainline/Patches/susfs_inline_hook_patches.sh"
         else
             KSU_HOOK="https://github.com/JackA1ltman/NonGKI_Kernel_Build_2nd/raw/refs/heads/mainline/Patches/syscall_hook_patches.sh"
@@ -45,15 +34,6 @@ case "$KERNELSU_SELECTOR" in
         curl -LSs "$KSU_HOOK" | bash
         if [[ "$KERNELSU_SELECTOR" == "zako-susfs" ]]; then
             wget -qO- $SUSFS_PATCH | patch -s -p1 --fuzz=5
-        fi
-        ;;
-    ksunext|ksunext-susfs)
-        # KernelSU Settings
-        export KSU_SETUP_URI="https://github.com/KernelSU-Next/KernelSU-Next/raw/refs/heads/dev/kernel/setup.sh"
-        export KSU_SETUP_BRANCH="legacy"
-        # SUSFS Settings
-        if [[ "$KERNELSU_SELECTOR" == "ksunext-susfs" ]]; then
-            export KSU_SETUP_BRANCH="legacy_susfs"
             echo "CONFIG_KSU_SUSFS=y" >> $MAIN_DEFCONFIG
             echo "CONFIG_KSU_SUSFS_SUS_PATH=y" >> $MAIN_DEFCONFIG
             echo "CONFIG_KSU_SUSFS_SUS_MOUNT=y" >> $MAIN_DEFCONFIG
@@ -65,6 +45,15 @@ case "$KERNELSU_SELECTOR" in
             echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> $MAIN_DEFCONFIG
             echo "CONFIG_KSU_SUSFS_SUS_MAP=y" >> $MAIN_DEFCONFIG
             echo "CONFIG_KSU_SUSFS_TRY_UMOUNT=y" >> $MAIN_DEFCONFIG
+        fi
+        ;;
+    ksunext|ksunext-susfs)
+        # KernelSU Settings
+        export KSU_SETUP_URI="https://github.com/KernelSU-Next/KernelSU-Next/raw/refs/heads/dev/kernel/setup.sh"
+        export KSU_SETUP_BRANCH="legacy"
+        # SUSFS Settings
+        if [[ "$KERNELSU_SELECTOR" == "ksunext-susfs" ]]; then
+            export KSU_SETUP_BRANCH="legacy_susfs"
             KSU_HOOK="https://github.com/JackA1ltman/NonGKI_Kernel_Build_2nd/raw/refs/heads/mainline/Patches/susfs_inline_hook_patches.sh"
         else
             KSU_HOOK="https://github.com/JackA1ltman/NonGKI_Kernel_Build_2nd/raw/refs/heads/mainline/Patches/syscall_hook_patches.sh"
@@ -81,6 +70,17 @@ case "$KERNELSU_SELECTOR" in
         curl -LSs "$KSU_HOOK" | bash
         if [[ "$KERNELSU_SELECTOR" == "ksunext-susfs" ]]; then
             wget -qO- $SUSFS_PATCH | patch -s -p1 --fuzz=5
+            echo "CONFIG_KSU_SUSFS=y" >> $MAIN_DEFCONFIG
+            echo "CONFIG_KSU_SUSFS_SUS_PATH=y" >> $MAIN_DEFCONFIG
+            echo "CONFIG_KSU_SUSFS_SUS_MOUNT=y" >> $MAIN_DEFCONFIG
+            echo "CONFIG_KSU_SUSFS_SUS_KSTAT=y" >> $MAIN_DEFCONFIG
+            echo "CONFIG_KSU_SUSFS_SPOOF_UNAME=y" >> $MAIN_DEFCONFIG
+            echo "CONFIG_KSU_SUSFS_ENABLE_LOG=y" >> $MAIN_DEFCONFIG
+            echo "CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y" >> $MAIN_DEFCONFIG
+            echo "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y" >> $MAIN_DEFCONFIG
+            echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> $MAIN_DEFCONFIG
+            echo "CONFIG_KSU_SUSFS_SUS_MAP=y" >> $MAIN_DEFCONFIG
+            echo "CONFIG_KSU_SUSFS_TRY_UMOUNT=y" >> $MAIN_DEFCONFIG
         fi
         ;;
     none|"")
