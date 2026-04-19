@@ -82,7 +82,7 @@ case "$DEVICE_IMPORT" in
         echo "CONFIG_EROFS_FS=y" >> $MAIN_DEFCONFIG
         echo "CONFIG_SECURITY_SELINUX_DEVELOP=y" >> $MAIN_DEFCONFIG
         ;;
-    alioth|lmi|munch|mi89x7)
+    alioth|lmi|munch|mi89x7|mi89x7-community)
         # Device specific for 4.19
         if [[ "$DEVICE_IMPORT" == "alioth" ]] || [[ "$DEVICE_IMPORT" == "lmi" ]] || [[ "$DEVICE_IMPORT" == "munch" ]]; then
             # Shared patches for 4.14
@@ -93,6 +93,11 @@ case "$DEVICE_IMPORT" in
             echo "CONFIG_LTO_CLANG=y" >> $MAIN_DEFCONFIG
             echo "CONFIG_THINLTO=y" >> $MAIN_DEFCONFIG
             echo "CONFIG_SHADOW_CALL_STACK=y" >> $MAIN_DEFCONFIG
+        fi
+        if [[ "$DEVICE_IMPORT" == "mi89x7-community" ]]; then
+            # Revert KSU commit for mi89x7-community
+            echo "-- Reverting KSU commit for mi89x7-community..."
+            revert_commit "https://github.com/Mi-Thorium/kernel_msm-4.19/commit/624875e8edc36ae280b1f8efc1d3c48a28da64ea.patch"
         fi
         # Common configs for 4.19
         echo "-- Tuning default configs..."
