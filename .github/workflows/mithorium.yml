@@ -1,0 +1,114 @@
+name: Mi-Thorium
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      timestamp: ${{ steps.ts.outputs.TIME }}
+      date: ${{ steps.ts.outputs.DATE }}
+    strategy:
+      matrix:
+        build-type: [mi89x7-community]
+        ksu-type: [zako, none]
+        bbg-type: [bbg]
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Timestamp
+        id: ts
+        run: |
+          DATE=$(date +'%Y%m%d')
+          TIME=$(date +'%s')
+          echo "DATE=$DATE" >> $GITHUB_OUTPUT
+          echo "TIME=$TIME" >> $GITHUB_OUTPUT
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            bc build-essential bison flex zip p7zip-full \
+            libc6 curl libstdc++6 git wget libssl-dev zstd \
+            lld python3 patchutils ccache
+
+      - name: Preparing kernel sources
+        run: |
+          if [[ "${{ matrix.build-type }}" == "mi89x7-community" ]]; then
+            if [ -d "$PWD/android_kernel_xiaomi_msm8937" ]; then
+              rm -rf android_kernel_xiaomi_msm8937
+            fi
+            echo "Cloning kernel sources..."
+            # Main source
+            git clone https://github.com/Mi-Thorium/kernel_msm-4.19 --depth=1 -b "mithorium/a13/master" android_kernel_xiaomi_msm8937
+            # Dts vendor-legacy
+            git clone https://github.com/Mi-Thorium/kernel_devicetree_msm-4.19 --depth=1 -b "dts/master" android_kernel_xiaomi_msm8937/arch/arm64/boot/dts/vendor-legacy
+            # Dts msm8937
+            git clone https://github.com/Mi-Thorium/kernel_devicetree_xiaomi-msm8937 --depth=1 -b "dts/mi8937/4.19/master" android_kernel_xiaomi_msm8937/arch/arm64/boot/dts/xiaomi-msm8937
+            # Dts sdm439
+            git clone https://github.com/Mi-Thorium/kernel_devicetree_xiaomi-sdm439 --depth=1 -b "dts/mi439/4.19/master" android_kernel_xiaomi_msm8937/arch/arm64/boot/dts/xiaomi-sdm439
+            # Techpack msm8937
+            git clone https://github.com/Mi-Thorium/kernel_techpack_xiaomi-msm8937 --depth=1 -b "techpack/mi8937/4.19/master" android_kernel_xiaomi_msm8937/techpack/xiaomi-msm8937
+            # Techpack sdm439
+            git clone https://github.com/Mi-Thorium/kernel_techpack_xiaomi-sdm439 --depth=1 -b "techpack/mi439/4.19/master" android_kernel_xiaomi_msm8937/techpack/xiaomi-sdm439
+            # Techpack audio-legacy
+            git clone https://github.com/Mi-Thorium/kernel_techpack_audio-legacy --depth=1 -b "audio/4.19/mithorium/master" android_kernel_xiaomi_msm8937/techpack/audio-legacy
+            # Techpack camera-legacy
+            git clone https://github.com/Mi-Thorium/kernel_techpack_camera-legacy --depth=1 -b "camera/LA.UM.8.6.r1-05300-89xx.0/4.19/mithorium" android_kernel_xiaomi_msm8937/techpack/camera-legacy
+            # Techpack camera-legacy-m
+            git clone https://github.com/Mi-Thorium/kernel_techpack_camera-legacy --depth=1 -b "camera/LA.UM.5.3-10610-89xx.0/4.19/mithorium" android_kernel_xiaomi_msm8937/techpack/camera-legacy-m
+            # Prima WIFI
+            git clone https://github.com/Mi-Thorium/vendor_qcom_opensource_wlan_prima --depth=1 -b "wlan/LA.UM.9.6.4/mithorium/master" android_kernel_xiaomi_msm8937/drivers/staging/prima
+            # Final
+            echo "Copying buildscript..."
+            cp build.sh android_kernel_xiaomi_msm8937/
+            cp -r scripts android_kernel_xiaomi_msm8937/
+            chmod +x ./android_kernel_xiaomi_msm8937/build.sh
+          else
+            echo "Invalid build type: ${{ matrix.build-type }}"
+            exit 1
+          fi
+          
+
+      - name: Compile the kernel
+        run: |
+          echo "Starting to compile..."
+          if [[ "${{ matrix.build-type }}" == "mi89x7-community" ]]; then
+            cd android_kernel_xiaomi_msm8937/
+            ./build.sh ${{ matrix.build-type }} ${{ matrix.ksu-type }} ${{ matrix.bbg-type }}
+            cd ..
+          else
+            echo "Invalid build type: ${{ matrix.build-type }}"
+            exit 1
+          fi
+
+      - name: Preparing AnyKernel3 sources
+        run: |
+          if [ -d "$PWD/AnyKernel3" ]; then
+            rm -rf AnyKernel3
+          fi
+          git clone https://github.com/riarumoda/AnyKernel3 AnyKernel3 --depth=1
+          if [[ "${{ matrix.build-type }}" == "mi89x7-community" ]]; then
+            cp android_kernel_xiaomi_msm8937/out/arch/arm64/boot/Image.gz-dtb AnyKernel3/
+            sed -i 's/supported.versions=11-16/supported.versions=11-16/' AnyKernel3/anykernel.sh
+            sed -i 's/device.name1=sweet/device.name1=mi8937/' AnyKernel3/anykernel.sh
+            sed -i 's/device.name2=sweetin/device.name2=mi8917/' AnyKernel3/anykernel.sh
+            sed -i '/device.name2=mi8917/a device.name3=santoni\ndevice.name4=prada\ndevice.name5=rolex\ndevice.name6=ugglite\ndevice.name7=riva\ndevice.name8=ugg' AnyKernel3/anykernel.sh
+            sed -i 's/sweet (sm6150)/mi8937 and mi8917 (msm8937)/g' AnyKernel3/banner
+          else
+            echo "Invalid build type: ${{ matrix.build-type }}"
+            exit 1
+          fi
+          sed -i '$a \\nBuild timestamp: ${{ steps.ts.outputs.TIME }}' AnyKernel3/banner
+
+      - name: Pack & upload artifacts (All builds)
+        uses: actions/upload-artifact@v6
+        with:
+          name: perf-neon-${{ matrix.build-type }}-${{ matrix.ksu-type }}-${{ matrix.bbg-type }}-mithorium-${{ steps.ts.outputs.DATE }}-${{ steps.ts.outputs.TIME }}
+          path: |
+            AnyKernel3/*
