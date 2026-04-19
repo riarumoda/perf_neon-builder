@@ -72,6 +72,7 @@ case "$DEVICE_IMPORT" in
             echo "-- Applying DTBO & LTO patches..."
             apply_patches "${DTBO_PATCHES[@]}" "$LTO_PATCH"
             echo "CONFIG_LTO_CLANG=y" >> $MAIN_DEFCONFIG
+            echo "CONFIG_THINLTO=y" >> $MAIN_DEFCONFIG
         fi
         # Shared patches for 4.14
         echo "-- Applying shared patches (KPATCH)..."
@@ -90,6 +91,7 @@ case "$DEVICE_IMPORT" in
             echo "-- Enabling LTO and Shadow Call Stack..."
             # Enable configs
             echo "CONFIG_LTO_CLANG=y" >> $MAIN_DEFCONFIG
+            echo "CONFIG_THINLTO=y" >> $MAIN_DEFCONFIG
             echo "CONFIG_SHADOW_CALL_STACK=y" >> $MAIN_DEFCONFIG
         fi
         # Common configs for 4.19
