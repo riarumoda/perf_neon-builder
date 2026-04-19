@@ -25,6 +25,7 @@ done
 # Device Default Exports
 export KBUILD_BUILD_USER=riarumoda-compile
 export KBUILD_BUILD_HOST=riaru.com
+export KERNEL_NAME="-perf-neon"
 export KERNEL_VERSION="4.14"
 export MAIN_DEFCONFIG="arch/arm64/configs/vendor/sdmsteppe-perf_defconfig"
 export ACTUAL_MAIN_DEFCONFIG="vendor/sdmsteppe-perf_defconfig"
@@ -60,6 +61,7 @@ case "$DEVICE_IMPORT" in
             export FEATURE_DEFCONFIG="vendor/feature/lineageos.config vendor/feature/android-12.config vendor/feature/erofs.config vendor/feature/exfat.config vendor/feature/lmkd.config vendor/feature/lto.config vendor/feature/ntfs.config vendor/feature/wireguard.config"
         elif [ "$DEVICE_IMPORT" = "mi89x7-community" ]; then
             export FEATURE_DEFCONFIG="vendor/feature/android-12.config vendor/feature/erofs.config vendor/feature/exfat.config vendor/feature/kprobes.config vendor/feature/lmkd.config vendor/feature/lto.config vendor/feature/ntfs.config vendor/feature/wireguard.config"
+            export KERNEL_NAME="-Mi8937v2-neon"
         fi
         export KERNEL_VERSION="4.19"
         ;;
@@ -87,9 +89,6 @@ esac
 # Maintainer info
 export GIT_NAME="$KBUILD_BUILD_USER"
 export GIT_EMAIL="$KBUILD_BUILD_USER@$KBUILD_BUILD_HOST"
-
-# Kernel name
-export KERNEL_NAME="-perf-neon"
 
 # Global Make Arguments
 export MAKE_ARGS=(
