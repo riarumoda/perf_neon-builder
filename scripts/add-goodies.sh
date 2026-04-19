@@ -42,8 +42,8 @@ case "$KERNELSU_SELECTOR" in
         echo "CONFIG_HAVE_SYSCALL_TRACEPOINTS=y" >> $MAIN_DEFCONFIG
         echo "CONFIG_THREAD_INFO_IN_TASK=y" >> $MAIN_DEFCONFIG
         # Apply backport and hooks
-        curl -LSs "$BACKPORT_GENERAL_PATCH" | bash &> /dev/null
-        curl -LSs "$KSU_HOOK" | bash &> /dev/null
+        curl -LSs "$BACKPORT_GENERAL_PATCH" | bash
+        curl -LSs "$KSU_HOOK" | bash
         ;;
     ksunext|ksunext-susfs)
         # KernelSU Settings
