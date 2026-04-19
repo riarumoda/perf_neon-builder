@@ -27,6 +27,7 @@ case "$KERNELSU_SELECTOR" in
         echo "CONFIG_KSU_MULTI_MANAGER_SUPPORT=y" >> $MAIN_DEFCONFIG
         echo "CONFIG_KPM=n" >> $MAIN_DEFCONFIG
         echo "CONFIG_KSU_MANUAL_HOOK=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_KSU_STATIC_HOOKS=y" >> $MAIN_DEFCONFIG
         echo "CONFIG_HAVE_SYSCALL_TRACEPOINTS=y" >> $MAIN_DEFCONFIG
         echo "CONFIG_THREAD_INFO_IN_TASK=y" >> $MAIN_DEFCONFIG
         # Apply backport and hooks
@@ -63,6 +64,7 @@ case "$KERNELSU_SELECTOR" in
         # Enable the necessary KernelSU configs
         echo "CONFIG_KSU=y" >> $MAIN_DEFCONFIG
         echo "CONFIG_KSU_MANUAL_HOOK=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_KSU_STATIC_HOOKS=y" >> $MAIN_DEFCONFIG
         echo "CONFIG_HAVE_SYSCALL_TRACEPOINTS=y" >> $MAIN_DEFCONFIG
         echo "CONFIG_THREAD_INFO_IN_TASK=y" >> $MAIN_DEFCONFIG
         # Apply backport and hooks
