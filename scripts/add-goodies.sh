@@ -16,7 +16,6 @@ case "$KERNELSU_SELECTOR" in
         # SUSFS Settings
         if [[ "$KERNELSU_SELECTOR" == "zako-susfs" ]]; then
             export KSU_SETUP_BRANCH="main"
-            wget -qO- $SUSFS_PATCH | patch -s -p1 --fuzz=5
             echo "CONFIG_KSU_SUSFS=y" >> $MAIN_DEFCONFIG
             echo "CONFIG_KSU_SUSFS_SUS_PATH=y" >> $MAIN_DEFCONFIG
             echo "CONFIG_KSU_SUSFS_SUS_MOUNT=y" >> $MAIN_DEFCONFIG
@@ -44,6 +43,9 @@ case "$KERNELSU_SELECTOR" in
         # Apply backport and hooks
         curl -LSs "$BACKPORT_GENERAL_PATCH" | bash
         curl -LSs "$KSU_HOOK" | bash
+        if [[ "$KERNELSU_SELECTOR" == "zako-susfs" ]]; then
+            wget -qO- $SUSFS_PATCH | patch -s -p1 --fuzz=5
+        fi
         ;;
     ksunext|ksunext-susfs)
         # KernelSU Settings
