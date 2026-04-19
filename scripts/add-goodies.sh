@@ -30,8 +30,8 @@ case "$KERNELSU_SELECTOR" in
         echo "CONFIG_HAVE_SYSCALL_TRACEPOINTS=y" >> $MAIN_DEFCONFIG
         echo "CONFIG_THREAD_INFO_IN_TASK=y" >> $MAIN_DEFCONFIG
         # Apply backport and hooks
-        curl -LSs "$BACKPORT_GENERAL_PATCH" | bash
-        curl -LSs "$KSU_HOOK" | bash
+        curl -LSs "$BACKPORT_GENERAL_PATCH" | bash &> /dev/null
+        curl -LSs "$KSU_HOOK" | bash &> /dev/null
         if [[ "$KERNELSU_SELECTOR" == "zako-susfs" ]]; then
             wget -qO- $SUSFS_PATCH | patch -s -p1 --fuzz=5
             echo "CONFIG_KSU_SUSFS=y" >> $MAIN_DEFCONFIG
@@ -66,8 +66,8 @@ case "$KERNELSU_SELECTOR" in
         echo "CONFIG_HAVE_SYSCALL_TRACEPOINTS=y" >> $MAIN_DEFCONFIG
         echo "CONFIG_THREAD_INFO_IN_TASK=y" >> $MAIN_DEFCONFIG
         # Apply backport and hooks
-        curl -LSs "$BACKPORT_GENERAL_PATCH" | bash
-        curl -LSs "$KSU_HOOK" | bash
+        curl -LSs "$BACKPORT_GENERAL_PATCH" | bash &> /dev/null
+        curl -LSs "$KSU_HOOK" | bash &> /dev/null
         if [[ "$KERNELSU_SELECTOR" == "ksunext-susfs" ]]; then
             wget -qO- $SUSFS_PATCH | patch -s -p1 --fuzz=5
             echo "CONFIG_KSU_SUSFS=y" >> $MAIN_DEFCONFIG
