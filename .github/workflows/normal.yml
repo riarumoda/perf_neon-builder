@@ -241,7 +241,8 @@ jobs:
                
             > [!IMPORTANT]
             > - Normal build contains ReSukiSU + Baseband Guard (Recommended).   
-            > - No-KSU build does not contain ReSukiSU. But it does contain Baseband Guard.
+            > - SUSFS build contains ReSukiSU + SUSFS + Baseband Guard.   
+            > - No-KSU build does not contain ReSukiSU. But it does contain Baseband Guard.   
 
             > [!CAUTION]   
             > - Always backup your boot & dtbo image first before proceeding!   
