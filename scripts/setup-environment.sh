@@ -79,6 +79,7 @@ case "$DEVICE_IMPORT" in
         export ACTUAL_MAIN_DEFCONFIG="sweet_defconfig"
         export COMMON_DEFCONFIG="vendor/debugfs.config"
         export DEVICE_DEFCONFIG=""
+        export KERNEL_NAME="-VantomKernel-neon"
         ;;
     *)
         echo "- Invalid DEVICE_IMPORT. Valid options: sweet, davinci, ginkgo, laurel_sprout, mi89x7, mi89x7-community, a52s, sweet-pixelos. Yours: $DEVICE_IMPORT."
