@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         build-type: [sweet]
-        ksu-type: [zako]
+        ksu-type: [zako, zako-susfs]
         bbg-type: [bbg]
 
     steps:
