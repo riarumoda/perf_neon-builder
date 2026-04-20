@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         build-type: [sweet, davinci, tucana, violet, ginkgo, laurel_sprout, alioth, lmi, munch, mi89x7]
-        ksu-type: [zako, none]
+        ksu-type: [zako, zako-susfs, none]
         bbg-type: [bbg]
 
     steps:
