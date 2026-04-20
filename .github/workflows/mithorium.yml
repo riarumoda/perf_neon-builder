@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         build-type: [mi89x7-community]
-        ksu-type: [zako, none]
+        ksu-type: [zako, zako-susfs, none]
         bbg-type: [bbg]
 
     steps:
