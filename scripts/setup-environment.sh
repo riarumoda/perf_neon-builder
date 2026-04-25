@@ -58,9 +58,9 @@ case "$DEVICE_IMPORT" in
         export COMMON_DEFCONFIG="vendor/msm8937-legacy.config vendor/common.config"
         export DEVICE_DEFCONFIG="vendor/xiaomi/msm8937/common.config vendor/xiaomi/msm8937/mi8937.config"
         if [ "$DEVICE_IMPORT" = "mi89x7" ]; then
-            export FEATURE_DEFCONFIG="vendor/feature/lineageos.config vendor/feature/android-12.config vendor/feature/erofs.config vendor/feature/exfat.config vendor/feature/lmkd.config vendor/feature/lto.config vendor/feature/ntfs.config vendor/feature/wireguard.config"
+            export FEATURE_DEFCONFIG="vendor/feature/lineageos.config vendor/feature/android-12.config vendor/feature/erofs.config vendor/feature/exfat.config vendor/feature/lmkd.config vendor/feature/ntfs.config vendor/feature/wireguard.config"
         elif [ "$DEVICE_IMPORT" = "mi89x7-community" ]; then
-            export FEATURE_DEFCONFIG="vendor/feature/android-12.config vendor/feature/erofs.config vendor/feature/exfat.config vendor/feature/kprobes.config vendor/feature/lmkd.config vendor/feature/lto.config vendor/feature/ntfs.config vendor/feature/wireguard.config"
+            export FEATURE_DEFCONFIG="vendor/feature/android-12.config vendor/feature/erofs.config vendor/feature/exfat.config vendor/feature/kprobes.config vendor/feature/lmkd.config vendor/feature/ntfs.config vendor/feature/wireguard.config"
             export KERNEL_NAME="-Mi8937v2-neon"
         fi
         export KERNEL_VERSION="4.19"
