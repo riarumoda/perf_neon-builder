@@ -88,11 +88,6 @@ case "$DEVICE_IMPORT" in
             # Shared patches for 4.14
             echo "-- Applying shared patches (DTBO)..."
             apply_patches "${DTBO_PATCHES[@]}"
-            echo "-- Enabling LTO and Shadow Call Stack..."
-            # Enable configs
-            echo "CONFIG_LTO_CLANG=y" >> $MAIN_DEFCONFIG
-            echo "CONFIG_THINLTO=y" >> $MAIN_DEFCONFIG
-            echo "CONFIG_SHADOW_CALL_STACK=y" >> $MAIN_DEFCONFIG
         fi
         if [[ "$DEVICE_IMPORT" == "mi89x7-community" ]]; then
             # Revert KSU commit for mi89x7-community
@@ -102,6 +97,9 @@ case "$DEVICE_IMPORT" in
         # Common configs for 4.19
         echo "-- Tuning default configs..."
         echo "CONFIG_SECURITY_SELINUX_DEVELOP=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_LTO_CLANG=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_THINLTO=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_SHADOW_CALL_STACK=y" >> $MAIN_DEFCONFIG
         ;;
     a52s)
         echo "-- STUB Entry for a52s. Nothing added yet."
