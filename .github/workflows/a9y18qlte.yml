@@ -16,7 +16,7 @@ jobs:
       matrix:
         build-type: [a9y18qlte]
         ksu-type: [zako, none]
-        bbg-type: [bbg]
+        bbg-type: [none]
 
     steps:
       - uses: actions/checkout@v6
