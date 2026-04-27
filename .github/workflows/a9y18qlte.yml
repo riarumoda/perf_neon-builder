@@ -74,7 +74,7 @@ jobs:
           fi
           git clone https://github.com/riarumoda/AnyKernel3 AnyKernel3 --depth=1
           if [[ "${{ matrix.build-type }}" == "a9y18qlte" ]]; then
-            cp android_kernel_samsung_a9y18qlte/out/arch/arm64/boot/Image.gz AnyKernel3/
+            cp android_kernel_samsung_a9y18qlte/out/arch/arm64/boot/Image.gz-dtb AnyKernel3/
             sed -i 's/supported.versions=11-16/supported.versions=11-16/' AnyKernel3/anykernel.sh
             if [[ "${{ matrix.build-type }}" == "a9y18qlte" ]]; then
               sed -i 's/device.name1=sweet/device.name1=a9y18qlte/' AnyKernel3/anykernel.sh
