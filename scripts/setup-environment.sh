@@ -81,6 +81,15 @@ case "$DEVICE_IMPORT" in
         export DEVICE_DEFCONFIG=""
         export KERNEL_NAME="-VantomKernel-neon"
         ;;
+    # OneUI
+    a9y18qlte)
+        export MAIN_DEFCONFIG="arch/arm64/configs/a9y18qlte_eur_open_defconfig"
+        export ACTUAL_MAIN_DEFCONFIG="a9y18qlte_eur_open_defconfig"
+        export COMMON_DEFCONFIG=""
+        export DEVICE_DEFCONFIG=""
+        export FEATURE_DEFCONFIG=""
+        export KERNEL_VERSION="4.4"
+        ;;
     *)
         echo "- Invalid DEVICE_IMPORT. Valid options: sweet, davinci, ginkgo, laurel_sprout, mi89x7, mi89x7-community, a52s, sweet-pixelos. Yours: $DEVICE_IMPORT."
         exit 1
@@ -98,3 +107,32 @@ export MAKE_ARGS=(
     CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_COMPAT=arm-linux-gnueabi-
     CLANG_TRIPLE=aarch64-linux-gnu-
 )
+
+# a9y18qlte specific settings
+if [ "$DEVICE_IMPORT" == "a9y18qlte" ]; then
+    local OPENSSL_DIR="$HOME/.openssl1.1"
+  
+    if [ ! -d "$OPENSSL_DIR" ]; then
+        wget https://www.openssl.org/source/openssl-1.1.1w.tar.gz
+        tar -xf openssl-1.1.1w.tar.gz
+        cd openssl-1.1.1w
+        ./config --prefix="$OPENSSL_DIR" --openssldir="$OPENSSL_DIR"
+        make -s -j$(nproc)
+        make -s install
+        cd ..
+        rm -rf openssl-1.1.1w*
+    fi
+
+    export HOSTCFLAGS="-I$OPENSSL_DIR/include"
+    export HOSTLDFLAGS="-L$OPENSSL_DIR/lib -Wl,-rpath,$OPENSSL_DIR/lib"
+    export LD_LIBRARY_PATH="$OPENSSL_DIR/lib:$LD_LIBRARY_PATH"
+    export MY_OPENSSL_DIR="$OPENSSL_DIR"
+
+    export MAKE_ARGS=(
+        ARCH=arm64 CC=aarch64-linux-android-gcc LD=aarch64-linux-android-ld.bfd
+        AR=aarch64-linux-android-ar AS=aarch64-linux-android-as NM=aarch64-linux-android-nm
+        OBJCOPY=aarch64-linux-android-objcopy OBJDUMP=aarch64-linux-android-objdump
+        STRIP=aarch64-linux-android-strip CROSS_COMPILE=aarch64-linux-android- 
+        HOSTCFLAGS="$HOSTCFLAGS" HOSTLDFLAGS="$HOSTLDFLAGS" OPENSSL="$MY_OPENSSL_DIR/bin/openssl"
+    )
+fi

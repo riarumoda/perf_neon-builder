@@ -101,6 +101,9 @@ case "$DEVICE_IMPORT" in
         echo "CONFIG_THINLTO=y" >> $MAIN_DEFCONFIG
         echo "CONFIG_SHADOW_CALL_STACK=y" >> $MAIN_DEFCONFIG
         ;;
+    a9y18qlte)
+        echo "-- STUB Entry for a9y18qlte. Nothing added yet."
+        ;;
     a52s)
         echo "-- STUB Entry for a52s. Nothing added yet."
         ;;
