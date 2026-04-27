@@ -46,6 +46,11 @@ case "$KERNELSU_SELECTOR" in
             echo "CONFIG_KSU_SUSFS_SUS_MAP=y" >> $MAIN_DEFCONFIG
             echo "CONFIG_KSU_SUSFS_TRY_UMOUNT=y" >> $MAIN_DEFCONFIG
         fi
+        # Kernel 4.4 specific patches
+        if [[ "$KERNEL_VERSION" == "4.4" ]]; then
+            echo "-- Applying KernelSU 4.4 patches..."
+            sed -i '/static struct tty_struct \*pts_unix98_lookup/,/}/ s/ksu_handle_devpts((struct inode \*)file->f_path.dentry->d_inode);/ksu_handle_devpts(pts_inode);/' drivers/tty/pty.c
+        fi
         ;;
     ksunext|ksunext-susfs)
         # KernelSU Settings
@@ -81,6 +86,11 @@ case "$KERNELSU_SELECTOR" in
             echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> $MAIN_DEFCONFIG
             echo "CONFIG_KSU_SUSFS_SUS_MAP=y" >> $MAIN_DEFCONFIG
             echo "CONFIG_KSU_SUSFS_TRY_UMOUNT=y" >> $MAIN_DEFCONFIG
+        fi
+        # Kernel 4.4 specific patches
+        if [[ "$KERNEL_VERSION" == "4.4" ]]; then
+            echo "-- Applying KernelSU 4.4 patches..."
+            sed -i '/static struct tty_struct \*pts_unix98_lookup/,/}/ s/ksu_handle_devpts((struct inode \*)file->f_path.dentry->d_inode);/ksu_handle_devpts(pts_inode);/' drivers/tty/pty.c
         fi
         ;;
     none|"")
