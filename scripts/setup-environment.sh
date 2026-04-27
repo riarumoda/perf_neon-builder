@@ -110,15 +110,16 @@ export MAKE_ARGS=(
 
 # a9y18qlte specific settings
 if [ "$DEVICE_IMPORT" == "a9y18qlte" ]; then
+    echo "-- Setting up OpenSSL 1.1..."
     export OPENSSL_DIR="$HOME/.openssl1.1"
   
     if [ ! -d "$OPENSSL_DIR" ]; then
-        wget https://www.openssl.org/source/openssl-1.1.1w.tar.gz
+        wget https://www.openssl.org/source/openssl-1.1.1w.tar.gz &> /dev/null || { echo "-- Fatal: Failed to download OpenSSL!"; exit 1; }
         tar -xf openssl-1.1.1w.tar.gz
         cd openssl-1.1.1w
-        ./config --prefix="$OPENSSL_DIR" --openssldir="$OPENSSL_DIR"
-        make -s -j$(nproc)
-        make -s install
+        ./config --prefix="$OPENSSL_DIR" --openssldir="$OPENSSL_DIR" &> /dev/null
+        make -s -j$(nproc) &> /dev/null
+        make -s install &> /dev/null
         cd ..
         rm -rf openssl-1.1.1w*
     fi
