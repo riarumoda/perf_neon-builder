@@ -110,7 +110,7 @@ export MAKE_ARGS=(
 
 # a9y18qlte specific settings
 if [ "$DEVICE_IMPORT" == "a9y18qlte" ]; then
-    local OPENSSL_DIR="$HOME/.openssl1.1"
+    export OPENSSL_DIR="$HOME/.openssl1.1"
   
     if [ ! -d "$OPENSSL_DIR" ]; then
         wget https://www.openssl.org/source/openssl-1.1.1w.tar.gz
