@@ -11,6 +11,8 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 120  # 2 hours
+
     outputs:
       timestamp: ${{ steps.ts.outputs.TIME }}
       date: ${{ steps.ts.outputs.DATE }}
