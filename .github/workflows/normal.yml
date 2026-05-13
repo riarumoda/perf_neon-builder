@@ -16,7 +16,7 @@ jobs:
       date: ${{ steps.ts.outputs.DATE }}
     strategy:
       matrix:
-        build-type: [sweet, davinci, tucana, violet, ginkgo, laurel_sprout, alioth, lmi, munch, mi89x7]
+        build-type: [sweet]
         ksu-type: [zako, zako-susfs, none]
         bbg-type: [bbg]
 
@@ -115,7 +115,7 @@ jobs:
           if [ -d "$PWD/AnyKernel3" ]; then
             rm -rf AnyKernel3
           fi
-          git clone https://github.com/riarumoda/AnyKernel3 AnyKernel3 --depth=1
+          git clone https://github.com/osm0sis/AnyKernel3 AnyKernel3 --depth=1
           if [[ "${{ matrix.build-type }}" == "sweet" || "${{ matrix.build-type }}" == "davinci" || "${{ matrix.build-type }}" == "tucana" || "${{ matrix.build-type }}" == "violet" ]]; then
             cp android_kernel_xiaomi_sm6150/out/arch/arm64/boot/Image.gz AnyKernel3/
             cp android_kernel_xiaomi_sm6150/out/arch/arm64/boot/dtb.img AnyKernel3/
