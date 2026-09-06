@@ -157,5 +157,33 @@
     "sources": [
       { "repo": "https://github.com/crdroidandroid/android_kernel_xiaomi_sm6150", "branch": "16.0", "path": "." }
     ]
+  },
+  "sweet-awaken": {
+    "dir": "android_kernel_xiaomi_sm6150",
+    "image": "Image.gz",
+    "dtb": "",
+    "dtbo": "dtbo.img",
+    "supported_versions": "13-17",
+    "device_names": ["sweet", "sweetin"],
+    "banner": "sweet (sm6150)",
+    "zip_prefix": "awaken-sweet-playground",
+    "env": {
+      "main_defconfig": "arch/arm64/configs/sweet_defconfig",
+      "actual_main_defconfig": "sweet_defconfig",
+      "common_defconfig": "vendor/debugfs.config",
+      "device_defconfig": "",
+      "kernel_name": "-awaken-neon",
+      "clang_strat": "0"
+    },
+    "build_flags": {
+      "ksu_type": ["zako-susfs", "none"], 
+      "bbg_type": "bbg",
+      "nomount_type": "nomount",
+      "droidspaces_type": "none",
+      "rekernel_type": "rekernel"
+    },
+    "sources": [
+      { "repo": "https://github.com/awaken-sweet/android_kernel_xiaomi_sm6150", "branch": "seventeen", "path": "." }
+    ]
   }
 }
