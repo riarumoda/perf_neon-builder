@@ -167,6 +167,11 @@ case "$DEVICE_IMPORT" in
         echo "-- Tuning default configs..."
         echo "CONFIG_SECURITY_SELINUX_DEVELOP=y" >> $MAIN_DEFCONFIG
     ;;
+    # Awaken
+    sweet-awaken)
+        echo "-- Tuning default configs..."
+        echo "CONFIG_SECURITY_SELINUX_DEVELOP=y" >> $MAIN_DEFCONFIG
+    ;;
     # Mi-Thorium
     mi89x7-playground)
         echo "-- Reverting KSU commit..."
