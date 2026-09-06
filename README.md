@@ -2,7 +2,7 @@
 <div align="center" style="font-size: 1.25rem;">
     <strong>
         <em>
-        This project is not affiliated with LineageOS & CrDroid.
+        This project is not affiliated with any Android-based OS.
         </em>
     </strong>
 </div>
