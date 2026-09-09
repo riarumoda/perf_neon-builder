@@ -59,6 +59,13 @@ case "$DEVICE_IMPORT" in
         echo "-- Applying DTB patches..."
         apply_patches "${DTBO_PATCHES[@]}"
         echo "CONFIG_SECURITY_SELINUX_DEVELOP=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_CRYPT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_DEFAULT_KEY=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_SNAPSHOT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_UEVENT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_VERITY=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_VERITY_FEC=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_BOW=y" >> $MAIN_DEFCONFIG
     ;;
     ginkgo-lineage|laurel_sprout-lineage)
         echo "-- Applying DTC patches..."
@@ -67,6 +74,13 @@ case "$DEVICE_IMPORT" in
         apply_patches "${DTBO_PATCHES[@]}"
         echo "-- Tuning default configs..."
         echo "CONFIG_SECURITY_SELINUX_DEVELOP=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_CRYPT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_DEFAULT_KEY=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_SNAPSHOT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_UEVENT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_VERITY=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_VERITY_FEC=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_BOW=y" >> $MAIN_DEFCONFIG
     ;;
     gta4l-lineage)
         echo "-- Fixing scripts/dtc/livetree.c..."
@@ -80,6 +94,13 @@ case "$DEVICE_IMPORT" in
         echo "CONFIG_SENSORS_SSC=y" >> $MAIN_DEFCONFIG
         echo "-- Tuning default configs..."
         echo "CONFIG_SECURITY_SELINUX_DEVELOP=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_CRYPT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_DEFAULT_KEY=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_SNAPSHOT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_UEVENT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_VERITY=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_VERITY_FEC=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_BOW=y" >> $MAIN_DEFCONFIG
     ;;
     # CrDroid
     sweet-crdroid|davinci-crdroid|tucana-crdroid)
@@ -106,6 +127,13 @@ case "$DEVICE_IMPORT" in
         echo "-- Tuning default configs..."
         echo "CONFIG_SECURITY_SELINUX_DEVELOP=y" >> $MAIN_DEFCONFIG
         echo "CONFIG_FRAME_WARN=4096" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_CRYPT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_DEFAULT_KEY=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_SNAPSHOT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_UEVENT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_VERITY=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_VERITY_FEC=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_BOW=y" >> $MAIN_DEFCONFIG
     ;;
     surya-crdroid)
         echo "-- Reverting SUSFS commits..."
@@ -130,6 +158,13 @@ case "$DEVICE_IMPORT" in
         revert_commit "https://github.com/crdroidandroid/android_kernel_xiaomi_surya/commit/3c8c1cd917d6b986bdbe88d66571b91a804d8add.patch"
         echo "-- Tuning default configs..."
         echo "CONFIG_SECURITY_SELINUX_DEVELOP=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_CRYPT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_DEFAULT_KEY=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_SNAPSHOT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_UEVENT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_VERITY=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_VERITY_FEC=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_BOW=y" >> $MAIN_DEFCONFIG
     ;;
     sweet-crdroid-droidspaces)
         echo "-- Reverting hard to commits before KSU is being added..."
@@ -156,6 +191,13 @@ case "$DEVICE_IMPORT" in
         echo "CONFIG_SECURITY_SELINUX_DEVELOP=y" >> $MAIN_DEFCONFIG
         echo "CONFIG_FRAME_WARN=4096" >> $MAIN_DEFCONFIG
         echo "CONFIG_CHECKPOINT_RESTORE=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_CRYPT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_DEFAULT_KEY=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_SNAPSHOT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_UEVENT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_VERITY=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_VERITY_FEC=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_BOW=y" >> $MAIN_DEFCONFIG
     ;;
     # PixelOS
     sweet-pixelos|davinci-pixelos|toco-pixelos)
@@ -166,11 +208,25 @@ case "$DEVICE_IMPORT" in
         fi
         echo "-- Tuning default configs..."
         echo "CONFIG_SECURITY_SELINUX_DEVELOP=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_CRYPT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_DEFAULT_KEY=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_SNAPSHOT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_UEVENT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_VERITY=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_VERITY_FEC=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_BOW=y" >> $MAIN_DEFCONFIG
     ;;
     # Awaken
     sweet-awaken)
         echo "-- Tuning default configs..."
         echo "CONFIG_SECURITY_SELINUX_DEVELOP=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_CRYPT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_DEFAULT_KEY=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_SNAPSHOT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_UEVENT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_VERITY=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_VERITY_FEC=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_BOW=y" >> $MAIN_DEFCONFIG
     ;;
     # Mi-Thorium
     mi89x7-playground)
@@ -225,6 +281,13 @@ case "$DEVICE_IMPORT" in
             $MAIN_DEFCONFIG
         echo "-- Tuning default configs..."
         echo "CONFIG_SECURITY_SELINUX_DEVELOP=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_CRYPT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_DEFAULT_KEY=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_SNAPSHOT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_UEVENT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_VERITY=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_VERITY_FEC=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_BOW=y" >> $MAIN_DEFCONFIG
     ;;
     # Spiteful AOSP Buildout
     spiteful-sweet-aosp-buildout)
@@ -239,6 +302,13 @@ case "$DEVICE_IMPORT" in
             $MAIN_DEFCONFIG
         echo "-- Tuning default configs..."
         echo "CONFIG_SECURITY_SELINUX_DEVELOP=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_CRYPT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_DEFAULT_KEY=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_SNAPSHOT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_UEVENT=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_VERITY=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_VERITY_FEC=y" >> $MAIN_DEFCONFIG
+        echo "CONFIG_DM_BOW=y" >> $MAIN_DEFCONFIG
     ;;
     # Titan Kernel
     a9y18qlte-titan-aosp)
