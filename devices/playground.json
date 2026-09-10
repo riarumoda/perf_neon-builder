@@ -13,7 +13,7 @@
       "actual_main_defconfig": "vendor/msm8937-perf_defconfig",
       "common_defconfig": "vendor/msm8937-legacy.config vendor/common.config",
       "device_defconfig": "vendor/xiaomi/msm8937/common.config vendor/xiaomi/msm8937/mi8937.config",
-      "feature_defconfig": "vendor/feature/android-12.config vendor/feature/erofs.config vendor/feature/exfat.config vendor/feature/kprobes.config vendor/feature/lmkd.config vendor/feature/ntfs.config vendor/feature/wireguard.config",
+      "feature_defconfig": "vendor/feature/android-12.config vendor/feature/compat-vdso.config vendor/feature/erofs.config vendor/feature/exfat.config vendor/feature/kprobes.config vendor/feature/lmkd.config vendor/feature/ntfs.config vendor/feature/wireguard.config",
       "kernel_name": "-mithorium-neon",
       "kernel_version": "4.19",
       "clang_strat": "1"
