@@ -100,6 +100,14 @@ Restore to default kernel
 - Reboot with `fastboot reboot`.   
 - Profit.   
 
+Notes   
+You can install different KernelSU Manager with ReSukiSU kernel drivers. This is currently supported KernelSU Managers:   
+- [Original KernelSU](github.com/tiann/KernelSU) (tiann)   
+- [Rissu's KernelSU](github.com/rsuntk/KernelSU) (rsuntk)   
+- [SukiSU-Ultra Manager](github.com/SukiSU-Ultra/SukiSU-Ultra) (shirkneko)   
+- [ReSukiSU Manager](github.com/ReSukiSU/ReSukiSU) (ReSukiSU Developers)   
+- [KOW's KernelSU](github.com/KOWX712/KernelSU) (KOWX712)   
+   
 # Credits
 Patches & buildscript
 - [TBYOOL](https://github.com/tbyool) for the buildscripts, kernel sources & kernel patches.   
