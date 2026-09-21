@@ -297,6 +297,7 @@ ksu_export_selinux_symbols() {
         fi
     }
     unstatic "security/selinux/selinuxfs.c" "ssize_t (\*write_op\[\])"
+    unstatic "security/selinux/selinuxfs.c" "ssize_t (\*const write_op\[\])"
     unstatic "security/selinux/selinuxfs.c" "const struct file_operations sel_handle_status_ops"
     unstatic "security/selinux/selinuxfs.c" "DEFINE_MUTEX(sel_mutex);"
     unstatic "security/selinux/ss/services.c" "struct page \*selinux_status_page;"
