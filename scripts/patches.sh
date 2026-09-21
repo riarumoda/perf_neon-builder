@@ -235,6 +235,14 @@ nethunter_fouronenine_patches() {
     echo "CONFIG_RTW88=y" >> $MAIN_DEFCONFIG
     echo "-- Patching ub500..."
     apply_patches "$UB500_PATCH"
+    echo "-- Patching ath9k..."
+    find drivers/net/wireless/ath/ath9k -type f -name "*.[ch]" -exec sed -i 's/\bhtc_start\b/ath9k_htc_start/g' {} +
+    find drivers/net/wireless/ath/ath9k -type f -name "*.[ch]" -exec sed -i 's/\bhtc_stop\b/ath9k_htc_stop/g' {} +
+    find drivers/net/wireless/ath/ath9k -type f -name "*.[ch]" -exec sed -i 's/\bhtc_connect_service\b/ath9k_htc_connect_service/g' {} +
+    sed -i -E 's/static int ath9k_htc_start\(struct ieee80211_hw/static int ath9k_mac80211_start(struct ieee80211_hw/g' drivers/net/wireless/ath/ath9k/htc_drv_main.c
+    sed -i -E 's/static void ath9k_htc_stop\(struct ieee80211_hw/static void ath9k_mac80211_stop(struct ieee80211_hw/g' drivers/net/wireless/ath/ath9k/htc_drv_main.c
+    sed -i -E 's/\.start[[:space:]]*=[[:space:]]*ath9k_htc_start,/.start = ath9k_mac80211_start,/g' drivers/net/wireless/ath/ath9k/htc_drv_main.c
+    sed -i -E 's/\.stop[[:space:]]*=[[:space:]]*ath9k_htc_stop,/.stop = ath9k_mac80211_stop,/g' drivers/net/wireless/ath/ath9k/htc_drv_main.c
 }
 # Shared configs
 enable_erofs() {
