@@ -397,6 +397,7 @@ case "$DEVICE_IMPORT" in
         sed -i '1i #include <linux/i2c.h>\n#include <linux/module.h>' techpack/audio/asoc/codecs/tas2557_clover/tas2557-regmap.c
         sed -i '1i #include <linux/i2c.h>\n#include <linux/module.h>' techpack/audio/asoc/codecs/max98937.c
         sed -i 's/module_i2c_driver(max98927_i2c_driver)/module_i2c_driver(max98927_i2c_driver);/' techpack/audio/asoc/codecs/max98937.c
+        sed -i 's/module_i2c_driver(max98927_i2c_driver);/builtin_i2c_driver(max98927_i2c_driver);/' techpack/audio/asoc/codecs/max98937.c
         enable_erofs
         default_config_fouronenine
     ;;
@@ -405,6 +406,7 @@ case "$DEVICE_IMPORT" in
         sed -i '1i #include <linux/i2c.h>\n#include <linux/module.h>' techpack/audio/asoc/codecs/tas2557_clover/tas2557-regmap.c
         sed -i '1i #include <linux/i2c.h>\n#include <linux/module.h>' techpack/audio/asoc/codecs/max98937.c
         sed -i 's/module_i2c_driver(max98927_i2c_driver)/module_i2c_driver(max98927_i2c_driver);/' techpack/audio/asoc/codecs/max98937.c
+        sed -i 's/module_i2c_driver(max98927_i2c_driver);/builtin_i2c_driver(max98927_i2c_driver);/' techpack/audio/asoc/codecs/max98937.c
         nethunter_fouronefour_configs
         nethunter_fouronenine_patches
         enable_erofs
