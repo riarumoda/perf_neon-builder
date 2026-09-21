@@ -393,18 +393,12 @@ case "$DEVICE_IMPORT" in
     ;;
     # SouthWest-NG
     lavender-southwest-ng)
-        echo "-- Fixing broken fingerprint..."
-        sed -i 's/rst_gpio_exit/exit_1/g' drivers/input/fingerprint/fpc/fpc1020_platform_tee.c
-        awk '/^[[:space:]]*exit_1:/ { if (++count > 1) next } 1' drivers/input/fingerprint/fpc/fpc1020_platform_tee.c > tmp.c && mv tmp.c drivers/input/fingerprint/fpc/fpc1020_platform_tee.c
         echo "-- Fixing audio on clover..."
         sed -i '1i #include <linux/i2c.h>\n#include <linux/module.h>' techpack/audio/asoc/codecs/tas2557_clover/tas2557-regmap.c
         enable_erofs
         default_config_fouronenine
     ;;
     lavender-southwest-ng-nethunter)
-        echo "-- Fixing broken fingerprint..."
-        sed -i 's/rst_gpio_exit/exit_1/g' drivers/input/fingerprint/fpc/fpc1020_platform_tee.c
-        awk '/^[[:space:]]*exit_1:/ { if (++count > 1) next } 1' drivers/input/fingerprint/fpc/fpc1020_platform_tee.c > tmp.c && mv tmp.c drivers/input/fingerprint/fpc/fpc1020_platform_tee.c
         echo "-- Fixing audio on clover..."
         sed -i '1i #include <linux/i2c.h>\n#include <linux/module.h>' techpack/audio/asoc/codecs/tas2557_clover/tas2557-regmap.c
         nethunter_fouronefour_configs
