@@ -400,7 +400,7 @@ case "$DEVICE_IMPORT" in
         sed -i 's/module_i2c_driver(max98927_i2c_driver);/builtin_i2c_driver(max98927_i2c_driver);/' techpack/audio/asoc/codecs/max98937.c
         sed -i 's/builtin_i2c_driver(max98927_i2c_driver);/static int __init max98927_i2c_init(void) { return i2c_add_driver(\&max98927_i2c_driver); }\nsubsys_initcall(max98927_i2c_init);/' techpack/audio/asoc/codecs/max98937.c
         echo "-- Fixing touchscreen..."
-        sed -i '/bdata->addr_delay_us/d; /synaptics,address-delay-us/,/}/d' drivers/input/touchscreen/synaptics_dsx_force/synaptics_dsx_spi.c
+        sed -i '/bdata->addr_delay_us/d; /synaptics,address-delay-us/,/^$/d' drivers/input/touchscreen/synaptics_dsx_force/synaptics_dsx_spi.c
         enable_erofs
         default_config_fouronenine
     ;;
@@ -412,7 +412,7 @@ case "$DEVICE_IMPORT" in
         sed -i 's/module_i2c_driver(max98927_i2c_driver);/builtin_i2c_driver(max98927_i2c_driver);/' techpack/audio/asoc/codecs/max98937.c
         sed -i 's/builtin_i2c_driver(max98927_i2c_driver);/static int __init max98927_i2c_init(void) { return i2c_add_driver(\&max98927_i2c_driver); }\nsubsys_initcall(max98927_i2c_init);/' techpack/audio/asoc/codecs/max98937.c
         echo "-- Fixing touchscreen..."
-        sed -i '/bdata->addr_delay_us/d; /synaptics,address-delay-us/,/}/d' drivers/input/touchscreen/synaptics_dsx_force/synaptics_dsx_spi.c
+        sed -i '/bdata->addr_delay_us/d; /synaptics,address-delay-us/,/^$/d' drivers/input/touchscreen/synaptics_dsx_force/synaptics_dsx_spi.c
         nethunter_fouronefour_configs
         nethunter_fouronenine_patches
         enable_erofs
