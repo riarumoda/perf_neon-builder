@@ -393,14 +393,16 @@ case "$DEVICE_IMPORT" in
     ;;
     # SouthWest-NG
     lavender-southwest-ng)
-        echo "-- Fixing audio on clover..."
+        echo "-- Fixing audio..."
         sed -i '1i #include <linux/i2c.h>\n#include <linux/module.h>' techpack/audio/asoc/codecs/tas2557_clover/tas2557-regmap.c
+        sed -i '1i #include <linux/i2c.h>\n#include <linux/module.h>' techpack/audio/asoc/codecs/max98937.c
         enable_erofs
         default_config_fouronenine
     ;;
     lavender-southwest-ng-nethunter)
-        echo "-- Fixing audio on clover..."
+        echo "-- Fixing audio..."
         sed -i '1i #include <linux/i2c.h>\n#include <linux/module.h>' techpack/audio/asoc/codecs/tas2557_clover/tas2557-regmap.c
+        sed -i '1i #include <linux/i2c.h>\n#include <linux/module.h>' techpack/audio/asoc/codecs/max98937.c
         nethunter_fouronefour_configs
         nethunter_fouronenine_patches
         enable_erofs
