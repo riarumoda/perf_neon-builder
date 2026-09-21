@@ -22,36 +22,6 @@
       "ksu_type": ["zako-susfs", "none"], 
       "bbg_type": "bbg",
       "nomount_type": "nomount",
-      "droidspaces_type": "none",
-      "rekernel_type": "rekernel"
-    },
-    "sources": [
-      { "repo": "https://github.com/pix106/android_kernel_xiaomi_sdm660_southwest-ng", "branch": "main", "path": "." }
-    ]
-  },
-  "lavender-southwest-ng-nethunter": {
-    "dir": "android_kernel_xiaomi_sdm660",
-    "image": "Image.gz-dtb",
-    "dtb": "",
-    "dtbo": "",
-    "supported_versions": "11-17",
-    "device_names": ["lavenderin", "lavender"],
-    "banner": "lavender (sdm660)",
-    "zip_prefix": "nethunter-southwest-ng-lavender-playground",
-    "env": {
-      "main_defconfig": "arch/arm64/configs/vendor/xiaomi/sdm660_defconfig",
-      "actual_main_defconfig": "vendor/xiaomi/sdm660_defconfig",
-      "common_defconfig": "vendor/debugfs.config",
-      "device_defconfig": "vendor/xiaomi/lavender.config",
-      "feature_defconfig": "",
-      "kernel_name": "-nethunter-southwest-ng-mainbranch-neon",
-      "kernel_version": "4.19",
-      "clang_strat": "1"
-    },
-    "build_flags": {
-      "ksu_type": ["zako-susfs", "none"], 
-      "bbg_type": "bbg",
-      "nomount_type": "nomount",
       "droidspaces_type": "droidspaces",
       "rekernel_type": "rekernel"
     },
