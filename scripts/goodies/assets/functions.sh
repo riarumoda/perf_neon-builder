@@ -10,6 +10,8 @@ export KSU_SETUP_URI="https://github.com/ReSukiSU/ReSukiSU/raw/refs/heads/main/k
 export KSU_SETUP_BRANCH="main"
 export NOMOUNT_SETUP_VER="2.0.0"
 export NOMOUNT_SETUP_ZIP="https://github.com/maxsteeel/nomount/archive/refs/tags/v$NOMOUNT_SETUP_VER.zip"
+export NOMOUNT_SETUP_URI_BLEEDING_EDGE="https://github.com/maxsteeel/nomount/raw/refs/heads/master/kernel/setup.sh"
+export NOMOUNT_SETUP_BRANCH_BLEEDING_EDGE="master"
 export REKERNEL_PATCH="https://github.com/JackA1ltman/NonGKI_Kernel_Build_2nd/raw/refs/heads/mainline/Patches/Rekernel/rekernel_patches.sh"
 export REKERNEL_EXTRA="https://github.com/JackA1ltman/NonGKI_Kernel_Build_2nd/raw/refs/heads/mainline/Patches/Rekernel/rekernel_extra.patch"
 
@@ -142,7 +144,7 @@ ksu_import_hook_script() {
 }
 ksu_run_setup() {
     echo "-- KernelSU: Running setup script..."
-    curl -LSs --fail --retry 3 "$KSU_SETUP_URI" | bash -s "$KSU_SETUP_BRANCH" &> /dev/null || { echo "Fatal: KSU setup script failed to download/run!"; exit 1; }
+    curl -LSs --fail --retry 3 "$KSU_SETUP_URI" | bash -s "$KSU_SETUP_BRANCH" &> /dev/null || { echo "-- Fatal: KSU setup script failed to download/run!"; exit 1; }
 }
 ksu_common_configs() {
     echo "-- KernelSU: Enabling configs..."
@@ -333,6 +335,10 @@ nomount_setup() {
         ls -alhZ $PWD/
         exit 1
     fi
+}
+nomount_setup_bleeding_edge() {
+    echo "-- NoMount: Bleeding Edge! Running setup script..."
+    curl -LSs --fail --retry 3 "$NOMOUNT_SETUP_URI_BLEEDING_EDGE" | bash -s "$NOMOUNT_SETUP_BRANCH_BLEEDING_EDGE" &> /dev/null || { echo "-- Fatal: NoMount setup script failed to download/run!"; exit 1; }
 }
 
 # ReKernel
