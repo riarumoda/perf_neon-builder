@@ -362,6 +362,10 @@ case "$DEVICE_IMPORT" in
         disable_modversions
         default_config_fouronefour
     ;;
+    sweet-pixelos-nomountedge)
+        disable_modversions
+        default_config_fouronefour
+    ;;
     # Mi-Thorium
     mi89x7-playground)
         echo "-- Reverting KSU commit..."
