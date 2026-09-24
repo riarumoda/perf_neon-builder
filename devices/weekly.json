@@ -83,6 +83,68 @@
       { "repo": "https://github.com/PixelOS-Devices/android_kernel_xiaomi_sm6150.git", "branch": "seventeen", "path": "." }
     ]
   },
+  "ginkgo-pixelos": {
+    "dir": "android_kernel_xiaomi_sm6125",
+    "image": "Image.gz",
+    "dtb": "",
+    "dtbo": "dtbo.img",
+    "supported_versions": "13-17",
+    "device_names": ["ginkgo", "willow"],
+    "banner": "ginkgo (sm6125)",
+    "zip_prefix": "pixelos-neon-ginkgo-weekly",
+    "env": {
+      "main_defconfig": "arch/arm64/configs/vendor/trinket-perf_defconfig",
+      "actual_main_defconfig": "vendor/trinket-perf_defconfig",
+      "common_defconfig": "vendor/debugfs.config vendor/xiaomi-trinket.config",
+      "device_defconfig": "vendor/ginkgo.config",
+      "feature_defconfig": "",
+      "kernel_name": "-pixelos-neon",
+      "kernel_version": "4.14",
+      "kbuild_build_user": "hiyorun-compile",
+      "clang_strat": "1"
+    },
+    "build_flags": {
+      "ksu_type": ["zako-susfs", "none"], 
+      "bbg_type": "bbg",
+      "nomount_type": "nomount",
+      "droidspaces_type": "none",
+      "rekernel_type": "rekernel"
+    },
+    "sources": [
+      { "repo": "https://github.com/PixelOS-Devices/android_kernel_xiaomi_sm6125", "branch": "seventeen", "path": "." }
+    ]
+  },
+  "laurel_sprout-pixelos": {
+    "dir": "android_kernel_xiaomi_sm6125",
+    "image": "Image.gz",
+    "dtb": "",
+    "dtbo": "dtbo.img",
+    "supported_versions": "13-17",
+    "device_names": ["laurel_sprout", "laurel_sproutin"],
+    "banner": "laurel_sprout (sm6125)",
+    "zip_prefix": "pixelos-neon-laurel_sprout-weekly",
+    "env": {
+      "main_defconfig": "arch/arm64/configs/vendor/trinket-perf_defconfig",
+      "actual_main_defconfig": "vendor/trinket-perf_defconfig",
+      "common_defconfig": "vendor/debugfs.config vendor/xiaomi-trinket.config",
+      "device_defconfig": "vendor/laurel_sprout.config",
+      "feature_defconfig": "",
+      "kernel_name": "-pixelos-neon",
+      "kernel_version": "4.14",
+      "kbuild_build_user": "hiyorun-compile",
+      "clang_strat": "1"
+    },
+    "build_flags": {
+      "ksu_type": ["zako-susfs", "none"], 
+      "bbg_type": "bbg",
+      "nomount_type": "nomount",
+      "droidspaces_type": "none",
+      "rekernel_type": "rekernel"
+    },
+    "sources": [
+      { "repo": "https://github.com/PixelOS-Devices/android_kernel_xiaomi_sm6125", "branch": "seventeen", "path": "." }
+    ]
+  },
   "sweet-lineage": {
     "dir": "android_kernel_xiaomi_sm6150",
     "image": "Image.gz",

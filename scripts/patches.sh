@@ -362,6 +362,15 @@ case "$DEVICE_IMPORT" in
         disable_modversions
         default_config_fouronefour
     ;;
+    ginkgo-pixelos|laurel_sprout-pixelos)
+        echo "-- Applying DTC patches..."
+        apply_patches "${DTC_PATCHES[@]}"
+        echo "-- Applying DTB patches..."
+        apply_patches "${DTBO_PATCHES[@]}"
+        disable_modversions
+        enable_erofs
+        default_config_fouronefour
+    ;;
     sweet-pixelos-nomountedge)
         disable_modversions
         default_config_fouronefour
