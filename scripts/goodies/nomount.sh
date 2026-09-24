@@ -8,6 +8,10 @@ case "$NOMOUNT_SELECTOR" in
         # Setup nomount
         nomount_setup
         ;;
+    nomount-edge)
+        # Setup nomount
+        nomount_setup_bleeding_edge
+        ;;
     none|"")
         echo "-- NoMount is not selected."
         ;;
