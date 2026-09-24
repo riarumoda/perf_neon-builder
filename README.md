@@ -41,6 +41,15 @@ Select features:
 - NetHunter w/ Droidspaces container support
 - Compiled with either Neutron Clang, AOSP Clang + Eva GCC, Playground TC, or AOSP Clang + Android GCC 4.9
 
+File namings:   
+`<OS/KernelName>-neon-<DeviceName>-<BuildTypes>-<KsuTypes>-<BuildDate>.zip`   
+- OS/KernelName: Operating System or Kernel names.
+- neon: Label indicator telling the user this kernel is built on Perf Neon Builder.
+- DeviceName: Codename of the device.
+- BuildTypes: Build types of the kernel. Either Weekly or Playground.
+- KsuTypes: Configuration of KernelSU inside the kernel. Either `zako`, `zako-susfs`, or `none`. The term `zako` is referenced to ReSukiSU and this [YouTube video](https://www.youtube.com/watch?v=kqj7b59D85Y).
+- BuildDate: When was the kernel compiled on.
+
 Current status:
 - ```lineage-neon```: Standard + Neutron Clang   
 - ```crdroid-neon```: Standard + Neutron Clang   
