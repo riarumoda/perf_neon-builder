@@ -22,7 +22,7 @@
 <p align="right">Your typical XDA Forum Disclaimer.<p>   
 
 # Background
-The naming, Perf Neon, is inspired by a Linux Distribution called KDE Neon, where KDE take latest Ubuntu LTS as a base system and then put Latest KDE on top of it. Same thing as Perf Neon, where i take whatever the world the LineageOS & CrDroid team put under their kernel source and then put minimal patches on top of it.   
+The naming, Perf Neon, is inspired by a Linux Distribution called KDE Neon, where KDE take latest Ubuntu LTS as a base system and then put Latest KDE on top of it. Same thing as Perf Neon, where i take whatever the world the LineageOS, CrDroid and PixelOS team put under their kernel source and then put minimal patches on top of it.   
 
 # What is it for?
 This kernel solely focuses on adding goodies on top of the stock kernel, which fulfill the dream of a purists, where they want everything stable and rock solid from their stock kernels but also wanted extra spices on top of it.   
