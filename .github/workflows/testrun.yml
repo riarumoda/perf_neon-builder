@@ -16,9 +16,57 @@ jobs:
           echo "KERNEL_BUILD_TYPE=Testing" >> $GITHUB_OUTPUT
 
   # device workflow imports goes in here
+  build-lineage-sm6150:
+    needs: setup
+    uses: ./.github/workflows/lineage-sm6150.yml
+    with:
+      build_date: ${{ needs.setup.outputs.build_date }}
+      build_type: ${{ needs.setup.outputs.build_type }}
+    secrets: inherit
+
+  build-lineage-sm6125:
+    needs: setup
+    uses: ./.github/workflows/lineage-sm6125.yml
+    with:
+      build_date: ${{ needs.setup.outputs.build_date }}
+      build_type: ${{ needs.setup.outputs.build_type }}
+    secrets: inherit
+
+  build-crdroid-sm6150:
+    needs: setup
+    uses: ./.github/workflows/crdroid-sm6150.yml
+    with:
+      build_date: ${{ needs.setup.outputs.build_date }}
+      build_type: ${{ needs.setup.outputs.build_type }}
+    secrets: inherit
+  
+  build-pixelos-sm6150:
+    needs: setup
+    uses: ./.github/workflows/pixelos-sm6150.yml
+    with:
+      build_date: ${{ needs.setup.outputs.build_date }}
+      build_type: ${{ needs.setup.outputs.build_type }}
+    secrets: inherit
+
   build-awaken-sm6150:
     needs: setup
     uses: ./.github/workflows/awaken-sm6150.yml
+    with:
+      build_date: ${{ needs.setup.outputs.build_date }}
+      build_type: ${{ needs.setup.outputs.build_type }}
+    secrets: inherit
+
+  build-mithorium-msm8937:
+    needs: setup
+    uses: ./.github/workflows/mithorium-msm8937.yml
+    with:
+      build_date: ${{ needs.setup.outputs.build_date }}
+      build_type: ${{ needs.setup.outputs.build_type }}
+    secrets: inherit
+
+  build-mititanium-msm8953:
+    needs: setup
+    uses: ./.github/workflows/mititanium-msm8953.yml
     with:
       build_date: ${{ needs.setup.outputs.build_date }}
       build_type: ${{ needs.setup.outputs.build_type }}
