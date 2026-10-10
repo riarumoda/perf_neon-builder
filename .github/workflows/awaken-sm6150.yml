@@ -125,6 +125,8 @@ jobs:
             sed -i -e 's/update_load_avg(qcfs_rq, se, 0);/update_load_avg(se, 0);/g' \
                    -e 's/update_load_avg(cfs_rq, se, 0);/update_load_avg(se, 0);/g' \
                    kernel/sched/fair.c
+            sed -i '/se_update_runnable/d' kernel/sched/fair.c
+            sed -i '/assert_list_leaf_cfs_rq/d' kernel/sched/fair.c
 
             echo "-- Disabling modversions..."
             sed -i 's/^CONFIG_MODVERSIONS=y/# CONFIG_MODVERSIONS is not set/' $FINAL_DEFCONFIG
