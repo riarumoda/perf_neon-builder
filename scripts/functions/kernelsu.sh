@@ -3,7 +3,10 @@
 # Export KernelSU variables
 export SUSFS_PATCH="https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Build_2nd/refs/heads/mainline/Patches/Patch/susfs_patch_to_${KERNEL_VERSION}.patch"
 export KSU_SETUP_URI="https://raw.githubusercontent.com/Baka-SU/BakaSU/refs/heads/main/kernel/setup.sh"
-export KSU_SETUP_BRANCH="main"
+
+# Temporary measurements before they add stuff again
+# export KSU_SETUP_BRANCH="main"
+export KSU_SETUP_BRANCH="5b76b884c75f729a220bb317aa4a4fc78f0e0e9c"
 
 # Import hook script
 ksu_import_hook_script() {
