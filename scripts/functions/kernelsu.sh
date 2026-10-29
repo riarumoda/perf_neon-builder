@@ -71,6 +71,75 @@ ksu_fix_susfs_fouronenine() {
         sed -i 's|^[[:space:]]*mnt = alloc_vfsmnt(fc->source ?: "none");|#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT\n\t// - We will just stop checking for ksu process if /sdcard/Android is accessible,\n\t//   for the sake of performance\n\tif (static_branch_unlikely(\&susfs_is_sdcard_android_data_not_decrypted)) {\n\t\tif (susfs_is_current_ksu_domain()) {\n\t\t\tmnt = susfs_alloc_non_unshare_ksu_vfsmnt(fc->source ?:"none");\n\t\t\tgoto bypass_orig_flow;\n\t\t}\n\t}\n#endif\n\tmnt = alloc_vfsmnt(fc->source ?: "none");\n#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT\nbypass_orig_flow:\n#endif|' fs/namespace.c
     fi
 }
+ksu_fix_susfs_fivepointfour() {
+    if [[ "$KERNEL_VERSION" == "5.4" ]]; then
+        echo "-- KernelSU: Patching fs/proc/fd.c for susfs_sus_mount..."
+        if grep -Fq 'ino:\t%lu\n' fs/proc/fd.c; then
+            sed -i '/^[[:space:]]*seq_printf(m, "pos:\\t%lli\\nflags:\\t0%o\\nmnt_id:\\t%i\\nino:\\t%lu\\n",/i \
+            #ifdef CONFIG_KSU_SUSFS_SUS_KSTAT\
+            	if (susfs_is_current_app_uid()) {\
+            		struct inode *inode = file_inode(file);\
+            		bool is_fuse = false;\
+            		if (susfs_is_inode_sus_kstat(inode, &is_fuse)) {\
+            			int mnt_id = real_mount(file->f_path.mnt)->mnt_id;\
+            			unsigned long ino = inode->i_ino;\
+            			susfs_sus_kstat_spoof_proc_fd_seq_show(&mnt_id, &ino, inode->i_sb->s_dev);\
+            			seq_printf(m, "pos:\\t%lli\\nflags:\\t0%o\\nmnt_id:\\t%i\\nino:\\t%lu\\n",\
+            					(long long)file->f_pos, f_flags,\
+            					mnt_id,\
+            					ino);\
+            			goto bypass_orig_flow;\
+            		}\
+            	}\
+            #endif // #ifdef CONFIG_KSU_SUSFS_SUS_KSTAT\
+            \
+            #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT\
+            	if (likely(susfs_is_current_proc_umounted())) {\
+            		struct mount *mnt = real_mount(file->f_path.mnt);\
+            		if (mnt->mnt_id >= DEFAULT_KSU_MNT_ID) {\
+            			struct path path;\
+            			char *pathname = kmalloc(PAGE_SIZE, GFP_KERNEL);\
+            			char *dpath;\
+            \
+            			if (!pathname) {\
+            				goto orig_flow;\
+            			}\
+            			dpath = d_path(&file->f_path, pathname, PAGE_SIZE);\
+            			if (!dpath) {\
+            				goto out_kfree;\
+            			}\
+            			if (kern_path(dpath, 0, &path)) {\
+            				goto out_kfree;\
+            			}\
+            			if (!d_backing_inode(path.dentry)) {\
+            				goto out_path_put;\
+            			}\
+            \
+            			seq_printf(m, "pos:\\t%lli\\nflags:\\t0%o\\nmnt_id:\\t%i\\nino:\\t%lu\\n",\
+            					(long long)file->f_pos, f_flags,\
+            					susfs_get_non_sus_mnt_id_from_mnt(mnt),\
+            					d_backing_inode(path.dentry)->i_ino);\
+            			path_put(&path);\
+            			kfree(pathname);\
+            			goto bypass_orig_flow;\
+            out_path_put:\
+            			path_put(&path);\
+            out_kfree:\
+            			kfree(pathname);\
+            			goto orig_flow;\
+            		}\
+            	}\
+            orig_flow:\
+            #endif // #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT\
+            ' fs/proc/fd.c
+            sed -i '/^[[:space:]]*show_fd_locks(m, file, files);/i \
+            #if defined(CONFIG_KSU_SUSFS_SUS_MOUNT) || defined(CONFIG_KSU_SUSFS_SUS_KSTAT)\
+            bypass_orig_flow:\
+            #endif // #if defined(CONFIG_KSU_SUSFS_SUS_MOUNT) || defined(CONFIG_KSU_SUSFS_SUS_KSTAT)\
+            ' fs/proc/fd.c
+        fi
+    fi
+}
 
 # Apply KernelSU hooks
 ksu_apply_hooks() {

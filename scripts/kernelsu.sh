@@ -50,6 +50,7 @@ case "$KERNELSU_SELECTOR" in
         # Duct tape fixes for SUSFS
         ksu_fix_susfs_fouronefour
         ksu_fix_susfs_fouronenine
+        ksu_fix_susfs_fivepointfour
 
         # Apply KSU Hooks
         ksu_apply_hooks
