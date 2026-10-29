@@ -78,6 +78,7 @@ This kernel follows weekly builds of LineageOS, you will get a new kernel build 
 - Looking for davinci? I moved davinci support from here to [Nebula Kernel Builder](https://github.com/Drsexo/davinci_kernel) instead.
 - We recommend installing LineageOS, CrDroid and PixelOS kernels on their respective OS.   
 - AwakenOS is upstreamed PixelOS kernels. This usually have newer commits before it got merged into the official PixelOS kernel sources.   
+- LineageOS (SM6150) & CrDroid (SM6150) can also be used on RANDOMSCAPE/MINKAN ROM Builds.   
 - LineageOS (SM6125) & LineageOS (SM7325) kernel might run on PixelOS for the respective device.
 - Mi-Thorium, Mi-Titanium, and SouthWest-NG kernels doesn't have any OS constraints.   
 - Akari & Mi8953 build for Mi-Titanium kernels contains 2 different way of handling USB, Media and Camera stack. If Mi8953 build feels broken to you pick the Akari build instead.   
