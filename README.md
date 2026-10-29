@@ -43,7 +43,8 @@ This kernel follows weekly builds of LineageOS, you will get a new kernel build 
 | Mi-Thorium (SDM439) | ✅ w/ SUSFS | ✅ | ✅ | ✅ |
 | Mi-Titanium (MSM8953) | ✅ w/ SUSFS | ✅ | ✅ | ✅ |
 | SouthWest-NG (SDM660) | ✅ w/ SUSFS | ✅ | ✅ | ✅ |
-| MIUI (SM6150) | ✅ w/ SUSFS | ✅ | ✅ | ✅ |
+| MIUI (SM6150) | ✅ w/ SUSFS | ✅ | ✅ | 🟡 |
+| LineageOS (SM7325) | ✅ w/ SUSFS | ✅ | ✅ | ❌ |
    
 **File Namings**   
 `neon-<OS/KernelName>-<DeviceName>-<Platform>-<BuildDate>.zip`   
@@ -55,7 +56,7 @@ This kernel follows weekly builds of LineageOS, you will get a new kernel build 
 
 **Notes**
 - During the usage of Droidspaces with systemd-based distros, mask the `NetworkManager` and `wpa_supplicant` systemd services to avoid overriding whos owning the wifi device, a.k.a NetworkManager will take control of the wifi device and android will not be able to connect to wifi until you masked the systemd services.   
-- CrDroid (SM6150) & LineageOS (SM6125) Droidspaces support have been marked "Yellow" because of the new Resources Limiter features of Droidspaces 7.0.0, and this feature is incompatible with said kernels because said kernels have Qualcomm WALT feature enabled by default, and CFS_BANDWIDTH is NOT compatible with Qualcomm WALT enabled.   
+- CrDroid (SM6150), LineageOS (SM6125), and MIUI (SM6150) Droidspaces support have been marked "Yellow" because of the new Resources Limiter features of Droidspaces 7.0.0, and this feature is incompatible with said kernels because said kernels have Qualcomm WALT feature enabled by default, and CFS_BANDWIDTH is NOT compatible with Qualcomm WALT enabled.   
 
 # Compatibility
 **Supported device list**   
@@ -71,12 +72,13 @@ This kernel follows weekly builds of LineageOS, you will get a new kernel build 
 | Mi-Titanium (MSM8953) | Redmi S2/Y2 (ysl), Redmi Note 4/4X Snapdragon (mido), Redmi 5 (rosy), Redmi 5 Plus (vince), Redmi 4 Prime/Pro (markw) | Android 11 ~ Android 17 |
 | SouthWest-NG (SDM660) | Xiaomi Mi Pad 4/4+ (clover), Redmi Note 7/7S (lavender) | Android 11 ~ Android 17 |
 | MIUI (SM6150) | Redmi Note 10 Pro/Pro Max (sweet) | Android 11 ~ Android 17 |
+| LineageOS (SM7325) | Samsung Galaxy A52s 5G (a52sxq) | Android 13 ~ Android 17 |
 
 **Notes**   
 - Looking for davinci? I moved davinci support from here to [Nebula Kernel Builder](https://github.com/Drsexo/davinci_kernel) instead.
 - We recommend installing LineageOS, CrDroid and PixelOS kernels on their respective OS.   
 - AwakenOS is upstreamed PixelOS kernels. This usually have newer commits before it got merged into the official PixelOS kernel sources.   
-- LineageOS (SM6125) kernel might run on PixelOS for the respective device.
+- LineageOS (SM6125) & LineageOS (SM7325) kernel might run on PixelOS for the respective device.
 - Mi-Thorium, Mi-Titanium, and SouthWest-NG kernels doesn't have any OS constraints.   
 - Akari & Mi8953 build for Mi-Titanium kernels contains 2 different way of handling USB, Media and Camera stack. If Mi8953 build feels broken to you pick the Akari build instead.   
 - Legacy label on SouthWest-NG is used to boot A16 and older OS with kernel 4.19 inside of it, without dynamic partition. Main is used to boot Android 17 and newer whether it's partition being dynamic or not.
