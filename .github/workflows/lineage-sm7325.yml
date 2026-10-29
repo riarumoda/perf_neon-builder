@@ -17,7 +17,7 @@ jobs:
       fail-fast: false
       max-parallel: 2
       matrix:
-        devices: [a52sxq, a73xq, m52xq]
+        devices: [a52sxq]
     
     steps:
       - uses: actions/checkout@v7
@@ -249,12 +249,6 @@ jobs:
             if [[ "$DEVICE_LIST" == "a52sxq" ]]; then
                 sed -i 's/device.name1=sweet/device.name1=a52s/g' AnyKernel3/anykernel.sh
                 sed -i 's/device.name2=sweetin/device.name2=a52sxq/g' AnyKernel3/anykernel.sh
-            elif [[ "$DEVICE_LIST" == "a73xq" ]]; then
-                sed -i 's/device.name1=sweet/device.name1=a72/g' AnyKernel3/anykernel.sh
-                sed -i 's/device.name2=sweetin/device.name2=a72xq/g' AnyKernel3/anykernel.sh
-            elif [[ "$DEVICE_LIST" == "m52xq" ]]; then
-                sed -i 's/device.name1=sweet/device.name1=m52/g' AnyKernel3/anykernel.sh
-                sed -i 's/device.name2=sweetin/device.name2=m52xq/g' AnyKernel3/anykernel.sh
             fi
 
             echo "-- Updating kernel build type..."
