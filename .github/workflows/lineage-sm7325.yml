@@ -138,6 +138,8 @@ jobs:
             echo "-- Forcing every drivers to be built-in..."
             sed -i '/^CONFIG_/s/=m$/=y/' $FINAL_DEFCONFIG
             find techpack/ \( -name "Makefile" -o -name "Kbuild" \) -exec sed -i 's/\bobj-m\b/obj-y/g' {} +
+            find techpack/audio -name "Makefile" -exec sed -i 's/\bobj-m\b/obj-y/g' {} +
+            find techpack/audio techpack/camera -name "*.conf" -exec sed -i 's/^\([[:space:]]*export[[:space:]]\+CONFIG_[^=]*\)=m$/\1=y/' {} +
 
             echo "-- Fixing qcacld-3.0..."
             sed -i 's/static int[[:space:]]\+wlan_hdd_state_ctrl_param_create/static int __maybe_unused wlan_hdd_state_ctrl_param_create/' drivers/staging/qcacld-3.0/core/hdd/src/wlan_hdd_main.c
