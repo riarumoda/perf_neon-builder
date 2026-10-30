@@ -137,6 +137,10 @@ jobs:
 
             echo "-- Forcing every drivers to be built-in..."
             sed -i '/^CONFIG_/s/=m$/=y/' $FINAL_DEFCONFIG
+            find techpack/ \( -name "Makefile" -o -name "Kbuild" \) -exec sed -i 's/\bobj-m\b/obj-y/g' {} +
+
+            echo "-- Fixing qcacld-3.0..."
+            sed -i 's/static int[[:space:]]\+wlan_hdd_state_ctrl_param_create/static int __maybe_unused wlan_hdd_state_ctrl_param_create/' drivers/staging/qcacld-3.0/core/hdd/src/wlan_hdd_main.c
 
             echo "-- Tuning default configs..."
             echo "CONFIG_LTO_CLANG=y" >> $FINAL_DEFCONFIG
@@ -208,12 +212,12 @@ jobs:
             python mkdtboimg.py create arch/arm64/boot/dtbo.img arch/arm64/boot/dts/samsung/a52/a52sxq/*.dtbo
             cd ../
 
-            echo "-- Stripping Kernel modules..."
-            mkdir -p modules &> /dev/null
-            find out/ -type f -name "*.ko" -exec cp {} modules/ \;
-            llvm-strip --strip-debug modules/*.ko
-            ls -alhZ modules/
-            cd ..
+            # echo "-- Stripping Kernel modules..."
+            # mkdir -p modules &> /dev/null
+            # find out/ -type f -name "*.ko" -exec cp {} modules/ \;
+            # llvm-strip --strip-debug modules/*.ko
+            # ls -alhZ modules/
+            # cd ..
 
             echo "-- Writing release info.txt..."
             echo "KSU_NAME=${KSU_NAME:-N/A}" >> release_info.txt
@@ -241,9 +245,9 @@ jobs:
             if [ -n "$DTB" ] && [ -f "$KERNEL_DIR/out/arch/arm64/boot/$DTB" ]; then cp "$KERNEL_DIR/out/arch/arm64/boot/$DTB" AnyKernel3/; fi
             if [ -n "$DTBO" ] && [ -f "$KERNEL_DIR/out/arch/arm64/boot/$DTBO" ]; then cp "$KERNEL_DIR/out/arch/arm64/boot/$DTBO" AnyKernel3/; fi
 
-            echo "-- Copying kernel modules to AnyKernel3..."
-            mkdir -p AnyKernel3/modules/vendor/lib/modules &> /dev/null
-            cp $KERNEL_DIR/modules/*.ko AnyKernel3/modules/vendor/lib/modules/
+            # echo "-- Copying kernel modules to AnyKernel3..."
+            # mkdir -p AnyKernel3/modules/vendor/lib/modules &> /dev/null
+            # cp $KERNEL_DIR/modules/*.ko AnyKernel3/modules/vendor/lib/modules/
 
             echo "-- Updating AnyKernel3 settings..."
             sed -i "s/supported.versions=11-16/supported.versions=$VERSIONS/" AnyKernel3/anykernel.sh
