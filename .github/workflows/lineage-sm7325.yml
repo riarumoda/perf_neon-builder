@@ -141,6 +141,9 @@ jobs:
 
             echo "-- Fixing qcacld-3.0..."
             sed -i 's/static int[[:space:]]\+wlan_hdd_state_ctrl_param_create/static int __maybe_unused wlan_hdd_state_ctrl_param_create/' drivers/staging/qcacld-3.0/core/hdd/src/wlan_hdd_main.c
+            find drivers/staging/qca-wifi-host-cmn drivers/staging/qcacld-3.0 -type f \( -name "*.c" -o -name "*.h" \) \
+              -exec sed -i 's/\bnl80211hdr_put\b/qca_nl80211hdr_put/g' {} +
+            sed -i 's/bool ipa_is_ready(/bool __weak ipa_is_ready(/g' drivers/staging/qcacld-3.0/components/ipa/dispatcher/src/wlan_ipa_obj_mgmt_api.c
 
             echo "-- Tuning default configs..."
             echo "CONFIG_LTO_CLANG=y" >> $FINAL_DEFCONFIG
