@@ -247,7 +247,6 @@ jobs:
 
             echo "-- Updating AnyKernel3 settings..."
             sed -i "s/supported.versions=11-16/supported.versions=$VERSIONS/" AnyKernel3/anykernel.sh
-            sed -i "s/do.modules=0/do.modules=1/" AnyKernel3/anykernel.sh
             sed -i "s/sweet (sm6150)/$BANNER/g" AnyKernel3/banner
 
             echo "-- Updating AnyKernel3 device name..."
