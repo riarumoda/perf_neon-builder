@@ -261,7 +261,7 @@ jobs:
             echo "-- Exporting zip settings..."
             if [[ "${{ matrix.root }}" == "baka-susfs" ]]; then
               export KSUTYPE="root"
-            elif [[ "${{ matrix.root }}" == "baka-susfs" ]]; then
+            elif [[ "${{ matrix.root }}" == "none" ]]; then
               export KSUTYPE="none"
             fi
             export ZIP_PREFIX="neon-lineage-${{ matrix.devices }}-sm7325"
