@@ -135,6 +135,9 @@ jobs:
             echo "-- Disabling IKHeaders..."
             sed -i 's/CONFIG_IKHEADERS=y/# CONFIG_IKHEADERS is not set/g' $FINAL_DEFCONFIG
 
+            echo "-- Forcing every drivers to be built-in..."
+            sed -i '/^CONFIG_/s/=m$/=y/' $FINAL_DEFCONFIG
+
             echo "-- Tuning default configs..."
             echo "CONFIG_LTO_CLANG=y" >> $FINAL_DEFCONFIG
             echo "CONFIG_THINLTO=y" >> $FINAL_DEFCONFIG
