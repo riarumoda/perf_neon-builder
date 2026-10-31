@@ -263,6 +263,7 @@ jobs:
             # cd ..
 
             echo "-- Rebuilding boot image..."
+            cd ../
             BOOT_SRC="$PWD/$KERNEL_DIR/clang/bin/images/boot.img"
             TMP_DIR="$PWD/$KERNEL_DIR/out/arch/arm64/boot/tmp"
             MAGISKBOOT="$PWD/$KERNEL_DIR/clang/bin/magiskboot"
