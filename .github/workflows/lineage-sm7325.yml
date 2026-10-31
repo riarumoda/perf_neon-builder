@@ -75,8 +75,8 @@ jobs:
             chmod +x "$PWD/$KERNEL_DIR/clang/bin/magiskboot"
 
             echo "-- Downloading avbtool..."
-            AVBTOOL_URL="https://android.googlesource.com/platform/external/avb/+/refs/heads/main/avbtool.py?format=TEXT"
-            curl -s "$AVBTOOL_URL" | base64 --decode > "$PWD/$KERNEL_DIR/clang/bin/avbtool"
+            AVBTOOL_URL="https://android.googlesource.com/platform/external/avb/+/refs/heads/master/avbtool.py?format=TEXT"
+            curl -sL "$AVBTOOL_URL" | base64 --decode -i > "$PWD/$KERNEL_DIR/clang/bin/avbtool"
             chmod +x "$PWD/$KERNEL_DIR/clang/bin/avbtool"
 
             echo "-- Downloading stock images..."
