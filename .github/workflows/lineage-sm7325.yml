@@ -160,7 +160,9 @@ jobs:
             echo "-- Importing patch helper script..."
             source scripts/patch-helper.sh
             cp scripts/patch-drivers-fts-sm7325.sh $KERNEL_DIR
+            cp scripts/patch-drivers-synaptics-sm7325.sh $KERNEL_DIR
             chmod +x $KERNEL_DIR/patch-drivers-fts-sm7325.sh
+            chmod +x $KERNEL_DIR/scripts/patch-drivers-synaptics-sm7325.sh
 
             echo "-- Applying device specific patches..."
             cd "$KERNEL_DIR"
@@ -173,6 +175,9 @@ jobs:
 
             echo "-- Fixing firmware load delay..."
             bash patch-drivers-fts-sm7325.sh ./
+            bash patch-drivers-synaptics-sm7325.sh ./
+            F=drivers/base/firmware_loader/fallback_table.c
+            grep -q '\.loading_timeout = 60,' "$F" && sed -i 's/\.loading_timeout = 60,/.loading_timeout = 10,/' "$F"
 
             echo "-- Forcing every drivers to be built-in..."
             sed -i '/^CONFIG_/s/=m$/=y/' $FINAL_DEFCONFIG
