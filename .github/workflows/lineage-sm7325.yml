@@ -17,7 +17,7 @@ jobs:
       fail-fast: false
       max-parallel: 2
       matrix:
-        devices: [a52sxq]
+        devices: [a52, a73, m52]
         root: [baka-susfs, none]
     
     steps:
@@ -68,6 +68,40 @@ jobs:
             rm -rf neutron-clang-*.tar.zst
             cd ..
 
+            echo "-- Downloading magiskboot..."
+            APK_URL="$(curl -s "https://api.github.com/repos/topjohnwu/Magisk/releases" | grep -oE 'https://[^\"]+\.apk' | grep 'Magisk[-.]v' | head -n 1)"
+            curl -L -O "$APK_URL"
+            unzip -p "magisk.apk" "lib/x86_64/libmagiskboot.so" > "$PWD/$KERNEL_DIR/clang/bin/magiskboot"
+            chmod +x "$PWD/$KERNEL_DIR/clang/bin/magiskboot"
+            unzip -p "magisk.apk" "assets/stub.apk" > "$PWD/$KERNEL_DIR/clang/bin/stub.apk"
+            unzip -p "magisk.apk" "lib/arm64-v8a/libinit-ld.so" > "$PWD/$KERNEL_DIR/clang/bin/init-ld"
+            unzip -p "magisk.apk" "lib/arm64-v8a/libmagiskinit.so" > "$PWD/$KERNEL_DIR/clang/bin/magiskinit"
+            unzip -p "magisk.apk" "lib/arm64-v8a/libmagisk.so" > "$PWD/$KERNEL_DIR/clang/bin/magisk"
+
+            echo "-- Downloading avbtool..."
+            AVBTOOL_URL="https://android.googlesource.com/platform/external/avb/+/refs/heads/main/avbtool.py?format=TEXT"
+            curl -s "$AVBTOOL_URL" | base64 --decode > "$PWD/$KERNEL_DIR/clang/bin/avbtool"
+            chmod +x "$PWD/$KERNEL_DIR/clang/bin/avbtool"
+
+            echo "-- Downloading stock images..."
+            mkdir -p "$PWD/$KERNEL_DIR/clang/bin/images/"
+            if [[ ${{matrix.devices}} == "a52" ]]; then
+              wget -qO- "$(curl -s "https://api.github.com/repos/RisenID/proprietary_vendor_samsung_a52sxq/releases/latest" | \
+                  jq -r '.assets[] | select(.name | test(".*_kernel.tar$")) | .browser_download_url')" | \
+                  tar xf - -C "$PWD/$KERNEL_DIR/clang/bin/images/" && \
+                  lz4 -dm --rm "$PWD/$KERNEL_DIR/clang/bin/images/"*
+            elif [[ ${{matrix.devices}} == "a73" ]]; then
+              wget -qO- "$(curl -s "https://api.github.com/repos/ngdplnk/proprietary_vendor_samsung_a73xq/releases/latest" | \
+                  jq -r '.assets[] | select(.name | test(".*_kernel.tar$")) | .browser_download_url')" | \
+                  tar xf - -C "$PWD/$KERNEL_DIR/clang/bin/images/" && \
+                  lz4 -dm --rm "$PWD/$KERNEL_DIR/clang/bin/images/"*
+            elif [[ ${{matrix.devices}} == "m52" ]]; then
+              wget -qO- "$(curl -s "https://api.github.com/repos/ngdplnk/proprietary_vendor_samsung_m52xq/releases/latest" | \
+                  jq -r '.assets[] | select(.name | test(".*_kernel.tar$")) | .browser_download_url')" | \
+                  tar xf - -C "$PWD/$KERNEL_DIR/clang/bin/images/" && \
+                  lz4 -dm --rm "$PWD/$KERNEL_DIR/clang/bin/images/"*
+            fi
+
       - name: Generate kernel configs
         id: generate_configs
         run: |
@@ -75,7 +109,11 @@ jobs:
             export ACTUAL_MAIN_DEFCONFIG="arch/arm64/configs/gki_defconfig"
             export MAIN_DEFCONFIG="gki_defconfig"
             export COMMON_DEFCONFIG="vendor/lahaina_GKI.config vendor/lahaina_QGKI.config"
-            export DEVICE_DEFCONFIG="vendor/lineage-${DEVICE_NAME}_defconfig"
+            if [[ ${{matrix.devices}} == "a52" ]]; then
+              export DEVICE_DEFCONFIG="vendor/lineage-${DEVICE_NAME}sxq_defconfig"
+            else
+              export DEVICE_DEFCONFIG="vendor/lineage-${DEVICE_NAME}xq_defconfig"
+            fi
             export FEATURE_DEFCONFIG=""
 
             echo "-- Exporting kernel configs into GITHUB_ENV..."
@@ -211,10 +249,14 @@ jobs:
 
             echo "-- Generating DTB & DTBO..."
             cd out/
-            find arch/arm64/boot/dts/ -name "*.dtb" -exec cat {} + > arch/arm64/boot/dtb.img
+            # find arch/arm64/boot/dts/ -name "*.dtb" -exec cat {} + > arch/arm64/boot/dtb.img
             curl -sSL "https://android.googlesource.com/platform/system/libufdt/+/refs/heads/main/utils/src/mkdtboimg.py?format=TEXT" | base64 -d > mkdtboimg.py
             chmod +x mkdtboimg.py
-            python mkdtboimg.py create arch/arm64/boot/dtbo.img arch/arm64/boot/dts/samsung/a52/a52sxq/*.dtbo
+            if [[ ${{ matrix.devices }} == "a52" ]]; then
+              python mkdtboimg.py create arch/arm64/boot/dtbo.img arch/arm64/boot/dts/samsung/${{ matrix.devices }}/${{ matrix.devices }}sxq/*.dtbo
+            else
+              python mkdtboimg.py create arch/arm64/boot/dtbo.img arch/arm64/boot/dts/samsung/${{ matrix.devices }}/${{ matrix.devices }}xq/*.dtbo
+            fi
             cd ../
 
             # echo "-- Stripping Kernel modules..."
@@ -224,6 +266,17 @@ jobs:
             # ls -alhZ modules/
             # cd ..
 
+            echo  "-- Rebuilding boot image..."
+            mkdir -p $PWD/$KERNEL_DIR/out/arch/arm64/boot/tmp
+            cp $PWD/$KERNEL_DIR/clang/bin/images/boot.img $PWD/$KERNEL_DIR/out/arch/arm64/boot/tmp
+            avbtool erase_footer --image "$PWD/$KERNEL_DIR/out/arch/arm64/boot/tmp/boot.img"
+            cd $PWD/$KERNEL_DIR/out/arch/arm64/boot/tmp
+            magiskboot unpack boot.img
+            rm kernel && cp "$OUT_DIR/arch/arm64/boot/Image" kernel
+            magiskboot repack boot.img boot-repacked.img
+            cp boot-repacked.img ../boot.img
+            cd ../../../../../../
+
             echo "-- Writing release info.txt..."
             echo "KSU_NAME=${KSU_NAME:-N/A}" >> release_info.txt
             echo "KSU_CODE=${KSU_CODE:-N/A}" >> release_info.txt
@@ -231,41 +284,25 @@ jobs:
             echo "BBG_VER=${BBG_VER:-N/A}" >> release_info.txt
             echo "NOMOUNT_VER=${NOMOUNT_VER:-N/A}" >> release_info.txt
 
-      - name: Preparing AnyKernel3 sources
+      - name: Preparing to zip up
         run: |
             echo "-- Exporting AnyKernel3 settings..."
-            export IMAGE="Image"
-            export DTB="dtb.img"
+            export IMAGE="boot.img"
             export DTBO="dtbo.img"
-            export VERSIONS="13-17"
-            export BANNER=" ${{ matrix.devices }} (SM7325)"
-            export DEVICE_LIST="${{ matrix.devices }}"
 
-            echo "-- Cloning AnyKernel3 repository..."
-            rm -rf AnyKernel3
-            git clone https://github.com/riarumoda/AnyKernel3 AnyKernel3 --depth=1
+            echo "-- Copying kernel image and dtb/dtbo to output..."
+            mkdir -p output
+            mkdir -p output/images
+            cp "$KERNEL_DIR/out/arch/arm64/boot/$IMAGE" output/images
+            if [ -n "$DTBO" ] && [ -f "$KERNEL_DIR/out/arch/arm64/boot/$DTBO" ]; then cp "$KERNEL_DIR/out/arch/arm64/boot/$DTBO" output/images; fi
 
-            echo "-- Copying kernel image and dtb/dtbo to AnyKernel3..."
-            cp "$KERNEL_DIR/out/arch/arm64/boot/$IMAGE" AnyKernel3/
-            if [ -n "$DTB" ] && [ -f "$KERNEL_DIR/out/arch/arm64/boot/$DTB" ]; then cp "$KERNEL_DIR/out/arch/arm64/boot/$DTB" AnyKernel3/; fi
-            if [ -n "$DTBO" ] && [ -f "$KERNEL_DIR/out/arch/arm64/boot/$DTBO" ]; then cp "$KERNEL_DIR/out/arch/arm64/boot/$DTBO" AnyKernel3/; fi
-
-            # echo "-- Copying kernel modules to AnyKernel3..."
-            # mkdir -p AnyKernel3/modules/vendor/lib/modules &> /dev/null
-            # cp $KERNEL_DIR/modules/*.ko AnyKernel3/modules/vendor/lib/modules/
-
-            echo "-- Updating AnyKernel3 settings..."
-            sed -i "s/supported.versions=11-16/supported.versions=$VERSIONS/" AnyKernel3/anykernel.sh
-            sed -i "s/sweet (sm6150)/$BANNER/g" AnyKernel3/banner
-
-            echo "-- Updating AnyKernel3 device name..."
-            if [[ "$DEVICE_LIST" == "a52sxq" ]]; then
-                sed -i 's/device.name1=sweet/device.name1=a52s/g' AnyKernel3/anykernel.sh
-                sed -i 's/device.name2=sweetin/device.name2=a52sxq/g' AnyKernel3/anykernel.sh
-            fi
-
-            echo "-- Updating kernel build type..."
-            sed -i 's/KERNEL_BUILD_TYPE="Weekly"/KERNEL_BUILD_TYPE="${{ inputs.build_type }}"/' AnyKernel3/anykernel.sh
+            echo "-- Touching update-binary and updater-script..."
+            mkdir -p output/META-INF/com/google/android
+            touch "output/META-INF/com/google/android/updater-script"
+            touch "output/META-INF/com/google/android/update-binary"
+            echo "# Dummy file; update-binary is a shell script." > "output/META-INF/com/google/android/updater-script"
+            chmod +x update-binary-sm7325.sh
+            bash update-binary-sm7325.sh
 
       - name: Pack kernel with AnyKernel3
         run: |
@@ -278,7 +315,7 @@ jobs:
             export ZIP_PREFIX="neon-lineage-${{ matrix.devices }}-sm7325"
             export ZIPNAME="${ZIP_PREFIX}-${KSUTYPE}-${{ inputs.build_date }}.zip"
 
-            cd AnyKernel3
+            cd output
             zip -rq9 "../$ZIPNAME" ./*
             cd ..
 
