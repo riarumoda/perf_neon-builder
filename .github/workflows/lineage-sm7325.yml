@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      max-parallel: 2
+      max-parallel: 6
       matrix:
         devices: [a52, a73, m52]
         root: [baka-susfs, none]
