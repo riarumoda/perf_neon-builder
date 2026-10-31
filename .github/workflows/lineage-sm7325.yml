@@ -319,7 +319,11 @@ jobs:
             elif [[ "${{ matrix.root }}" == "none" ]]; then
               export KSUTYPE="none"
             fi
-            export ZIP_PREFIX="neon-lineage-${{ matrix.devices }}-sm7325"
+            if [[ ${{ matrix.devices }} == "a52" ]]; then
+              export ZIP_PREFIX="neon-lineage-${{ matrix.devices }}sxq-sm7325"
+            else
+              export ZIP_PREFIX="neon-lineage-${{ matrix.devices }}xq-sm7325"
+            fi
             export ZIPNAME="${ZIP_PREFIX}-${KSUTYPE}-${{ inputs.build_date }}.zip"
 
             cd output
