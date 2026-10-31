@@ -263,16 +263,26 @@ jobs:
             # ls -alhZ modules/
             # cd ..
 
-            echo  "-- Rebuilding boot image..."
-            mkdir -p $PWD/$KERNEL_DIR/out/arch/arm64/boot/tmp
-            cp $PWD/$KERNEL_DIR/clang/bin/images/boot.img $PWD/$KERNEL_DIR/out/arch/arm64/boot/tmp
-            avbtool erase_footer --image "$PWD/$KERNEL_DIR/out/arch/arm64/boot/tmp/boot.img"
-            cd $PWD/$KERNEL_DIR/out/arch/arm64/boot/tmp
-            magiskboot unpack boot.img
-            rm kernel && cp "$OUT_DIR/arch/arm64/boot/Image" kernel
-            magiskboot repack boot.img boot-repacked.img
-            cp boot-repacked.img ../boot.img
-            cd ../../../../../../
+            echo "-- Rebuilding boot image..."
+            BOOT_SRC="$PWD/$KERNEL_DIR/clang/bin/images/boot.img"
+            TMP_DIR="$PWD/$KERNEL_DIR/out/arch/arm64/boot/tmp"
+            MAGISKBOOT="$PWD/$KERNEL_DIR/clang/bin/magiskboot"
+            IMAGE_FILE="$PWD/$KERNEL_DIR/out/arch/arm64/boot/Image"
+            if [[ ! -f "$BOOT_SRC" ]]; then
+                echo "ERROR: Source image not found at $BOOT_SRC"
+                exit 1
+            fi
+            mkdir -p "$TMP_DIR"
+            cp "$BOOT_SRC" "$TMP_DIR/boot.img"
+            (
+                cd "$TMP_DIR"
+                avbtool erase_footer --image "boot.img"
+                "$MAGISKBOOT" unpack boot.img
+                rm -f kernel
+                cp $IMAGE_FILE kernel
+                "$MAGISKBOOT" repack boot.img boot-repacked.img
+                cp boot-repacked.img "../boot.img"
+            )
 
             echo "-- Writing release info.txt..."
             echo "KSU_NAME=${KSU_NAME:-N/A}" >> release_info.txt
