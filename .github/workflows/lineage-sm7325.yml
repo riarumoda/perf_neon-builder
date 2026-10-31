@@ -82,20 +82,19 @@ jobs:
             echo "-- Downloading stock images..."
             mkdir -p "$PWD/$KERNEL_DIR/clang/bin/images/"
             if [[ ${{matrix.devices}} == "a52" ]]; then
-              wget -qO- "$(curl -s "https://api.github.com/repos/RisenID/proprietary_vendor_samsung_a52sxq/releases/latest" | \
-                  jq -r '.assets[] | select(.name | test(".*_kernel.tar$")) | .browser_download_url')" | \
-                  tar xf - -C "$PWD/$KERNEL_DIR/clang/bin/images/" && \
-                  lz4 -dm --rm "$PWD/$KERNEL_DIR/clang/bin/images/"*
-            elif [[ ${{matrix.devices}} == "a73" ]]; then
-              wget -qO- "$(curl -s "https://api.github.com/repos/ngdplnk/proprietary_vendor_samsung_a73xq/releases/latest" | \
-                  jq -r '.assets[] | select(.name | test(".*_kernel.tar$")) | .browser_download_url')" | \
-                  tar xf - -C "$PWD/$KERNEL_DIR/clang/bin/images/" && \
-                  lz4 -dm --rm "$PWD/$KERNEL_DIR/clang/bin/images/"*
-            elif [[ ${{matrix.devices}} == "m52" ]]; then
-              wget -qO- "$(curl -s "https://api.github.com/repos/ngdplnk/proprietary_vendor_samsung_m52xq/releases/latest" | \
-                  jq -r '.assets[] | select(.name | test(".*_kernel.tar$")) | .browser_download_url')" | \
-                  tar xf - -C "$PWD/$KERNEL_DIR/clang/bin/images/" && \
-                  lz4 -dm --rm "$PWD/$KERNEL_DIR/clang/bin/images/"*
+              BOOT_URL="$(curl -s "https://download.lineageos.org/api/v2/devices/${{ matrix.devices }}sxq/builds" | grep -oE 'https://[^\"]+/boot\.img' | head -n 1)"
+              if [[ -z "$BOOT_URL" ]]; then
+                echo "ERROR: Could not find boot.img download link for ${{matrix.devices}}sxq"
+                exit 1
+              fi
+              curl -sSL -o "$PWD/$KERNEL_DIR/clang/bin/images/boot.img" "$BOOT_URL"
+            else
+              BOOT_URL="$(curl -s "https://download.lineageos.org/api/v2/devices/${{ matrix.devices }}xq/builds" | grep -oE 'https://[^\"]+/boot\.img' | head -n 1)"
+              if [[ -z "$BOOT_URL" ]]; then
+                echo "ERROR: Could not find boot.img download link for ${{matrix.devices}}sxq"
+                exit 1
+              fi
+              curl -sSL -o "$PWD/$KERNEL_DIR/clang/bin/images/boot.img" "$BOOT_URL"
             fi
             ls -alhZ $PWD/$KERNEL_DIR/clang/bin/images/
 
