@@ -73,10 +73,6 @@ jobs:
             curl -L -o magisk.apk "$APK_URL"
             unzip -p "magisk.apk" "lib/x86_64/libmagiskboot.so" > "$PWD/$KERNEL_DIR/clang/bin/magiskboot"
             chmod +x "$PWD/$KERNEL_DIR/clang/bin/magiskboot"
-            unzip -p "magisk.apk" "assets/stub.apk" > "$PWD/$KERNEL_DIR/clang/bin/stub.apk"
-            unzip -p "magisk.apk" "lib/arm64-v8a/libinit-ld.so" > "$PWD/$KERNEL_DIR/clang/bin/init-ld"
-            unzip -p "magisk.apk" "lib/arm64-v8a/libmagiskinit.so" > "$PWD/$KERNEL_DIR/clang/bin/magiskinit"
-            unzip -p "magisk.apk" "lib/arm64-v8a/libmagisk.so" > "$PWD/$KERNEL_DIR/clang/bin/magisk"
 
             echo "-- Downloading avbtool..."
             AVBTOOL_URL="https://android.googlesource.com/platform/external/avb/+/refs/heads/main/avbtool.py?format=TEXT"
@@ -101,6 +97,7 @@ jobs:
                   tar xf - -C "$PWD/$KERNEL_DIR/clang/bin/images/" && \
                   lz4 -dm --rm "$PWD/$KERNEL_DIR/clang/bin/images/"*
             fi
+            ls -alhZ $PWD/$KERNEL_DIR/clang/bin/images/
 
       - name: Generate kernel configs
         id: generate_configs
