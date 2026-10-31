@@ -70,7 +70,7 @@ jobs:
 
             echo "-- Downloading magiskboot..."
             APK_URL="$(curl -s "https://api.github.com/repos/topjohnwu/Magisk/releases" | grep -oE 'https://[^\"]+\.apk' | grep 'Magisk[-.]v' | head -n 1)"
-            curl -L -O "$APK_URL"
+            curl -L -o magisk.apk "$APK_URL"
             unzip -p "magisk.apk" "lib/x86_64/libmagiskboot.so" > "$PWD/$KERNEL_DIR/clang/bin/magiskboot"
             chmod +x "$PWD/$KERNEL_DIR/clang/bin/magiskboot"
             unzip -p "magisk.apk" "assets/stub.apk" > "$PWD/$KERNEL_DIR/clang/bin/stub.apk"
