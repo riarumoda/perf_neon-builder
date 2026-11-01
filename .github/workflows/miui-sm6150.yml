@@ -18,6 +18,7 @@ jobs:
       max-parallel: 4
       matrix:
         devices: [sweet]
+        type: [nobpfspoof, bpfspoof]
     
     steps:
       - uses: actions/checkout@v7
@@ -131,6 +132,12 @@ jobs:
             echo "-- Getting rid of the dirty flag..."
             sed -i "s/printf '%s' -dirty/:/g" scripts/setlocalversion
 
+            if [[ ${{ matrix.type }} == "bpfspoof" ]]; then
+                echo "-- Applying BPF Spoofing..."
+                sed -i -e 's/^CONFIG_FAKE_UNAME_NONE=y/# CONFIG_FAKE_UNAME_NONE is not set/' \
+                       -e 's/^# CONFIG_FAKE_UNAME_5_10 is not set/CONFIG_FAKE_UNAME_5_10=y/' $FINAL_DEFCONFIG
+            fi
+
             echo "-- Disabling IKHeaders..."
             sed -i 's/CONFIG_IKHEADERS=y/# CONFIG_IKHEADERS is not set/g' $FINAL_DEFCONFIG
             
@@ -222,7 +229,7 @@ jobs:
       - name: Pack kernel with AnyKernel3
         run: |
             echo "-- Exporting zip settings..."
-            export ZIP_PREFIX="neon-miui-${{ matrix.devices }}-sm6150"
+            export ZIP_PREFIX="neon-miui-${{ matrix.devices }}-${{ matrix.type }}-sm6150"
             export ZIPNAME="${ZIP_PREFIX}-${{ inputs.build_date }}.zip"
 
             cd AnyKernel3
@@ -232,7 +239,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: miui-${{ matrix.devices }}
+          name: miui-${{ matrix.devices }}-${{ matrix.type }}
           path: |
             *.zip
             release_info.txt
