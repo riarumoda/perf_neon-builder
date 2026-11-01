@@ -118,6 +118,7 @@ You can install different KernelSU Manager with BakaSU kernel drivers. This is c
 - [JackA1ltMan](https://github.com/JackA1ltman) for BakaSU hook scripts & SUSFS patches.   
 - [TheSillyOk](https://github.com/TheSillyOk) for LTO fixup for 4.14 devices.   
 - [null07089](https://github.com/null07089) for SELinux Hide fixup script.
+- YUPIK, [utkusthr/Frax3r](https://github.com/utkustnr), [Salvo from UN1CA](https://github.com/salvogiangri/UN1CA) for the generic flasher.
 
 **Projects**   
 - [Baka-SU](https://github.com/Baka-SU) for BakaSU.   
