@@ -72,7 +72,7 @@ This kernel follows weekly builds of LineageOS, you will get a new kernel build 
 | Mi-Titanium (MSM8953) | Redmi S2/Y2 (ysl), Redmi Note 4/4X Snapdragon (mido), Redmi 5 (rosy), Redmi 5 Plus (vince), Redmi 4 Prime/Pro (markw) | Android 11 ~ Android 17 |
 | SouthWest-NG (SDM660) | Xiaomi Mi Pad 4/4+ (clover), Redmi Note 7/7S (lavender) | Android 11 ~ Android 17 |
 | MIUI (SM6150) | Redmi Note 10 Pro/Pro Max (sweet) | Android 11 ~ Android 17 |
-| LineageOS (SM7325) | Samsung Galaxy A52s 5G (a52sxq) | Android 13 ~ Android 17 |
+| LineageOS (SM7325) | Samsung Galaxy A52s 5G (a52sxq), Samsung Galaxy A73 (a73xq), Samsung Galaxy M52 (m52xq) | Android 13 ~ Android 17 |
 
 **Notes**   
 - Looking for davinci? I moved davinci support from here to [Nebula Kernel Builder](https://github.com/Drsexo/davinci_kernel) instead.
@@ -84,6 +84,7 @@ This kernel follows weekly builds of LineageOS, you will get a new kernel build 
 - Akari & Mi8953 build for Mi-Titanium kernels contains 2 different way of handling USB, Media and Camera stack. If Mi8953 build feels broken to you pick the Akari build instead.   
 - Legacy label on SouthWest-NG is used to boot A16 and older OS with kernel 4.19 inside of it, without dynamic partition. Main is used to boot Android 17 and newer whether it's partition being dynamic or not.
 - Don't forget to flash appender after flashing the kernel if you're using bootloader bypass exploit on MSM8937 devices.
+- On MIUI (SM6150), BPF Spoofed Build can be used to boots up HyperOS2 Android 15 and up, meanwhile for Stock ROMs & Ported MIUI 14/HyperOS 1 Android 13/14 you can use the Non-BPF Spoofed Build.
 - Your device aren't yet supported? Go to the telegram channel to request your device for support.   
 
 **Warning! ⚠️**
