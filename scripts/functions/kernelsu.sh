@@ -152,6 +152,17 @@ ksu_fix_hooks_fouronefour() {
     if [[ "$KERNEL_VERSION" == "4.14" ]]; then
         echo "-- KernelSU: Fixing typos on fs/stat.c hooks..."
         sed -i 's/ksu_handle_stat(&dfd, &fname, &flag);/ksu_handle_stat(\&dfd, \&fname, \&flags);/g' fs/stat.c
+        if grep -q 'ksu_handle_faccessat(&dfd, &fname, &mode, NULL);' fs/open.c && \
+           ! grep -q 'extern int ksu_handle_faccessat' fs/open.c; then
+            echo "-- KernelSU: Restoring fs/open.c declarations for faccessat2..."
+            sed -i '/^long do_faccessat(/i\
+                #ifdef CONFIG_KSU_SUSFS\
+                extern struct static_key_true ksu_su_compat_enabled;\
+                extern bool __ksu_is_allow_uid_for_current(uid_t uid);\
+                extern int ksu_handle_faccessat(int *dfd, struct filename **filename, int *mode, int *flags);\
+                extern int filename_lookup(int dfd, struct filename *name, unsigned flags, struct path *path, struct path *root);\
+                #endif' fs/open.c
+        fi
     fi
 }
 ksu_fix_hooks_fouronenine() {
