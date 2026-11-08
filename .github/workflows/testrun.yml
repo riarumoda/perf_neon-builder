@@ -16,13 +16,6 @@ jobs:
           echo "KERNEL_BUILD_TYPE=Testing" >> $GITHUB_OUTPUT
 
   # device workflow imports goes in here
-  build-lineage-sm7325:
-    needs: setup
-    uses: ./.github/workflows/lineage-sm7325.yml
-    with:
-      build_date: ${{ needs.setup.outputs.build_date }}
-      build_type: ${{ needs.setup.outputs.build_type }}
-    secrets: inherit
   build-miui-sm6150:
     needs: setup
     uses: ./.github/workflows/miui-sm6150.yml
