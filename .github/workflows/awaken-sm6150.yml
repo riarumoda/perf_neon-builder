@@ -51,7 +51,8 @@ jobs:
             echo "KERNEL_VERSION="4.14"" >> $GITHUB_ENV
 
             echo "-- Exporting toolchain settings..."
-            export TC_URLS=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/Neutron-Toolchains/clang-build-catalogue/releases/latest | grep "browser_download_url" | head -n 1 | cut -d '"' -f 4) 
+            TC_URLS="$(curl -fsSL --retry 5 --retry-all-errors -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/Neutron-Toolchains/clang-build-catalogue/releases/latest | grep -o '"browser_download_url": *"[^"]*"' | head -n 1 | cut -d '"' -f 4)"
+            [ -n "$TC_URLS" ] || { echo "ERROR: could not resolve toolchain URL"; exit 1; }
             
             echo "-- Cloning kernel repository..."
             git clone --depth=1 --branch "$KERNEL_BRANCH" "$KERNEL_REPO" "$KERNEL_DIR" &> /dev/null
@@ -60,12 +61,10 @@ jobs:
             echo "$PWD/$KERNEL_DIR/clang/bin" >> $GITHUB_PATH
 
             echo "-- Downloading toolchain..."
-            cd $KERNEL_DIR
-            curl -L -O "$TC_URLS"
-            mkdir -p clang
-            tar -C clang -xf neutron-clang-*.tar.zst
-            rm -rf neutron-clang-*.tar.zst
-            cd ..
+            mkdir -p "$KERNEL_DIR/clang"
+            curl -fL --retry 5 --retry-all-errors --retry-delay 5 -o "$KERNEL_DIR/neutron-clang.tar.zst" "$TC_URLS"
+            tar --zstd -C "$KERNEL_DIR/clang" -xf "$KERNEL_DIR/neutron-clang.tar.zst"
+            rm -f "$KERNEL_DIR/neutron-clang.tar.zst"
 
       - name: Generate kernel configs
         id: generate_configs
