@@ -104,7 +104,6 @@ jobs:
             { yes "" 2>/dev/null || true; } | make O=out $MAKE_ARGS silentoldconfig &> /dev/null
 
             echo "-- Copying merged config to defconfig directory..."
-            cp out/.config arch/arm64/configs/"${{ matrix.devices }}"_stock_defconfig
             cp out/.config arch/arm64/configs/"${{ matrix.devices }}"_defconfig
 
             echo "-- Cleaning up..."
@@ -114,9 +113,6 @@ jobs:
             export FINAL_DEFCONFIG="arch/arm64/configs/${{ matrix.devices }}_defconfig"
             echo "FINAL_DEFCONFIG=$FINAL_DEFCONFIG" >> $GITHUB_ENV
             echo "COMPILE_DEFCONFIG=${{ matrix.devices }}_defconfig" >> $GITHUB_ENV
-
-            echo "-- Hard code config.gz into kernel..."
-            sed -i 's|\$(KCONFIG_CONFIG)|arch/arm64/configs/'"${{ matrix.devices }}"'_stock_defconfig|g' kernel/Makefile
             cd ..
 
       - name: Apply device related patches
