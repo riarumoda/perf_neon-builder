@@ -117,6 +117,8 @@ jobs:
 
       - name: Apply device related patches
         id: apply_patches
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
             echo "-- Importing patch helper script..."
             source scripts/patch-helper.sh

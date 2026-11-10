@@ -178,6 +178,8 @@ jobs:
 
       - name: Apply device related patches
         id: apply_patches
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
             echo "-- Exporting device patches..."
             export KSU_REVERT="https://github.com/Mi-Thorium/kernel_msm-4.19/commit/624875e8edc36ae280b1f8efc1d3c48a28da64ea.patch"

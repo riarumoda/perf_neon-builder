@@ -120,6 +120,8 @@ jobs:
 
       - name: Apply device related patches
         id: apply_patches
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
             echo "-- Exporting device patches..."
             export LTO_PATCH="https://github.com/TheSillyOk/kernel_ls_patches/raw/refs/heads/master/fix_lto.patch"

@@ -127,6 +127,8 @@ jobs:
 
       - name: Apply device related patches
         id: apply_patches
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
             echo "-- Exporting device patches..."
             export KSU_REVERT1="https://github.com/imren0x/msm-4.19/commit/5426473d20be5c5b128b68d8a5d5fe838af3d7ad.patch"
