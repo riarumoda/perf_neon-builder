@@ -168,7 +168,7 @@ jobs:
             echo "-- Exporting goodies settings..."
             export KERNELSU_SELECTOR="baka-susfs"
             export BBG_SELECTOR="bbg"
-            export NOMOUNT_SELECTOR="nomount"
+            export NOMOUNT_SELECTOR="nomount-edge"
             export DROIDSPACES_SELECTOR="droidspaces"
 
             echo "-- Running goodies script..."
