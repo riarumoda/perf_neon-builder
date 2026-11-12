@@ -39,7 +39,7 @@ jobs:
 
             echo "-- Exporting kernel settings..."
             export KERNEL_REPO="https://github.com/awaken-sweet/android_kernel_xiaomi_sm6150.git"
-            export KERNEL_BRANCH="seventeen-power"
+            export KERNEL_BRANCH="seventeen"
             export KERNEL_DIR="android_kernel_xiaomi_sm6150"
             
             echo "-- Exporting variables into GITHUB_ENV..."
