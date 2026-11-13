@@ -1,0 +1,64 @@
+name: Device Build
+
+on:
+  workflow_call:
+    inputs:
+      device:
+        description: Device directory name (devices/<device>/)
+        required: true
+        type: string
+      os:
+        description: Config name (devices/<device>/<os>.conf)
+        required: true
+        type: string
+      build_date:
+        required: true
+        type: string
+      build_type:
+        required: true
+        type: string
+      artifact_retention_days:
+        required: false
+        type: number
+        default: 14
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Free up disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force || true
+          df -h /
+
+      - name: Install build dependencies
+        run: |
+          sudo apt purge -y firefox google-chrome-stable || true
+          if [ -f /etc/apt/apt-mirrors.txt ]; then sudo sed -i 's/azure.archive.ubuntu.com/archive.ubuntu.com/g' /etc/apt/apt-mirrors.txt; fi
+          sudo find /etc/apt/ -type f \( -name "*.list" -o -name "*.sources" \) -exec sed -i 's/azure.archive.ubuntu.com/archive.ubuntu.com/g' {} +
+          sudo apt-get update
+          sudo apt-get install -y bc build-essential bison flex zip p7zip-full libc6 curl libstdc++6 git wget libssl-dev zstd lld python3 patchutils ccache libc6-dev unzip cpio
+
+      - name: Build ${{ inputs.device }} (${{ inputs.os }})
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BUILD_DATE: ${{ inputs.build_date }}
+          BUILD_TYPE: ${{ inputs.build_type }}
+        run: |
+          chmod +x build.sh
+          ./build.sh "${{ inputs.device }}" "${{ inputs.os }}"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ inputs.device }}-${{ inputs.os }}
+          retention-days: ${{ inputs.artifact_retention_days }}
+          if-no-files-found: error
+          path: |
+            *.zip
+            release_info.txt
+            build.log

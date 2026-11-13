@@ -20,91 +20,37 @@ jobs:
           echo "TIME=$(date +'%s')" >> $GITHUB_OUTPUT
           echo "FANCYDATE=$(date +'%Y/%m/%d')" >> $GITHUB_OUTPUT
           echo "KERNEL_BUILD_TYPE=Release" >> $GITHUB_OUTPUT
-  
-  # device workflow imports
-  build-lineage-sm6150:
-    needs: setup
-    uses: ./.github/workflows/lineage-sm6150.yml
-    with:
-      build_date: ${{ needs.setup.outputs.build_date }}
-      build_type: ${{ needs.setup.outputs.build_type }}
-    secrets: inherit
 
-  build-lineage-sm6125:
-    needs: setup
-    uses: ./.github/workflows/lineage-sm6125.yml
-    with:
-      build_date: ${{ needs.setup.outputs.build_date }}
-      build_type: ${{ needs.setup.outputs.build_type }}
-    secrets: inherit
+  # Read every devices/<device>/<os>.conf and turn them into a build matrix
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.devices.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v7
 
-  build-lineage-sm7325:
-    needs: setup
-    uses: ./.github/workflows/lineage-sm7325.yml
-    with:
-      build_date: ${{ needs.setup.outputs.build_date }}
-      build_type: ${{ needs.setup.outputs.build_type }}
-    secrets: inherit
+      - name: Collect device configs
+        id: devices
+        run: echo "matrix=$(python3 .github/scripts/matrix.py)" >> "$GITHUB_OUTPUT"
 
-  build-crdroid-sm6150:
-    needs: setup
-    uses: ./.github/workflows/crdroid-sm6150.yml
+  # One reusable workflow call per devices/<device>/<os>.conf
+  build:
+    needs: [setup, discover]
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix: ${{ fromJSON(needs.discover.outputs.matrix) }}
+    uses: ./.github/workflows/build-device.yml
     with:
+      device: ${{ matrix.device }}
+      os: ${{ matrix.os }}
       build_date: ${{ needs.setup.outputs.build_date }}
       build_type: ${{ needs.setup.outputs.build_type }}
-    secrets: inherit
-  
-  build-pixelos-sm6150:
-    needs: setup
-    uses: ./.github/workflows/pixelos-sm6150.yml
-    with:
-      build_date: ${{ needs.setup.outputs.build_date }}
-      build_type: ${{ needs.setup.outputs.build_type }}
-    secrets: inherit
-
-  build-awaken-sm6150:
-    needs: setup
-    uses: ./.github/workflows/awaken-sm6150.yml
-    with:
-      build_date: ${{ needs.setup.outputs.build_date }}
-      build_type: ${{ needs.setup.outputs.build_type }}
-    secrets: inherit
-
-  build-mithorium-msm8937:
-    needs: setup
-    uses: ./.github/workflows/mithorium-msm8937.yml
-    with:
-      build_date: ${{ needs.setup.outputs.build_date }}
-      build_type: ${{ needs.setup.outputs.build_type }}
-    secrets: inherit
-
-  build-mititanium-msm8953:
-    needs: setup
-    uses: ./.github/workflows/mititanium-msm8953.yml
-    with:
-      build_date: ${{ needs.setup.outputs.build_date }}
-      build_type: ${{ needs.setup.outputs.build_type }}
-    secrets: inherit
-    
-  build-southwestng-sdm660:
-    needs: setup
-    uses: ./.github/workflows/southwestng-sdm660.yml
-    with:
-      build_date: ${{ needs.setup.outputs.build_date }}
-      build_type: ${{ needs.setup.outputs.build_type }}
-    secrets: inherit
-
-  build-miui-sm6150:
-    needs: setup
-    uses: ./.github/workflows/miui-sm6150.yml
-    with:
-      build_date: ${{ needs.setup.outputs.build_date }}
-      build_type: ${{ needs.setup.outputs.build_type }}
+      artifact_retention_days: 30
     secrets: inherit
 
   release:
-    # gotta add these later
-    needs: [setup, build-lineage-sm6150, build-lineage-sm6125, build-lineage-sm7325, build-crdroid-sm6150, build-pixelos-sm6150, build-awaken-sm6150, build-mithorium-msm8937, build-mititanium-msm8953, build-southwestng-sdm660, build-miui-sm6150]
+    needs: [setup, build]
     runs-on: ubuntu-latest
     permissions:
       contents: write
