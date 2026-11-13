@@ -10,6 +10,9 @@ DTBO_PATCH3="https://github.com/xiaomi-sm6150/android_kernel_xiaomi_sm6150/commi
 DTBO_PATCH4="https://github.com/xiaomi-sm6150/android_kernel_xiaomi_sm6150/commit/fade7df36b01f2b170c78c63eb8fe0d11c613c4a.patch"
 DTBO_PATCH5="https://github.com/xiaomi-sm6150/android_kernel_xiaomi_sm6150/commit/2628183db0d96be8dae38a21f2b09cb10978f423.patch"
 DTBO_PATCH6="https://github.com/xiaomi-sm6150/android_kernel_xiaomi_sm6150/commit/31f4577af3f8255ae503a5b30d8f68906edde85f.patch"
+# qcacld returns A_ERROR (A_STATUS) where QDF_STATUS is expected; clang 24
+# rejects that implicit enum-to-enum cast. Fix taken from the sweet-miui tree.
+QCA_ENUM_PATCH="https://github.com/riarumoda/android_kernel_xiaomi_sm6150/commit/7cadc70cfaa62ddff85e7ce1ea9cfb868762e5fe.patch"
 
 # Apply device specific patches
 echo "-- Applying patches..."
@@ -20,6 +23,7 @@ apply_patches "$DTBO_PATCH3"
 apply_patches "$DTBO_PATCH4"
 apply_patches "$DTBO_PATCH5"
 apply_patches "$DTBO_PATCH6"
+apply_patches "$QCA_ENUM_PATCH"
 
 # Specific tweaks
 echo "-- Enabling EROFS support..."
