@@ -73,6 +73,7 @@ This kernel follows weekly builds of LineageOS, you will get a new kernel build 
 | SouthWest-NG (SDM660) | Xiaomi Mi Pad 4/4+ (clover), Redmi Note 7/7S (lavender) | Android 11 ~ Android 17 |
 | MIUI (SM6150) | Redmi Note 10 Pro/Pro Max (sweet) | Android 11 ~ Android 17 |
 | LineageOS (SM7325) | Samsung Galaxy A52s 5G (a52sxq), Samsung Galaxy A73 (a73xq), Samsung Galaxy M52 (m52xq) | Android 13 ~ Android 17 |
+| bone-machine (SM7325) | Samsung Galaxy A52s 5G (a52sxq) | Android 13 ~ Android 17 |
 
 **Notes**   
 - Looking for davinci? I moved davinci support from here to [Nebula Kernel Builder](https://github.com/Drsexo/davinci_kernel) instead.

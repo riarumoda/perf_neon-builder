@@ -44,12 +44,24 @@ fi
 curl -sSL --retry 5 --retry-all-errors --retry-delay 5 -o "$STOCK_BOOT" "$BOOT_URL"
 ls -alhZ "$STOCK_BOOT"
 
-# Generate the DTBO image from the compiled device trees
-echo "-- Generating dtbo image..."
-MKDTBOIMG="$PWD/$KERNEL_DIR/out/mkdtboimg.py"
-curl -sSL "https://android.googlesource.com/platform/system/libufdt/+/refs/heads/main/utils/src/mkdtboimg.py?format=TEXT" | base64 -d > "$MKDTBOIMG"
-chmod +x "$MKDTBOIMG"
-( cd "$KERNEL_DIR" && python3 "$MKDTBOIMG" create out/arch/arm64/boot/dtbo.img "$DTBO_DIR"/*.dtbo )
+# Generate the DTBO image from the compiled device trees, or reuse the one the
+# kernel build produced itself (UNICA_DTBO_IMAGE points at it).
+DTBO_IMG="$PWD/$KERNEL_DIR/out/arch/arm64/boot/dtbo.img"
+if [ -n "$UNICA_DTBO_IMAGE" ]; then
+    echo "-- Using dtbo image produced by the build..."
+    DTBO_SRC="$PWD/$KERNEL_DIR/$UNICA_DTBO_IMAGE"
+    [ -f "$DTBO_SRC" ] || { echo "-- ERROR: dtbo image not found at $DTBO_SRC"; exit 1; }
+    if [ "$(readlink -f "$DTBO_SRC")" != "$(readlink -f "$DTBO_IMG")" ]; then
+        cp "$DTBO_SRC" "$DTBO_IMG"
+    fi
+else
+    echo "-- Generating dtbo image..."
+    MKDTBOIMG="$PWD/$KERNEL_DIR/out/mkdtboimg.py"
+    curl -sSL "https://android.googlesource.com/platform/system/libufdt/+/refs/heads/main/utils/src/mkdtboimg.py?format=TEXT" | base64 -d > "$MKDTBOIMG"
+    chmod +x "$MKDTBOIMG"
+    ( cd "$KERNEL_DIR" && python3 "$MKDTBOIMG" create out/arch/arm64/boot/dtbo.img "$DTBO_DIR"/*.dtbo )
+fi
+[ -s "$DTBO_IMG" ] || { echo "-- ERROR: dtbo image is missing or empty at $DTBO_IMG"; exit 1; }
 
 # Unpack the stock boot image, replace its kernel and repack it
 echo "-- Rebuilding boot image..."
