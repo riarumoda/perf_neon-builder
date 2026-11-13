@@ -14,6 +14,31 @@ sed -i "s/printf '%s' -dirty/:/g" scripts/setlocalversion
 echo "-- Disabling IKHeaders..."
 sed -i 's/CONFIG_IKHEADERS=y/# CONFIG_IKHEADERS is not set/g' "$FINAL_DEFCONFIG"
 
+# seccomp.c, fs/proc/array.c and KernelSU all use seccomp.filter_count, but
+# this tree still ships the 5.4 struct seccomp, so init_task.c does not build.
+echo "-- Restoring struct seccomp filter_count..."
+if ! grep -q 'atomic_t filter_count;' include/linux/seccomp.h; then
+    sed -i '/^struct seccomp {$/,/^};$/ s/^\([[:space:]]*\)int mode;$/\1int mode;\n\1atomic_t filter_count;/' include/linux/seccomp.h
+fi
+grep -q 'atomic_t filter_count;' include/linux/seccomp.h || { echo "-- ERROR: could not add filter_count to struct seccomp"; exit 1; }
+
+# scripts/gcc-wrapper.py turns every warning into a hard error, and clang 24
+# reports diagnostics this 5.4 tree predates. Keep suppressing the warnings
+# only (no -mllvm/polly flags, those stay out).
+echo "-- Silencing clang 24-only warnings..."
+if ! grep -q 'cc-disable-warning, default-const-init-var-unsafe' Makefile; then
+    warn_flags=""
+    for warn in declaration-after-statement implicit-int enum-conversion \
+                default-const-init-var-unsafe default-const-init-field-unsafe \
+                misleading-indentation unsequenced sizeof-pointer-memaccess \
+                implicit-function-declaration implicit-enum-enum-cast \
+                unused-command-line-argument; do
+        warn_flags="${warn_flags} \$(call cc-disable-warning, ${warn})"
+    done
+    sed -i "/^export KBUILD_CFLAGS CFLAGS_KERNEL CFLAGS_MODULE/i KBUILD_CFLAGS +=${warn_flags}" Makefile
+fi
+grep -q 'cc-disable-warning, default-const-init-var-unsafe' Makefile || { echo "-- ERROR: could not add clang warning suppressions"; exit 1; }
+
 # Deferred firmware loading (custom external patches)
 echo "-- Fixing firmware load delay..."
 bash "$EXTERNAL/patch-drivers-fts-sm7325.sh" ./ || { echo "-- ERROR: failed to patch stm firmware loading"; exit 1; }
