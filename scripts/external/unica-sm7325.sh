@@ -12,6 +12,17 @@ else
 fi
 DTBO_DIR="${UNICA_DTBO_DIR:-arch/arm64/boot/dts/samsung/$DEVICE/$CODENAME}"
 
+# Out-of-tree builds (make O=out) write the .dtbo files under out/, while older
+# in-tree builds leave them next to the sources. Resolve whichever exists.
+if [ -z "${UNICA_DTBO_IMAGE:-}" ]; then
+    if compgen -G "$PWD/$KERNEL_DIR/out/$DTBO_DIR/*.dtbo" > /dev/null; then
+        DTBO_DIR="out/$DTBO_DIR"
+    elif ! compgen -G "$PWD/$KERNEL_DIR/$DTBO_DIR/*.dtbo" > /dev/null; then
+        echo "-- ERROR: no .dtbo files found for $CODENAME"
+        exit 1
+    fi
+fi
+
 # Prepare boot image tools
 BIN_DIR="$PWD/$KERNEL_DIR/clang/bin"
 mkdir -p "$BIN_DIR"
@@ -47,7 +58,7 @@ ls -alhZ "$STOCK_BOOT"
 # Generate the DTBO image from the compiled device trees, or reuse the one the
 # kernel build produced itself (UNICA_DTBO_IMAGE points at it).
 DTBO_IMG="$PWD/$KERNEL_DIR/out/arch/arm64/boot/dtbo.img"
-if [ -n "$UNICA_DTBO_IMAGE" ]; then
+if [ -n "${UNICA_DTBO_IMAGE:-}" ]; then
     echo "-- Using dtbo image produced by the build..."
     DTBO_SRC="$PWD/$KERNEL_DIR/$UNICA_DTBO_IMAGE"
     [ -f "$DTBO_SRC" ] || { echo "-- ERROR: dtbo image not found at $DTBO_SRC"; exit 1; }
@@ -59,7 +70,8 @@ else
     MKDTBOIMG="$PWD/$KERNEL_DIR/out/mkdtboimg.py"
     curl -sSL "https://android.googlesource.com/platform/system/libufdt/+/refs/heads/main/utils/src/mkdtboimg.py?format=TEXT" | base64 -d > "$MKDTBOIMG"
     chmod +x "$MKDTBOIMG"
-    ( cd "$KERNEL_DIR" && python3 "$MKDTBOIMG" create out/arch/arm64/boot/dtbo.img "$DTBO_DIR"/*.dtbo )
+    ( cd "$KERNEL_DIR" && python3 "$MKDTBOIMG" create out/arch/arm64/boot/dtbo.img "$DTBO_DIR"/*.dtbo ) \
+        || { echo "-- ERROR: failed to generate dtbo image from $DTBO_DIR"; exit 1; }
 fi
 [ -s "$DTBO_IMG" ] || { echo "-- ERROR: dtbo image is missing or empty at $DTBO_IMG"; exit 1; }
 
