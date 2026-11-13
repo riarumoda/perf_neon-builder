@@ -7,6 +7,43 @@ cd "$KERNEL_DIR" || exit 1
 
 EXTERNAL="$REPO_ROOT/scripts/external"
 
+# Strip the ReSukiSU integration from the resukisu-aosp branch. We want the
+# branch for its Android 17 BPF/XDP backport, but the builder already ships
+# BakaSU, so the in-tree root solution must go. Revert newest first so each
+# patch still has the context it was written against.
+RESUKISU_REPO="https://github.com/bone-machine/android_kernel_samsung_sm7325_a52s_5g"
+echo "-- Removing ReSukiSU integration..."
+revert_commit \
+    "$RESUKISU_REPO/commit/398b1633f6dafdf2c891fab1d32c4526754e3fb1.patch" \
+    "$RESUKISU_REPO/commit/299560a16e66ce82a84b54a8cc624f45ab7a31bd.patch" \
+    "$RESUKISU_REPO/commit/af72a44a3ac6c0b1a57103da6f93d693bfe7a0c5.patch" \
+    "$RESUKISU_REPO/commit/2054bf82fb43e04d53412876db20e0ae518d3c10.patch" \
+    "$RESUKISU_REPO/commit/aecde9f054d581df7114e9f952996e54fe012498.patch" \
+    "$RESUKISU_REPO/commit/4e6198ac1aa13e0519b8819dbdbc985b06ee26f8.patch"
+
+# 7654d12 adds the ReSukiSU Kconfig block, but later defconfig regenerations
+# moved its surrounding context, so it cannot be reversed as a patch. Remove
+# the block from the generated final config (and the vendor defconfig it came
+# from) instead.
+echo "-- Removing ReSukiSU defconfig flags..."
+RESUKISU_CFGS=("$FINAL_DEFCONFIG" "arch/arm64/configs/$MAIN_DEFCONFIG")
+for cfg in "${RESUKISU_CFGS[@]}"; do
+    [ -f "$cfg" ] || continue
+    sed -i '/^# ReSukiSU$/,/^# CONFIG_KSU_MANUAL_HOOK_AUTO_INITRC_HOOK is not set$/d' "$cfg"
+    grep -q 'CONFIG_KSU' "$cfg" && { echo "-- ERROR: ReSukiSU defconfig flags remain in $cfg"; exit 1; }
+done
+
+# 711b146 wires a KernelSU submodule into the driver tree. A depth-1 clone
+# never checks that submodule out and the goodies provide their own KernelSU,
+# so drop the gitlink, the symlink and the two in-tree references by hand.
+echo "-- Removing ReSukiSU driver glue..."
+rm -rf KernelSU
+rm -f drivers/kernelsu
+sed -i '\|^source "drivers/kernelsu/Kconfig"$|d' drivers/Kconfig
+sed -i '\|^obj-$(CONFIG_KSU) += kernelsu/$|d' drivers/Makefile
+grep -qE 'drivers/kernelsu|kernelsu/' drivers/Kconfig drivers/Makefile && { echo "-- ERROR: ReSukiSU driver glue remains"; exit 1; }
+grep -q 'ReSukiSU\|KernelSU' .gitmodules && { echo "-- ERROR: ReSukiSU submodule entry remains"; exit 1; }
+
 # Kernel tree fixes
 echo "-- Getting rid of the dirty flag..."
 sed -i "s/printf '%s' -dirty/:/g" scripts/setlocalversion
