@@ -22,6 +22,7 @@ echo "CONFIG_THREAD_INFO_IN_TASK=y" >> $FINAL_DEFCONFIG
 # Apply SUSFS patches
 echo "-- KernelSU: Applying SUSFS patch..."
 wget -qO- $SUSFS_PATCH | patch -p1 -s --fuzz=5
+
 echo "-- KernelSU: Enabling SUSFS configs..."
 echo "CONFIG_KSU_SUSFS=y" >> $FINAL_DEFCONFIG
 echo "CONFIG_KSU_SUSFS_SUS_PATH=y" >> $FINAL_DEFCONFIG
@@ -49,6 +50,28 @@ if [[ "$KERNEL_VERSION" == "4.19" ]]; then
     sed -i 's|^[[:space:]]*mnt = alloc_vfsmnt(fc->source ?: "none");|#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT\n\t// - We will just stop checking for ksu process if /sdcard/Android is accessible,\n\t//   for the sake of performance\n\tif (static_branch_unlikely(\&susfs_is_sdcard_android_data_not_decrypted)) {\n\t\tif (susfs_is_current_ksu_domain()) {\n\t\t\tmnt = susfs_alloc_non_unshare_ksu_vfsmnt(fc->source ?:"none");\n\t\t\tgoto bypass_orig_flow;\n\t\t}\n\t}\n#endif\n\tmnt = alloc_vfsmnt(fc->source ?: "none");\n#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT\nbypass_orig_flow:\n#endif|' fs/namespace.c
 fi
 if [[ "$KERNEL_VERSION" == "5.4" ]]; then
+    # copy_mnt_ns() wraps copy_tree() in #ifdef CONFIG_KDP_NS on sm7325, which
+    # breaks the SUSFS hunk's trailing context. With --fuzz=5 patch drops the
+    # whole context and lands copy_flags |= CL_COPY_MNT_NS; in the wrong
+    # function, where copy_flags does not exist. Move it back.
+    if grep -q 'copy_flags |= CL_COPY_MNT_NS;' fs/namespace.c && \
+       ! grep -A2 'copy_flags |= CL_SHARED_TO_SLAVE;' fs/namespace.c | grep -q 'CL_COPY_MNT_NS'; then
+        echo "-- KernelSU: Moving misplaced copy_flags hook in fs/namespace.c..."
+        python3 - <<'PY' || { echo "-- Fatal: could not fix copy_flags hook!"; exit 1; }
+path = "fs/namespace.c"
+src = open(path).read()
+block = "#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT\n\tcopy_flags |= CL_COPY_MNT_NS;\n#endif\n"
+if src.count(block) != 1:
+    raise SystemExit("expected exactly one misplaced block, found %d" % src.count(block))
+src = src.replace(block, "", 1)
+anchor = "\tcopy_flags |= CL_SHARED_TO_SLAVE;\n"
+if src.count(anchor) != 1:
+    raise SystemExit("expected one CL_SHARED_TO_SLAVE anchor, found %d" % src.count(anchor))
+src = src.replace(anchor, anchor + block, 1)
+open(path, "w").write(src)
+print("   -> moved into copy_mnt_ns()")
+PY
+    fi
     # susfs_patch_to_5.4.patch already patches fs/proc/fd.c; only fall back to
     # the legacy duct tape when it doesn't, or the labels get defined twice.
     if ! grep -q 'susfs_get_non_sus_mnt_id_from_mnt' fs/proc/fd.c; then
