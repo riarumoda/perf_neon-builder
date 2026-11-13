@@ -49,9 +49,28 @@ export DEVICE_NAME KBUILD_BUILD_USER KBUILD_BUILD_HOST
 # Clone device source code
 echo "-- Cloning kernel repository..."
 if [ "$IS_DEPTH_CLONE" = "true" ]; then
-    git clone --depth=1 --branch "$KERNEL_BRANCH" "$KERNEL_REPO" "$KERNEL_DIR" &> /dev/null
+    git clone --depth=1 --branch "$KERNEL_BRANCH" "$KERNEL_REPO" "$KERNEL_DIR" &> /dev/null || { echo "-- ERROR: failed to clone $KERNEL_REPO"; exit 1; }
 else
-    git clone --branch "$KERNEL_BRANCH" "$KERNEL_REPO" "$KERNEL_DIR" &> /dev/null
+    git clone --branch "$KERNEL_BRANCH" "$KERNEL_REPO" "$KERNEL_DIR" &> /dev/null || { echo "-- ERROR: failed to clone $KERNEL_REPO"; exit 1; }
+fi
+
+# Clone extra repositories: <repo>|<branch>|<target directory>
+if [ "${#KERNEL_EXTRA_REPOS[@]}" -gt 0 ]; then
+    echo "-- Cloning extra repositories..."
+    for entry in "${KERNEL_EXTRA_REPOS[@]}"; do
+        IFS='|' read -r repo branch target_dir <<< "$entry"
+        if [ -z "$repo" ] || [ -z "$branch" ] || [ -z "$target_dir" ]; then
+            echo "-- ERROR: invalid KERNEL_EXTRA_REPOS entry: $entry"
+            exit 1
+        fi
+        echo "   -> $target_dir"
+        mkdir -p "$(dirname "$KERNEL_DIR/$target_dir")"
+        if [ "$IS_DEPTH_CLONE" = "true" ]; then
+            git clone --depth=1 --branch "$branch" "$repo" "$KERNEL_DIR/$target_dir" &> /dev/null || { echo "-- ERROR: failed to clone $repo"; exit 1; }
+        else
+            git clone --branch "$branch" "$repo" "$KERNEL_DIR/$target_dir" &> /dev/null || { echo "-- ERROR: failed to clone $repo"; exit 1; }
+        fi
+    done
 fi
 
 # Determine kernel version from Makefile
