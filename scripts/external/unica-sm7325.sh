@@ -83,7 +83,7 @@ bash scripts/external/update-binary-sm7325.sh
 # Zip the final flasher
 echo "-- Zipping UNICA package..."
 [ -n "$ZIP_PREFIX" ] || { echo "-- ERROR: ZIP_PREFIX is not set in devices/$DEVICE/$OS.conf"; exit 1; }
-ZIPNAME="$ZIP_PREFIX-${{ inputs.build_date }}.zip"
+ZIPNAME="$ZIP_PREFIX-$BUILD_DATE.zip"
 cd output
 zip -rq9 "../$ZIPNAME" ./*
 cd ..

@@ -14,8 +14,16 @@ fi
 DEVICE="$1"
 OS="$2"
 
+# Load CI environment
+GITHUB_TOKEN="${GITHUB_TOKEN:-}"
+BUILD_DATE="${BUILD_DATE:-$(date +%Y%m%d)}"
+BUILD_TYPE="${BUILD_TYPE:-Testing}"
+export GITHUB_TOKEN BUILD_DATE BUILD_TYPE
+
 # Load CI github secrets silently
-git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
+if [ -n "$GITHUB_TOKEN" ]; then
+    git config --global url."https://x-access-token:$GITHUB_TOKEN@github.com/".insteadOf "https://github.com/"
+fi
 
 # Banner
 echo " "
@@ -34,6 +42,10 @@ echo " "
 echo "-- Loading device settings..."
 source "devices/$DEVICE/$OS.conf" || { echo "-- ERROR: could not load device settings"; exit 1; }
 
+# Export build metadata for make and helper scripts
+DEVICE_NAME="$DEVICE"
+export DEVICE_NAME KBUILD_BUILD_USER KBUILD_BUILD_HOST
+
 # Clone device source code
 echo "-- Cloning kernel repository..."
 if [ "$IS_DEPTH_CLONE" = "true" ]; then
@@ -45,20 +57,27 @@ fi
 # Determine kernel version from Makefile
 cd $KERNEL_DIR
 KERNEL_VERSION=$(awk -F'[[:space:]]*=[[:space:]]*' '/^VERSION/{v=$2} /^PATCHLEVEL/{print v"."$2; exit}' Makefile)
+export KERNEL_VERSION
 cd ..
 
 # Set up clang compiler
 cd $KERNEL_DIR
 echo "-- Setting up compiler..."
-TC_URLS="$(curl -fsSL --retry 5 --retry-all-errors -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/Neutron-Toolchains/clang-build-catalogue/releases/latest | grep -o '"browser_download_url": *"[^"]*"' | head -n 1 | cut -d '"' -f 4)"
-            [ -n "$TC_URLS" ] || { echo "-- ERROR: could not resolve toolchain URL"; exit 1; }
+if [ -n "$GITHUB_TOKEN" ]; then
+    AUTH_HEADER=(-H "Authorization: Bearer $GITHUB_TOKEN")
+else
+    AUTH_HEADER=()
+fi
+TC_URLS="$(curl -fsSL --retry 5 --retry-all-errors "${AUTH_HEADER[@]}" https://api.github.com/repos/Neutron-Toolchains/clang-build-catalogue/releases/latest | grep -o '"browser_download_url": *"[^"]*"' | head -n 1 | cut -d '"' -f 4)"
+[ -n "$TC_URLS" ] || { echo "-- ERROR: could not resolve toolchain URL"; exit 1; }
 CLANG_ROOT="$PWD/clang"
+mkdir -p "$CLANG_ROOT"
 PATH="$PWD/clang/bin/:$PATH"
 MAKE_ARGS=(
 	ARCH=arm64 LLVM=1 LLVM_IAS=1 LD=ld.lld
 	CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_COMPAT=arm-linux-gnueabi- CROSS_COMPILE_ARM32=arm-linux-gnueabi-
 )
-curl -fL --retry 5 --retry-all-errors --retry-delay 5 -o "neutron-clang.tar.zst" "$TC_URLS"
+curl -fL --retry 5 --retry-all-errors --retry-delay 5 "${AUTH_HEADER[@]}" -o "neutron-clang.tar.zst" "$TC_URLS"
 tar --zstd -C "$CLANG_ROOT" -xf "neutron-clang.tar.zst"
 rm -f "neutron-clang.tar.zst"
 cd ..
@@ -97,6 +116,7 @@ echo "-- Cleaning up..."
 rm -rf out &> /dev/null
 echo "-- Exporting finalized kernel config..."
 export FINAL_DEFCONFIG="arch/arm64/configs/"$DEVICE"_defconfig"
+export COMPILE_DEFCONFIG="${DEVICE}_defconfig"
 cd ..
 
 # Load device specific patches
@@ -112,7 +132,7 @@ echo "-- Prepping build environment..."
 cd "$KERNEL_DIR"
 mkdir -p out &> /dev/null
 echo "-- Parsing final defconfig..."
-make O=out $MAKE_ARGS $FINAL_DEFCONFIG &> /dev/null
+make O=out $MAKE_ARGS $COMPILE_DEFCONFIG &> /dev/null
 if [[ "$IS_SYNCCONFIG" == "true" ]]; then
     echo "-- Executing olddefconfig and syncconfig..."
     { yes "" 2>/dev/null || true; } | make O=out $MAKE_ARGS olddefconfig &> /dev/null
@@ -123,7 +143,15 @@ else
     { yes "" 2>/dev/null || true; } | make O=out $MAKE_ARGS silentoldconfig &> /dev/null
 fi
 echo "-- Compiling the kernel..."
+set -o pipefail
 make -j$(nproc --all) O=out $MAKE_ARGS 2>&1 | tee build.log
+BUILD_STATUS=$?
+set +o pipefail
+if [ "$BUILD_STATUS" -ne 0 ]; then
+    echo "-- ERROR: kernel compilation failed"
+    cd ..
+    exit 1
+fi
 echo "-- Exporting build versions..."
 export KSU_NAME=$(grep -m 1 -e "-- BakaSU version name:" build.log | awk -F': ' '{print $2}' | tr -d '[:space:]')
 export KSU_CODE=$(grep -m 1 -e "-- BakaSU version code:" build.log | awk -F': ' '{print $2}' | tr -d '[:space:]')
@@ -172,9 +200,10 @@ if [[ "$IS_ANYKERNEL3" == "true" ]]; then
         sed -i "s/device.name2=sweetin/device.name2=$DEVICE_2/" AnyKernel3/anykernel.sh
     fi
     echo "-- Updating kernel build type..."
-    sed -i 's/KERNEL_BUILD_TYPE="Weekly"/KERNEL_BUILD_TYPE="${{ inputs.build_type }}"/' AnyKernel3/anykernel.sh
+    sed -i "s/KERNEL_BUILD_TYPE=\"Weekly\"/KERNEL_BUILD_TYPE=\"$BUILD_TYPE\"/" AnyKernel3/anykernel.sh
     echo "-- Zipping AnyKernel3 package..."
-    ZIPNAME="$ZIP_PREFIX-${{ inputs.build_date }}.zip"
+    [ -n "$ZIP_PREFIX" ] || { echo "-- ERROR: ZIP_PREFIX is not set in devices/$DEVICE/$OS.conf"; exit 1; }
+    ZIPNAME="$ZIP_PREFIX-$BUILD_DATE.zip"
     cd AnyKernel3
     zip -rq9 "../$ZIPNAME" ./*
     cd ..

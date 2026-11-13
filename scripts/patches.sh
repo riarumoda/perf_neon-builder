@@ -47,4 +47,4 @@ revert_commit() {
 
 # Patcher - 2.0
 echo " -- Applying device specific patches..."
-source "devices/$DEVICE/$OS.sh" || { echo "-- ERROR: could not load device patches"; exit 1; }
+source "scripts/patches/$DEVICE-$OS.sh" || { echo "-- ERROR: could not load device patches"; exit 1; }
