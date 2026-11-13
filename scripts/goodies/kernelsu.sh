@@ -49,8 +49,11 @@ if [[ "$KERNEL_VERSION" == "4.19" ]]; then
     sed -i 's|^[[:space:]]*mnt = alloc_vfsmnt(fc->source ?: "none");|#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT\n\t// - We will just stop checking for ksu process if /sdcard/Android is accessible,\n\t//   for the sake of performance\n\tif (static_branch_unlikely(\&susfs_is_sdcard_android_data_not_decrypted)) {\n\t\tif (susfs_is_current_ksu_domain()) {\n\t\t\tmnt = susfs_alloc_non_unshare_ksu_vfsmnt(fc->source ?:"none");\n\t\t\tgoto bypass_orig_flow;\n\t\t}\n\t}\n#endif\n\tmnt = alloc_vfsmnt(fc->source ?: "none");\n#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT\nbypass_orig_flow:\n#endif|' fs/namespace.c
 fi
 if [[ "$KERNEL_VERSION" == "5.4" ]]; then
-    echo "-- KernelSU: Patching fs/proc/fd.c for susfs_sus_mount..."
-    if grep -Fq 'ino:\t%lu\n' fs/proc/fd.c; then
+    # susfs_patch_to_5.4.patch already patches fs/proc/fd.c; only fall back to
+    # the legacy duct tape when it doesn't, or the labels get defined twice.
+    if ! grep -q 'susfs_get_non_sus_mnt_id_from_mnt' fs/proc/fd.c; then
+        echo "-- KernelSU: Patching fs/proc/fd.c for susfs_sus_mount..."
+        if grep -Fq 'ino:\t%lu\n' fs/proc/fd.c; then
         sed -i '/^[[:space:]]*seq_printf(m, "pos:\\t%lli\\nflags:\\t0%o\\nmnt_id:\\t%i\\nino:\\t%lu\\n",/i \
         #ifdef CONFIG_KSU_SUSFS_SUS_KSTAT\
         	if (susfs_is_current_app_uid()) {\
@@ -113,6 +116,7 @@ if [[ "$KERNEL_VERSION" == "5.4" ]]; then
         bypass_orig_flow:\
         #endif // #if defined(CONFIG_KSU_SUSFS_SUS_MOUNT) || defined(CONFIG_KSU_SUSFS_SUS_KSTAT)\
         ' fs/proc/fd.c
+        fi
     fi
 fi
 
