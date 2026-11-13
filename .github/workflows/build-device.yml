@@ -26,8 +26,24 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 360
+    env:
+      CCACHE_MAXSIZE: 2G
+      CCACHE_NOHASHDIR: "1"
+      CCACHE_BASEDIR: ${{ github.workspace }}
+      CCACHE_SLOPPINESS: file_macro,time_macros,include_file_ctime,include_file_mtime
     steps:
       - uses: actions/checkout@v7
+
+      # ccache is content-addressed, so entries from other configs of the same
+      # device are safe to reuse through the restore-key prefix.
+      - name: Restore ccache
+        uses: actions/cache@v6
+        with:
+          path: ~/.ccache
+          key: ccache-${{ inputs.device }}-${{ inputs.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            ccache-${{ inputs.device }}-${{ inputs.os }}-
+            ccache-${{ inputs.device }}-
 
       - name: Free up disk space
         run: |
@@ -51,6 +67,10 @@ jobs:
         run: |
           chmod +x build.sh
           ./build.sh "${{ inputs.device }}" "${{ inputs.os }}"
+
+      - name: ccache stats
+        if: always()
+        run: ccache -s -v || true
 
       - name: Upload artifacts
         if: always()

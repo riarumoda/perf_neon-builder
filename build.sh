@@ -122,6 +122,23 @@ if ! "$CLANG_ROOT/bin/ld.lld" --version &> /dev/null; then
 fi
 export PATH
 echo "-- Compiler: $("$CLANG_ROOT/bin/clang" --version | head -n 1)"
+
+# Wrap the compiler with ccache when available (CI restores ~/.ccache).
+# The compiler identity includes the resolved clang version and the wrapper
+# hash, so a toolchain or wrapper change can never hit stale objects.
+if command -v ccache &> /dev/null; then
+    CLANG_ID="$("$CLANG_ROOT/bin/clang" --version | head -n 1)"
+    export CCACHE_DIR="${CCACHE_DIR:-$HOME/.ccache}"
+    export CCACHE_COMPILERCHECK="string:${CLANG_ID}:$(sha256sum scripts/gcc-wrapper.py | cut -d' ' -f1)"
+    mkdir -p "$CCACHE_DIR"
+    echo "-- Enabling ccache ($(ccache --version | head -n 1))..."
+    ccache -z &> /dev/null || true
+    MAKE_ARGS+=(
+        CC="ccache $PWD/scripts/gcc-wrapper.py clang"
+        HOSTCC="ccache clang"
+        HOSTCXX="ccache clang++"
+    )
+fi
 cd ..
 
 # Generate single main defconfig
