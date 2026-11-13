@@ -22,6 +22,16 @@ if ! grep -q 'atomic_t filter_count;' include/linux/seccomp.h; then
 fi
 grep -q 'atomic_t filter_count;' include/linux/seccomp.h || { echo "-- ERROR: could not add filter_count to struct seccomp"; exit 1; }
 
+# struct request keeps its completion csd as a plain struct __call_single_data
+# (8-byte aligned), while call_single_data_t is 32-byte aligned, so clang 20+
+# rejects &rq->csd with -Walign-mismatch. Declare the member with the proper
+# type like the other csd users (netdevice.h's softnet_data, sched.h's rq).
+echo "-- Aligning struct request csd..."
+if grep -q '^[[:space:]]*struct __call_single_data csd;$' include/linux/blkdev.h; then
+    sed -i 's/^\([[:space:]]*\)struct __call_single_data csd;$/\1call_single_data_t csd;/' include/linux/blkdev.h
+fi
+grep -q '^[[:space:]]*call_single_data_t csd;$' include/linux/blkdev.h || { echo "-- ERROR: could not align struct request csd"; exit 1; }
+
 # scripts/gcc-wrapper.py turns every warning into a hard error, and clang 24
 # reports diagnostics this 5.4 tree predates. Keep suppressing the warnings
 # only (no -mllvm/polly flags, those stay out).

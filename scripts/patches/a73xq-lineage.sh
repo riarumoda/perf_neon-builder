@@ -14,6 +14,16 @@ sed -i "s/printf '%s' -dirty/:/g" scripts/setlocalversion
 echo "-- Disabling IKHeaders..."
 sed -i 's/CONFIG_IKHEADERS=y/# CONFIG_IKHEADERS is not set/g' "$FINAL_DEFCONFIG"
 
+# struct request keeps its completion csd as a plain struct __call_single_data
+# (8-byte aligned), while call_single_data_t is 32-byte aligned, so clang 20+
+# rejects &rq->csd with -Walign-mismatch. Declare the member with the proper
+# type like the other csd users (netdevice.h's softnet_data, sched.h's rq).
+echo "-- Aligning struct request csd..."
+if grep -q '^[[:space:]]*struct __call_single_data csd;$' include/linux/blkdev.h; then
+    sed -i 's/^\([[:space:]]*\)struct __call_single_data csd;$/\1call_single_data_t csd;/' include/linux/blkdev.h
+fi
+grep -q '^[[:space:]]*call_single_data_t csd;$' include/linux/blkdev.h || { echo "-- ERROR: could not align struct request csd"; exit 1; }
+
 # Deferred firmware loading (custom external patches)
 echo "-- Fixing firmware load delay..."
 bash "$EXTERNAL/patch-drivers-fts-sm7325.sh" ./ || { echo "-- ERROR: failed to patch stm firmware loading"; exit 1; }
