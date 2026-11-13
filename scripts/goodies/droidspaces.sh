@@ -1,0 +1,124 @@
+#!/bin/bash
+
+# Export droidspaces variables
+export DROIDSPACES_XT_QTAGUID="https://raw.githubusercontent.com/ravindu644/Droidspaces-OSS/refs/heads/main/Documentation/resources/kernel-patches/non-GKI/01.fix_kernel_panic_in_xt_qtaguid.patch"
+export DROIDSPACES_CGROUP="https://raw.githubusercontent.com/ravindu644/Droidspaces-OSS/refs/heads/main/Documentation/resources/kernel-patches/non-GKI/02.fix_restore%20cgroup%20file%20prefix%20handling%20.patch"
+
+# Apply droidspaces patches
+cd $KERNEL_DIR
+if [[ ! -f "net/netfilter/xt_qtaguid.c" ]]; then
+    echo "-- Droidspaces: xt_qtaguid module not found in kernel source."
+    XT_QTAGUID_CHECK="false"
+else
+    XT_QTAGUID_CHECK="true"
+fi
+if [[ "$XT_QTAGUID_CHECK" == "true" ]]; then
+    echo "-- Droidspaces: net/netfilter/xt_qtaguid.c exist, applying patch..."
+    wget -qO- $DROIDSPACES_XT_QTAGUID | patch -s -p1 --fuzz=5 || { echo "-- Fatal: Failed to apply Droidspaces xt_qtaguid patch!"; exit 1; }
+fi
+echo "-- Droidspaces: Applying cgroup patch..."
+wget -qO- $DROIDSPACES_CGROUP | patch -s -p1 --fuzz=5 || { echo "-- Fatal: Failed to apply Droidspaces cgroup patch!"; exit 1; }
+
+# Enable droidspaces configs
+echo "-- Droidspaces: Enabling configs..."
+# IPC mechanisms
+echo "CONFIG_SYSCTL=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_SYSVIPC=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_POSIX_MQUEUE=y" >> $FINAL_DEFCONFIG
+# Core namespace support
+echo "CONFIG_NAMESPACES=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_PID_NS=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_UTS_NS=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_IPC_NS=y" >> $FINAL_DEFCONFIG
+# Seccomp support
+echo "CONFIG_SECCOMP=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_SECCOMP_FILTER=y" >> $FINAL_DEFCONFIG
+# Control groups support
+echo "CONFIG_CGROUPS=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_CGROUP_DEVICE=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_CGROUP_SCHED=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_FAIR_GROUP_SCHED=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_CGROUP_FREEZER=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_CGROUP_NET_PRIO=y" >> $FINAL_DEFCONFIG
+# Resource limits
+echo "CONFIG_MEMCG=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_CFS_BANDWIDTH=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_CGROUP_PIDS=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_CGROUP_CPUACCT=y" >> $FINAL_DEFCONFIG
+# Device filesystem support
+echo "CONFIG_DEVTMPFS=y" >> $FINAL_DEFCONFIG
+# Overlay filesystem support
+echo "CONFIG_OVERLAY_FS=y" >> $FINAL_DEFCONFIG
+# Enable xattr, posix acl support on tmpfs
+echo "CONFIG_TMPFS_POSIX_ACL=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_TMPFS_XATTR=y" >> $FINAL_DEFCONFIG
+# Firmware loading support
+echo "CONFIG_FW_LOADER=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_FW_LOADER_USER_HELPER=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_FW_LOADER_COMPRESS=y" >> $FINAL_DEFCONFIG
+# Droidspaces Network Isolation Support - NAT/none modes
+echo "CONFIG_NET_NS=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_VETH=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_BRIDGE=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NETFILTER=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_BRIDGE_NETFILTER=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NETFILTER_ADVANCED=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NF_CONNTRACK=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_IP_NF_IPTABLES=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_IP_NF_FILTER=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NF_NAT=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NF_TABLES=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_IP_NF_TARGET_MASQUERADE=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NETFILTER_XT_TARGET_MASQUERADE=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NETFILTER_XT_TARGET_TCPMSS=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NF_CONNTRACK_NETLINK=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NF_NAT_REDIRECT=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_IP_ADVANCED_ROUTER=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_IP_MULTIPLE_TABLES=y" >> $FINAL_DEFCONFIG
+# legacy compat
+echo "CONFIG_NF_CONNTRACK_IPV4=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NF_NAT_IPV4=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_IP_NF_NAT=y" >> $FINAL_DEFCONFIG
+# IPv6 in NAT mode (NAT66).
+echo "CONFIG_IPV6=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_IPV6_MULTIPLE_TABLES=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_IP6_NF_IPTABLES=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_IP6_NF_FILTER=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_IP6_NF_MANGLE=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_IP6_NF_NAT=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_IP6_NF_TARGET_MASQUERADE=y" >> $FINAL_DEFCONFIG
+# legacy compat
+echo "CONFIG_NF_CONNTRACK_IPV6=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NF_NAT_IPV6=y" >> $FINAL_DEFCONFIG
+# Macvlan mode
+echo "CONFIG_MACVLAN=y" >> $FINAL_DEFCONFIG
+# Disable this on older kernels to make internet work
+echo "CONFIG_ANDROID_PARANOID_NETWORK=n" >> $FINAL_DEFCONFIG
+# Fix for docker unsafe procfs error
+echo "CONFIG_USER_NS=y" >> $FINAL_DEFCONFIG
+# UFW & FAIL2BAN CORE
+echo "CONFIG_NETFILTER_XT_MATCH_COMMENT=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NETFILTER_XT_MATCH_STATE=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NETFILTER_XT_MATCH_CONNTRACK=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NETFILTER_XT_MATCH_MULTIPORT=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NETFILTER_XT_MATCH_HL=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NETFILTER_XT_TARGET_REJECT=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_IP_NF_TARGET_REJECT=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NETFILTER_XT_TARGET_LOG=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_IP_NF_TARGET_ULOG=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NETFILTER_XT_MATCH_RECENT=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NETFILTER_XT_MATCH_LIMIT=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NETFILTER_XT_MATCH_HASHLIMIT=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NETFILTER_XT_MATCH_OWNER=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NETFILTER_XT_MATCH_PKTTYPE=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NETFILTER_XT_MATCH_MARK=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NETFILTER_XT_TARGET_MARK=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_IP_SET=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_IP_SET_HASH_IP=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_IP_SET_HASH_NET=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NETFILTER_XT_SET=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NETFILTER_NETLINK_QUEUE=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NETFILTER_NETLINK_LOG=y" >> $FINAL_DEFCONFIG
+echo "CONFIG_NETFILTER_XT_TARGET_NFLOG=y" >> $FINAL_DEFCONFIG
+cd ..
