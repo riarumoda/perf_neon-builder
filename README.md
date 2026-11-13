@@ -13,7 +13,7 @@
 
 [![Downloads](https://img.shields.io/github/downloads/riarumoda/perf_neon-builder/total?label=Downloads&logo=icloud&logoColor=white)](https://github.com/riarumoda/perf_neon-builder/releases)
 [![Telegram](https://img.shields.io/badge/Follow-Telegram-blue?logo=telegram)](https://t.me/trrflexgroup)
-[![CI Status](https://img.shields.io/github/actions/workflow/status/riarumoda/perf_neon-builder/release.yml?label=Status&logo=github-actions&logoColor=white)](https://github.com/riarumoda/perf_neon-builder/actions/workflows/normal.yml)
+[![CI Status](https://img.shields.io/github/actions/workflow/status/riarumoda/perf_neon-builder/release.yml?label=Status&logo=github-actions&logoColor=white)](https://github.com/riarumoda/perf_neon-builder/actions/workflows/release.yml)
 
 </div>
 
