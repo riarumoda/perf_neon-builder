@@ -51,8 +51,4 @@ echo "CONFIG_DM_VERITY=y" >> $FINAL_DEFCONFIG
 echo "CONFIG_DM_VERITY_FEC=y" >> $FINAL_DEFCONFIG
 echo "CONFIG_DM_BOW=y" >> $FINAL_DEFCONFIG
 
-# tune compiler flags
-echo "-- Tuning compiler flags..."
-sed -i 's/-Wno-format-security/-Wno-format-security -Wno-declaration-after-statement -Wno-implicit-int -Wno-enum-conversion -Wno-default-const-init-var-unsafe -Wno-default-const-init-field-unsafe -Wno-misleading-indentation -Wno-unsequenced -Wno-sizeof-pointer-memaccess -Wno-implicit-function-declaration -Wno-implicit-enum-enum-cast/g' Makefile
-sed -i '/export KBUILD_CFLAGS/i KBUILD_CFLAGS += -mllvm -polly -mllvm -enable-gvn-hoist -Wno-unused-command-line-argument' Makefile
 cd ..

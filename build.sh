@@ -96,16 +96,40 @@ MAKE_ARGS=(
 	ARCH=arm64 LLVM=1 LLVM_IAS=1 LD=ld.lld
 	CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_COMPAT=arm-linux-gnueabi- CROSS_COMPILE_ARM32=arm-linux-gnueabi-
 )
-curl -fL --retry 5 --retry-all-errors --retry-delay 5 "${AUTH_HEADER[@]}" -o "neutron-clang.tar.zst" "$TC_URLS"
-tar --zstd -C "$CLANG_ROOT" -xf "neutron-clang.tar.zst"
+
+# Apply a kconfig target and abort with the relevant output if it fails
+config_step() {
+	local target="$1"
+	{ yes "" 2>/dev/null || true; } | make O=out "${MAKE_ARGS[@]}" "$target" >> config.log 2>&1 || {
+		echo "-- ERROR: '$target' failed"
+		tail -n 40 config.log
+		cp config.log ../config.log 2>/dev/null || true
+		exit 1
+	}
+}
+curl -fL --retry 5 --retry-all-errors --retry-delay 5 "${AUTH_HEADER[@]}" -o "neutron-clang.tar.zst" "$TC_URLS" || { echo "-- ERROR: failed to download toolchain: $TC_URLS"; exit 1; }
+tar --zstd -C "$CLANG_ROOT" -xf "neutron-clang.tar.zst" || { echo "-- ERROR: failed to extract toolchain"; exit 1; }
 rm -f "neutron-clang.tar.zst"
+
+# Never let a broken toolchain silently fall back to the host gcc
+if ! "$CLANG_ROOT/bin/clang" --version &> /dev/null; then
+    echo "-- ERROR: clang is not usable at $CLANG_ROOT/bin/clang"
+    exit 1
+fi
+if ! "$CLANG_ROOT/bin/ld.lld" --version &> /dev/null; then
+    echo "-- ERROR: ld.lld is not usable at $CLANG_ROOT/bin/ld.lld"
+    exit 1
+fi
+export PATH
+echo "-- Compiler: $("$CLANG_ROOT/bin/clang" --version | head -n 1)"
 cd ..
 
 # Generate single main defconfig
 echo "-- Generating generic kernel config..."
 cd $KERNEL_DIR
 mkdir -p out &> /dev/null
-make O=out $MAKE_ARGS "$MAIN_DEFCONFIG" &> /dev/null
+: > config.log
+config_step "$MAIN_DEFCONFIG"
 echo "-- Appending fragments to .config..."
 for fragment in $COMMON_DEFCONFIG $DEVICE_DEFCONFIG $FEATURE_DEFCONFIG; do
     if [ -f "arch/arm64/configs/$fragment" ]; then
@@ -117,16 +141,16 @@ for fragment in $COMMON_DEFCONFIG $DEVICE_DEFCONFIG $FEATURE_DEFCONFIG; do
 done
 if [[ "$IS_SYNCCONFIG" == "true" ]]; then
     echo "-- Executing olddefconfig and syncconfig..."
-    { yes "" 2>/dev/null || true; } | make O=out $MAKE_ARGS olddefconfig &> /dev/null
-    { yes "" 2>/dev/null || true; } | make O=out $MAKE_ARGS syncconfig &> /dev/null
+    config_step olddefconfig
+    config_step syncconfig
 else
     echo "-- Executing olddefconfig and silentoldconfig..."
-    { yes "" 2>/dev/null || true; } | make O=out $MAKE_ARGS olddefconfig &> /dev/null
-    { yes "" 2>/dev/null || true; } | make O=out $MAKE_ARGS silentoldconfig &> /dev/null
+    config_step olddefconfig
+    config_step silentoldconfig
 fi
 echo "-- Copying merged config to defconfig directory..."
-cp out/.config arch/arm64/configs/"$DEVICE"_stock_defconfig
-cp out/.config arch/arm64/configs/"$DEVICE"_defconfig
+cp out/.config arch/arm64/configs/"$DEVICE"_stock_defconfig || exit 1
+cp out/.config arch/arm64/configs/"$DEVICE"_defconfig || exit 1
 if [[ "$IS_SPOOF_DEFCONFIG" == "true" ]]; then
     echo "-- Hard code config.gz into kernel..."
     sed -i 's|\$(KCONFIG_CONFIG)|arch/arm64/configs/'"$DEVICE"'_stock_defconfig|g' kernel/Makefile
@@ -151,23 +175,26 @@ echo "-- Prepping build environment..."
 cd "$KERNEL_DIR"
 mkdir -p out &> /dev/null
 echo "-- Parsing final defconfig..."
-make O=out $MAKE_ARGS $COMPILE_DEFCONFIG &> /dev/null
+config_step "$COMPILE_DEFCONFIG"
 if [[ "$IS_SYNCCONFIG" == "true" ]]; then
     echo "-- Executing olddefconfig and syncconfig..."
-    { yes "" 2>/dev/null || true; } | make O=out $MAKE_ARGS olddefconfig &> /dev/null
-    { yes "" 2>/dev/null || true; } | make O=out $MAKE_ARGS syncconfig &> /dev/null
+    config_step olddefconfig
+    config_step syncconfig
 else
     echo "-- Executing olddefconfig and silentoldconfig..."
-    { yes "" 2>/dev/null || true; } | make O=out $MAKE_ARGS olddefconfig &> /dev/null
-    { yes "" 2>/dev/null || true; } | make O=out $MAKE_ARGS silentoldconfig &> /dev/null
+    config_step olddefconfig
+    config_step silentoldconfig
 fi
 echo "-- Compiling the kernel..."
 set -o pipefail
-make -j$(nproc --all) O=out $MAKE_ARGS 2>&1 | tee build.log
+make -j$(nproc --all) O=out "${MAKE_ARGS[@]}" 2>&1 | tee build.log
 BUILD_STATUS=$?
 set +o pipefail
 if [ "$BUILD_STATUS" -ne 0 ]; then
     echo "-- ERROR: kernel compilation failed"
+    cp build.log ../build.log 2>/dev/null || true
+    cp config.log ../config.log 2>/dev/null || true
+    cp out/.config ../final.config 2>/dev/null || true
     cd ..
     exit 1
 fi
