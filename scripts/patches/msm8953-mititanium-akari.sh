@@ -3,15 +3,18 @@ cd "$KERNEL_DIR"
 
 # Export kernel patches
 echo "-- Exporting device patches..."
-KSU_REVERT1="https://github.com/imren0x/msm-4.19/commit/5426473d20be5c5b128b68d8a5d5fe838af3d7ad.patch"
+KSU_REVERT1="https://github.com/imren0x/msm-4.19/commit/599d78404136f1135dab59f8a4b07f375920d593.patch"
 KSU_REVERT2="https://github.com/imren0x/msm-4.19/commit/ddaa99ca3d0d08729b832737aa8ead84cd9271bd.patch"
 KSU_REVERT3="https://github.com/imren0x/msm-4.19/commit/13a81eb419c70b1ea0e6990852be3f1bba9766d8.patch"
+KSU_REVERT4="https://github.com/imren0x/msm-4.19/commit/5426473d20be5c5b128b68d8a5d5fe838af3d7ad.patch"
 
 # Apply device specific patches
+# Revert newest first: v3.3.1+ update, 32567 update, import, ksu.config.
 echo "-- Reverting KSU commits..."
 revert_commit "$KSU_REVERT1"
 revert_commit "$KSU_REVERT2"
 revert_commit "$KSU_REVERT3"
+revert_commit "$KSU_REVERT4"
 
 echo "-- Fixing msm clk broken redifinition..."
 sed -i 's/static inline void clk_debug_print_hw.*/void clk_debug_print_hw(struct clk *clk, struct seq_file *f);/' include/linux/clk/msm-clk-provider.h
