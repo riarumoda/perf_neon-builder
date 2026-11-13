@@ -41,7 +41,6 @@ This kernel follows weekly builds of LineageOS, you will get a new kernel build 
 | LineageOS (SM6125) | ✅ w/ SUSFS | ✅ | ✅ | 🟡 |
 | Mi-Thorium (MSM8937) | ✅ w/ SUSFS | ✅ | ✅ | ✅ |
 | Mi-Thorium (SDM439) | ✅ w/ SUSFS | ✅ | ✅ | ✅ |
-| Mi-Titanium (MSM8953) | ✅ w/ SUSFS | ✅ | ✅ | ✅ |
 | SouthWest-NG (SDM660) | ✅ w/ SUSFS | ✅ | ✅ | ✅ |
 | MIUI (SM6150) | ✅ w/ SUSFS | ✅ | ✅ | 🟡 |
 | LineageOS (SM7325) | ✅ w/ SUSFS | ✅ | ✅ | ❌ |
@@ -70,7 +69,6 @@ This kernel follows weekly builds of LineageOS, you will get a new kernel build 
 | LineageOS (SM6125) | Redmi Note 8/8T (ginkgo/willow), Xiaomi Mi A3 (laurel_sprout) | Android 13 ~ Android 17 |
 | Mi-Thorium (MSM8937) | Redmi 3S (land), Redmi 4 (prada), Redmi 4X (santoni), Redmi Note 5A Prime/Y1 Prime (ugg), Redmi 4A (rolex), Redmi 5A (riva), Redmi Note 5A Lite/Y1 Lite (ugglite) | Android 11 ~ Android 17 |
 | Mi-Thorium (SDM439) | Redmi 7A (pine), Redmi 8 (olive), Redmi 8A (olivelite), Redmi 8A Dual (olivewood) | Android 11 ~ Android 17 |
-| Mi-Titanium (MSM8953) | Redmi S2/Y2 (ysl), Redmi Note 4/4X Snapdragon (mido), Redmi 5 (rosy), Redmi 5 Plus (vince), Redmi 4 Prime/Pro (markw) | Android 11 ~ Android 17 |
 | SouthWest-NG (SDM660) | Xiaomi Mi Pad 4/4+ (clover), Redmi Note 7/7S (lavender) | Android 11 ~ Android 17 |
 | MIUI (SM6150) | Redmi Note 10 Pro/Pro Max (sweet) | Android 11 ~ Android 17 |
 | LineageOS (SM7325) | Samsung Galaxy A52s 5G (a52sxq), Samsung Galaxy A73 (a73xq), Samsung Galaxy M52 (m52xq) | Android 13 ~ Android 17 |
@@ -82,8 +80,7 @@ This kernel follows weekly builds of LineageOS, you will get a new kernel build 
 - AwakenOS is upstreamed PixelOS kernels. This usually have newer commits before it got merged into the official PixelOS kernel sources.   
 - LineageOS (SM6150) & CrDroid (SM6150) can also be used on RANDOMSCAPE/MINKAN ROM Builds.   
 - LineageOS (SM6125) & LineageOS (SM7325) kernel might run on PixelOS for the respective device.
-- Mi-Thorium, Mi-Titanium, and SouthWest-NG kernels doesn't have any OS constraints.   
-- Akari & Mi8953 build for Mi-Titanium kernels contains 2 different way of handling USB, Media and Camera stack. If Mi8953 build feels broken to you pick the Akari build instead.   
+- Mi-Thorium and SouthWest-NG kernels doesn't have any OS constraints.   
 - Legacy label on SouthWest-NG is used to boot A16 and older OS with kernel 4.19 inside of it, without dynamic partition. Main is used to boot Android 17 and newer whether it's partition being dynamic or not.
 - Don't forget to flash appender after flashing the kernel if you're using bootloader bypass exploit on MSM8937 devices.
 - On MIUI (SM6150), BPF Spoofed Build can be used to boots up HyperOS2 Android 15 and up, meanwhile for Stock ROMs & Ported MIUI 14/HyperOS 1 Android 13/14 you can use the Non-BPF Spoofed Build.
@@ -132,6 +129,5 @@ You can install different KernelSU Manager with BakaSU kernel drivers. This is c
 - [PixelOS-Devices](https://github.com/PixelOS-Devices) for kernel sources.   
 - [Mi-Thorium](https://github.com/Mi-Thorium) for kernel sources.   
 - [crdroidandroid](https://github.com/crdroidandroid) for kernel sources.   
-- [imren0x](https://github.com/imren0x) for kernel sources.   
 - [pix106](https://github.com/pix106) for kernel sources.   
 - [bone-machine](https://github.com/bone-machine) for kernel sources.   
