@@ -52,18 +52,8 @@ jobs:
           chmod +x build.sh
           ./build.sh "${{ inputs.device }}" "${{ inputs.os }}"
 
-      - name: Upload build logs
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: ${{ inputs.device }}-${{ inputs.os }}-logs
-          retention-days: 7
-          if-no-files-found: ignore
-          path: |
-            build.log
-            config.log
-
       - name: Upload artifacts
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: ${{ inputs.device }}-${{ inputs.os }}
@@ -73,3 +63,5 @@ jobs:
             *.zip
             release_info.txt
             build.log
+            config.log
+            final.config

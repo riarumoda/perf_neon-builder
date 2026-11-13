@@ -205,6 +205,7 @@ export SUSFS_VER=$(grep -m 1 -e "-- SUSFS_VERSION:" build.log | awk -F': ' '{pri
 export BBG_VER=$(grep -m 1 -e "-- BBG version:" build.log | awk -F': ' '{print $2}' | tr -d '[:space:]')
 export NOMOUNT_VER=$(grep -m 1 "NOMOUNT_BASE_VERSION" fs/nomount/nomount.h 2>/dev/null | awk -F'"' '{print $2}' | tr -d '[:space:]')
 cp build.log ../build.log
+cp config.log ../config.log 2>/dev/null || true
 cp out/.config ../final.config
 cd ..
 echo "-- Writing release info.txt..."
