@@ -128,13 +128,23 @@ echo "-- Compiler: $("$CLANG_ROOT/bin/clang" --version | head -n 1)"
 # hash, so a toolchain or wrapper change can never hit stale objects.
 if command -v ccache &> /dev/null; then
     CLANG_ID="$("$CLANG_ROOT/bin/clang" --version | head -n 1)"
+    # Older CAF trees (e.g. sm6150 4.14) don't ship scripts/gcc-wrapper.py.
+    # Pointing ccache at a missing wrapper makes every compile fail.
+    if [ -f scripts/gcc-wrapper.py ]; then
+        KERNEL_CC="ccache $PWD/scripts/gcc-wrapper.py clang"
+        WRAPPER_ID="$(sha256sum scripts/gcc-wrapper.py | cut -d' ' -f1)"
+    else
+        KERNEL_CC="ccache clang"
+        WRAPPER_ID="none"
+    fi
     export CCACHE_DIR="${CCACHE_DIR:-$HOME/.ccache}"
-    export CCACHE_COMPILERCHECK="string:${CLANG_ID}:$(sha256sum scripts/gcc-wrapper.py | cut -d' ' -f1)"
+    export CCACHE_COMPILERCHECK="string:${CLANG_ID}:${WRAPPER_ID}"
     mkdir -p "$CCACHE_DIR"
     echo "-- Enabling ccache ($(ccache --version | head -n 1))..."
+    echo "-- Kernel CC: $KERNEL_CC"
     ccache -z &> /dev/null || true
     MAKE_ARGS+=(
-        CC="ccache $PWD/scripts/gcc-wrapper.py clang"
+        CC="$KERNEL_CC"
         HOSTCC="ccache clang"
         HOSTCXX="ccache clang++"
     )
