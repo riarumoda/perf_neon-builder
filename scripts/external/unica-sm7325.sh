@@ -23,17 +23,41 @@ if [ -z "${UNICA_DTBO_IMAGE:-}" ]; then
     fi
 fi
 
+# Direct API override, then the token-authenticated API, then the update channel.
+magisk_apk_url() {
+    local url channel gh=()
+    [ -n "${MAGISK_APK_URL:-}" ] && { echo "$MAGISK_APK_URL"; return 0; }
+    [ -n "${GITHUB_TOKEN:-}" ] && gh=(-H "Authorization: Bearer $GITHUB_TOKEN")
+
+    url="$(curl -fsSL --retry 2 "${gh[@]}" \
+        "https://api.github.com/repos/topjohnwu/Magisk/releases/latest" 2>/dev/null |
+        grep -oE '"browser_download_url": *"[^"]+\.apk"' | grep -v 'app-debug' | head -n 1 | cut -d'"' -f4)"
+    [ -n "$url" ] && { echo "$url"; return 0; }
+
+    for channel in stable beta canary; do
+        url="$(curl -fsSL --retry 2 \
+            "https://raw.githubusercontent.com/topjohnwu/magisk-files/master/$channel.json" 2>/dev/null |
+            grep -oE '"link": *"[^"]+\.apk"' | head -n 1 | cut -d'"' -f4)"
+        [ -n "$url" ] && { echo "$url"; return 0; }
+    done
+    return 1
+}
+
 # Prepare boot image tools
 BIN_DIR="$PWD/$KERNEL_DIR/clang/bin"
 mkdir -p "$BIN_DIR"
 if [ ! -x "$BIN_DIR/magiskboot" ]; then
     echo "-- Downloading magiskboot..."
-    APK_URL="$(curl -s "https://api.github.com/repos/topjohnwu/Magisk/releases" | grep -oE 'https://[^\"]+\.apk' | grep 'Magisk[-.]v' | head -n 1)"
-    [ -n "$APK_URL" ] || { echo "-- ERROR: could not resolve Magisk APK URL"; exit 1; }
-    curl -L --retry 5 --retry-all-errors --retry-delay 5 -o magisk.apk "$APK_URL"
-    unzip -p "magisk.apk" "lib/x86_64/libmagiskboot.so" > "$BIN_DIR/magiskboot"
+    APK_URL="$(magisk_apk_url)" || APK_URL=""
+    [ -n "$APK_URL" ] || { echo "-- ERROR: could not resolve Magisk APK URL (set MAGISK_APK_URL)"; exit 1; }
+    echo "   -> $APK_URL"
+    MAGISK_APK="$BIN_DIR/magisk.apk"
+    curl -fsSL --retry 5 --retry-all-errors -o "$MAGISK_APK" "$APK_URL" ||
+        { rm -f "$MAGISK_APK"; echo "-- ERROR: failed to download $APK_URL"; exit 1; }
+    unzip -p "$MAGISK_APK" "lib/x86_64/libmagiskboot.so" > "$BIN_DIR/magiskboot" 2>/dev/null
+    rm -f "$MAGISK_APK"
+    [ -s "$BIN_DIR/magiskboot" ] || { echo "-- ERROR: $APK_URL has no lib/x86_64/libmagiskboot.so"; exit 1; }
     chmod +x "$BIN_DIR/magiskboot"
-    rm -f magisk.apk
 fi
 if [ ! -x "$BIN_DIR/avbtool" ]; then
     echo "-- Downloading avbtool..."
