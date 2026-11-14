@@ -87,7 +87,7 @@ This kernel follows weekly builds of LineageOS, you will get a new kernel build 
 - Your device aren't yet supported? Go to the telegram channel to request your device for support.   
 
 **Warning! ⚠️**
-- Currently MIUI kernel for Redmi Note 10 Pro is in BETA stage. Currently it only targets and tested on Android 13 MIUI 14 / Android 13 HyperOS 1. If you want to, become a tester by joining the group support and send log captured by this KernelSU module called [Log Catcher](https://github.com/Howard20181/Log-Catcher).    
+- Currently MIUI kernel for Redmi Note 10 Pro is in RC (Release Candidate) stage. Currently it targets and tested on Android 13 MIUI 14/HyperOS 1, Android 14 HyperOS 1/2, Android 15 HyperOS 2/3 and Android 16 HyperOS 3. If you want to, become a tester by joining the group support and send log captured by this KernelSU module called [Log Catcher](https://github.com/Howard20181/Log-Catcher).    
 
 # Installation
 **On Recovery**   
