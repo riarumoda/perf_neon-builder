@@ -131,7 +131,9 @@ find techpack/audio techpack/camera techpack/video -name "*.conf" -exec sed -i '
 
 # Fix qcacld-3.0
 echo "-- Fixing qcacld-3.0..."
-sed -i 's/static int[[:space:]]\+wlan_hdd_state_ctrl_param_create/static int __maybe_unused wlan_hdd_state_ctrl_param_create/' drivers/staging/qcacld-3.0/core/hdd/src/wlan_hdd_main.c
+# Built-in qcacld never registers /dev/wlan (only the module_init path does),
+# so the WiFi HAL cannot load the driver. Register the chardev at init too.
+bash "$EXTERNAL/patch-qcacld-builtin-devctl-sm7325.sh" ./ || { echo "-- ERROR: failed to register /dev/wlan for built-in qcacld"; exit 1; }
 find drivers/staging/qca-wifi-host-cmn drivers/staging/qcacld-3.0 -type f \( -name "*.c" -o -name "*.h" \) \
   -exec sed -i 's/\bnl80211hdr_put\b/qca_nl80211hdr_put/g' {} +
 sed -i 's/bool ipa_is_ready(/bool __weak ipa_is_ready(/g' drivers/staging/qcacld-3.0/components/ipa/dispatcher/src/wlan_ipa_obj_mgmt_api.c
