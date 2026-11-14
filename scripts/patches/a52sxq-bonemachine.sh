@@ -24,12 +24,28 @@ revert_commit \
 # 7654d12 adds the ReSukiSU Kconfig block, but later defconfig regenerations
 # moved its surrounding context, so it cannot be reversed as a patch. Remove
 # the block from the generated final config (and the vendor defconfig it came
-# from) instead.
+# from) instead. The generated config has been rewritten by conf, so its menu
+# comments ("# KernelSU", "# end of KernelSU", the ReSukiSU warning text) no
+# longer match the hand-written "# ReSukiSU" block in the vendor defconfig.
+# Drop the symbols first, then the leftover menu/comment headers.
 echo "-- Removing ReSukiSU defconfig flags..."
 RESUKISU_CFGS=("$FINAL_DEFCONFIG" "arch/arm64/configs/$MAIN_DEFCONFIG")
 for cfg in "${RESUKISU_CFGS[@]}"; do
     [ -f "$cfg" ] || continue
-    sed -i '/^# ReSukiSU$/,/^# CONFIG_KSU_MANUAL_HOOK_AUTO_INITRC_HOOK is not set$/d' "$cfg"
+    # conf turns the block into a menu ("# KernelSU" ... "# end of KernelSU")
+    if grep -qx '# KernelSU' "$cfg" && grep -qx '# end of KernelSU' "$cfg"; then
+        sed -i '/^# KernelSU$/,/^# end of KernelSU$/d' "$cfg"
+    fi
+    # the vendor defconfig still carries the hand-written variant
+    if grep -qx '# ReSukiSU' "$cfg" &&
+       grep -qx '# CONFIG_KSU_MANUAL_HOOK_AUTO_INITRC_HOOK is not set' "$cfg"; then
+        sed -i '/^# ReSukiSU$/,/^# CONFIG_KSU_MANUAL_HOOK_AUTO_INITRC_HOOK is not set$/d' "$cfg"
+    fi
+    # catch any symbol the ranges above did not cover
+    sed -i -E \
+        -e '/^CONFIG_KSU([=_A-Z0-9]|$)/d' \
+        -e '/^# CONFIG_KSU([ _A-Z0-9]|$)/d' \
+        -e '/^# (end of )?(KernelSU|ReSukiSU)( |$)/d' "$cfg"
     grep -q 'CONFIG_KSU' "$cfg" && { echo "-- ERROR: ReSukiSU defconfig flags remain in $cfg"; exit 1; }
 done
 
@@ -43,6 +59,19 @@ sed -i '\|^source "drivers/kernelsu/Kconfig"$|d' drivers/Kconfig
 sed -i '\|^obj-$(CONFIG_KSU) += kernelsu/$|d' drivers/Makefile
 grep -qE 'drivers/kernelsu|kernelsu/' drivers/Kconfig drivers/Makefile && { echo "-- ERROR: ReSukiSU driver glue remains"; exit 1; }
 grep -q 'ReSukiSU\|KernelSU' .gitmodules && { echo "-- ERROR: ReSukiSU submodule entry remains"; exit 1; }
+
+# scripts/as-version.sh only shortcuts to "LLVM 0" when -fintegrated-as shows up
+# in CLANG_FLAGS; otherwise it probes $(CC) itself. This tree (unlike Lineage's)
+# never adds that flag when LLVM_IAS=1, so the builder's wrapped CC
+# ("ccache .../gcc-wrapper.py clang") gets probed instead of clang and Kconfig
+# aborts with "unknown assembler invoked" on every defconfig/syncconfig. Add the
+# flag the same way Lineage's Makefile does, so the integrated assembler is used
+# (and advertised) whenever LLVM_IAS=1.
+echo "-- Fixing integrated assembler detection for wrapped CC..."
+if ! grep -q -- '-fintegrated-as' Makefile; then
+    sed -i 's/^ifneq (\$(LLVM_IAS),1)$/ifeq ($(LLVM_IAS),1)\nCLANG_FLAGS\t+= -fintegrated-as\nelse/' Makefile
+fi
+grep -q -- '-fintegrated-as' Makefile || { echo "-- ERROR: could not add -fintegrated-as to CLANG_FLAGS"; exit 1; }
 
 # Kernel tree fixes
 echo "-- Getting rid of the dirty flag..."

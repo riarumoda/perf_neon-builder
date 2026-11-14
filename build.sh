@@ -73,6 +73,16 @@ if [ "${#KERNEL_EXTRA_REPOS[@]}" -gt 0 ]; then
     done
 fi
 
+# Some trees source Kconfig files from submodules (e.g. bone-machine's
+# drivers/kernelsu -> KernelSU/kernel). A plain --depth=1 clone leaves those
+# empty, so the config phase fails before device patches can strip them.
+if [ -f "$KERNEL_DIR/.gitmodules" ]; then
+    echo "-- Updating git submodules..."
+    git -C "$KERNEL_DIR" submodule update --init --recursive --depth=1 &> /dev/null ||
+        git -C "$KERNEL_DIR" submodule update --init --recursive &> /dev/null ||
+        echo "-- WARNING: could not check out submodules (config may fail if Kconfig sources one)"
+fi
+
 # Determine kernel version from Makefile
 cd $KERNEL_DIR
 KERNEL_VERSION=$(awk -F'[[:space:]]*=[[:space:]]*' '/^VERSION/{v=$2} /^PATCHLEVEL/{print v"."$2; exit}' Makefile)
@@ -97,10 +107,17 @@ MAKE_ARGS=(
 	CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_COMPAT=arm-linux-gnueabi- CROSS_COMPILE_ARM32=arm-linux-gnueabi-
 )
 
+# Kconfig probes the assembler through $(CC) (scripts/as-version.sh), and some
+# trees assume its first word is the compiler. A "ccache ... gcc-wrapper.py
+# clang" prefix fails that probe with "unknown assembler invoked". Config
+# targets compile nothing, so probe with the bare compiler; the wrapped CC is
+# only needed for the actual build below.
+KCONFIG_CC="$CLANG_ROOT/bin/clang"
+
 # Apply a kconfig target and abort with the relevant output if it fails
 config_step() {
 	local target="$1"
-	{ yes "" 2>/dev/null || true; } | make O=out "${MAKE_ARGS[@]}" "$target" >> config.log 2>&1 || {
+	{ yes "" 2>/dev/null || true; } | make O=out "${MAKE_ARGS[@]}" CC="$KCONFIG_CC" "$target" >> config.log 2>&1 || {
 		echo "-- ERROR: '$target' failed"
 		tail -n 40 config.log
 		cp config.log ../config.log 2>/dev/null || true
