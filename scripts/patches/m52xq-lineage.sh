@@ -39,8 +39,8 @@ find techpack/audio techpack/camera -name "*.conf" -exec sed -i 's/^\([[:space:]
 
 # Fix qcacld-3.0
 echo "-- Fixing qcacld-3.0..."
-# Built-in qcacld never registers /dev/wlan, which the WiFi HAL needs
-bash "$EXTERNAL/patch-qcacld-builtin-devctl-sm7325.sh" ./ || { echo "-- ERROR: failed to register /dev/wlan for built-in qcacld"; exit 1; }
+# Built-in qcacld must load itself; the ROM only loads wlan.ko
+bash "$EXTERNAL/patch-qcacld-builtin-devctl-sm7325.sh" ./ || { echo "-- ERROR: failed to patch built-in qcacld"; exit 1; }
 find drivers/staging/qca-wifi-host-cmn drivers/staging/qcacld-3.0 -type f \( -name "*.c" -o -name "*.h" \) \
   -exec sed -i 's/\bnl80211hdr_put\b/qca_nl80211hdr_put/g' {} +
 sed -i 's/bool ipa_is_ready(/bool __weak ipa_is_ready(/g' drivers/staging/qcacld-3.0/components/ipa/dispatcher/src/wlan_ipa_obj_mgmt_api.c
