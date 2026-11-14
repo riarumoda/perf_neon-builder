@@ -1,15 +1,7 @@
 #!/usr/bin/env bash
-# Built-in qcacld-3.0 never creates /dev/wlan (qcwlanstate): the chardev is
-# only registered from hdd_module_init()'s #ifdef MODULE branch, while the
-# built-in branch just creates the boot_wlan sysfs node and waits for a
-# root-only write. The WiFi HAL runs as user wifi and needs /dev/wlan to
-# write "ON"/"OFF"; without it wifi-service fails with
-# "Failed to access driver state control param" -> "Wifi HAL start failed".
-#
-# Register the chardev from the built-in initcall as well. ueventd's coldboot
-# pass applies the same /dev/wlan permissions as the module build, and the
-# HAL's "ON" write then triggers hdd_driver_load() from
-# wlan_hdd_state_ctrl_param_write() once firmware and userspace are ready.
+# Built-in qcacld only registers /dev/wlan in the module build, so the WiFi HAL
+# fails with "Failed to access driver state control param". Register it from the
+# built-in initcall too; the HAL's "ON" write then triggers hdd_driver_load().
 #
 # Edits drivers/staging/qcacld-3.0/core/hdd/src/wlan_hdd_main.c in place.
 # Usage: ./patch-qcacld-builtin-devctl-sm7325.sh [kernel_root]
@@ -40,13 +32,9 @@ static int __init hdd_module_init(void)
 {
 	int ret;
 
-	/*
-	 * BUILTIN_WLAN_DEVCTL: built-in builds never run the module_init()
-	 * path, so nothing registers /dev/wlan (qcwlanstate). The WiFi HAL
-	 * writes "ON"/"OFF" there, and wlan_hdd_state_ctrl_param_write() is
-	 * what calls hdd_driver_load(). Create the chardev here so the
-	 * built-in driver is brought up the same way the module build does;
-	 * ueventd's coldboot applies the usual /dev/wlan permissions.
+	/* BUILTIN_WLAN_DEVCTL: the module build registers /dev/wlan from
+	 * module_init(), which built-in builds never run. Without it the WiFi
+	 * HAL cannot issue "ON", so hdd_driver_load() is never called.
 	 */
 	ret = wlan_hdd_state_ctrl_param_create();
 	if (ret)

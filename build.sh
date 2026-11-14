@@ -34,7 +34,7 @@ echo " | |_) / _ \ '__| |_  |  \| |/ _ \/ _ \| '_ \  "
 echo " |  __/  __/ |  |  _| | |\  |  __/ (_) | | | | "
 echo " |_|   \___|_|  |_|   |_| \_|\___|\___/|_| |_| "
 echo "==============================================="
-echo " Build Script 3.0 - by Riaru Moda"
+echo " Build Script 3.1 - by Riaru Moda"
 echo " https://t.me/trrflex"
 echo " "
 
@@ -73,9 +73,8 @@ if [ "${#KERNEL_EXTRA_REPOS[@]}" -gt 0 ]; then
     done
 fi
 
-# Some trees source Kconfig files from submodules (e.g. bone-machine's
-# drivers/kernelsu -> KernelSU/kernel). A plain --depth=1 clone leaves those
-# empty, so the config phase fails before device patches can strip them.
+# Some trees source Kconfig from submodules (e.g. drivers/kernelsu); a
+# --depth=1 clone leaves them empty and the first config fails.
 if [ -f "$KERNEL_DIR/.gitmodules" ]; then
     echo "-- Updating git submodules..."
     git -C "$KERNEL_DIR" submodule update --init --recursive --depth=1 &> /dev/null ||
@@ -107,11 +106,8 @@ MAKE_ARGS=(
 	CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_COMPAT=arm-linux-gnueabi- CROSS_COMPILE_ARM32=arm-linux-gnueabi-
 )
 
-# Kconfig probes the assembler through $(CC) (scripts/as-version.sh), and some
-# trees assume its first word is the compiler. A "ccache ... gcc-wrapper.py
-# clang" prefix fails that probe with "unknown assembler invoked". Config
-# targets compile nothing, so probe with the bare compiler; the wrapped CC is
-# only needed for the actual build below.
+# Kconfig's as-version.sh probe breaks on the "ccache ... gcc-wrapper.py clang"
+# prefix; config targets compile nothing, so probe with the bare compiler.
 KCONFIG_CC="$CLANG_ROOT/bin/clang"
 
 # Apply a kconfig target and abort with the relevant output if it fails

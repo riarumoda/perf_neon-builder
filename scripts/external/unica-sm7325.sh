@@ -12,8 +12,7 @@ else
 fi
 DTBO_DIR="${UNICA_DTBO_DIR:-arch/arm64/boot/dts/samsung/$DEVICE/$CODENAME}"
 
-# Out-of-tree builds (make O=out) write the .dtbo files under out/, while older
-# in-tree builds leave them next to the sources. Resolve whichever exists.
+# .dtbo files live under out/ for O=out builds, next to the sources otherwise.
 if [ -z "${UNICA_DTBO_IMAGE:-}" ]; then
     if compgen -G "$PWD/$KERNEL_DIR/out/$DTBO_DIR/*.dtbo" > /dev/null; then
         DTBO_DIR="out/$DTBO_DIR"
@@ -79,8 +78,7 @@ fi
 curl -sSL --retry 5 --retry-all-errors --retry-delay 5 -o "$STOCK_BOOT" "$BOOT_URL"
 ls -alhZ "$STOCK_BOOT"
 
-# Generate the DTBO image from the compiled device trees, or reuse the one the
-# kernel build produced itself (UNICA_DTBO_IMAGE points at it).
+# Build the DTBO image, or reuse the one UNICA_DTBO_IMAGE points at.
 DTBO_IMG="$PWD/$KERNEL_DIR/out/arch/arm64/boot/dtbo.img"
 if [ -n "${UNICA_DTBO_IMAGE:-}" ]; then
     echo "-- Using dtbo image produced by the build..."

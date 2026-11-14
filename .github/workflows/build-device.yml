@@ -34,16 +34,24 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      # ccache is content-addressed, so entries from other configs of the same
-      # device are safe to reuse through the restore-key prefix.
+      # Scope caches by kernel tree: configs of the same device can use
+      # different trees (a52sxq lineage vs bonemachine), and restoring another
+      # tree's ccache is 2 GB of downloads with almost no hits.
+      - name: Resolve ccache scope
+        id: ccache
+        run: |
+          kernel=$(sed -n 's/^KERNEL_DIR="\(.*\)"$/\1/p' "devices/${{ inputs.device }}/${{ inputs.os }}.conf" | head -n1)
+          echo "kernel=${kernel:-${{ inputs.device }}}" >> "$GITHUB_OUTPUT"
+
       - name: Restore ccache
         uses: actions/cache@v6
         with:
           path: ~/.ccache
-          key: ccache-${{ inputs.device }}-${{ inputs.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: ccache/${{ steps.ccache.outputs.kernel }}/${{ inputs.os }}/${{ inputs.device }}/${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
-            ccache-${{ inputs.device }}-${{ inputs.os }}-
-            ccache-${{ inputs.device }}-
+            ccache/${{ steps.ccache.outputs.kernel }}/${{ inputs.os }}/${{ inputs.device }}/
+            ccache/${{ steps.ccache.outputs.kernel }}/${{ inputs.os }}/
+            ccache/${{ steps.ccache.outputs.kernel }}/
 
       - name: Free up disk space
         run: |

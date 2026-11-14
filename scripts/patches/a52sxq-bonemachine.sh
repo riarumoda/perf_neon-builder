@@ -7,10 +7,8 @@ cd "$KERNEL_DIR" || exit 1
 
 EXTERNAL="$REPO_ROOT/scripts/external"
 
-# Strip the ReSukiSU integration from the resukisu-aosp branch. We want the
-# branch for its Android 17 BPF/XDP backport, but the builder already ships
-# BakaSU, so the in-tree root solution must go. Revert newest first so each
-# patch still has the context it was written against.
+# Drop ReSukiSU from resukisu-aosp (only its BPF/XDP backport is wanted), newest
+# first so each revert still has its context.
 RESUKISU_REPO="https://github.com/bone-machine/android_kernel_samsung_sm7325_a52s_5g"
 echo "-- Removing ReSukiSU integration..."
 revert_commit \
@@ -21,27 +19,21 @@ revert_commit \
     "$RESUKISU_REPO/commit/aecde9f054d581df7114e9f952996e54fe012498.patch" \
     "$RESUKISU_REPO/commit/4e6198ac1aa13e0519b8819dbdbc985b06ee26f8.patch"
 
-# 7654d12 adds the ReSukiSU Kconfig block, but later defconfig regenerations
-# moved its surrounding context, so it cannot be reversed as a patch. Remove
-# the block from the generated final config (and the vendor defconfig it came
-# from) instead. The generated config has been rewritten by conf, so its menu
-# comments ("# KernelSU", "# end of KernelSU", the ReSukiSU warning text) no
-# longer match the hand-written "# ReSukiSU" block in the vendor defconfig.
-# Drop the symbols first, then the leftover menu/comment headers.
+# The ReSukiSU Kconfig block cannot be reverted as a patch any more: conf
+# rewrote it as a "# KernelSU" menu in the generated config, while the vendor
+# defconfig keeps the hand-written "# ReSukiSU" block.
 echo "-- Removing ReSukiSU defconfig flags..."
 RESUKISU_CFGS=("$FINAL_DEFCONFIG" "arch/arm64/configs/$MAIN_DEFCONFIG")
 for cfg in "${RESUKISU_CFGS[@]}"; do
     [ -f "$cfg" ] || continue
-    # conf turns the block into a menu ("# KernelSU" ... "# end of KernelSU")
     if grep -qx '# KernelSU' "$cfg" && grep -qx '# end of KernelSU' "$cfg"; then
         sed -i '/^# KernelSU$/,/^# end of KernelSU$/d' "$cfg"
     fi
-    # the vendor defconfig still carries the hand-written variant
     if grep -qx '# ReSukiSU' "$cfg" &&
        grep -qx '# CONFIG_KSU_MANUAL_HOOK_AUTO_INITRC_HOOK is not set' "$cfg"; then
         sed -i '/^# ReSukiSU$/,/^# CONFIG_KSU_MANUAL_HOOK_AUTO_INITRC_HOOK is not set$/d' "$cfg"
     fi
-    # catch any symbol the ranges above did not cover
+    # catch symbols the ranges above did not cover
     sed -i -E \
         -e '/^CONFIG_KSU([=_A-Z0-9]|$)/d' \
         -e '/^# CONFIG_KSU([ _A-Z0-9]|$)/d' \
@@ -49,9 +41,8 @@ for cfg in "${RESUKISU_CFGS[@]}"; do
     grep -q 'CONFIG_KSU' "$cfg" && { echo "-- ERROR: ReSukiSU defconfig flags remain in $cfg"; exit 1; }
 done
 
-# 711b146 wires a KernelSU submodule into the driver tree. A depth-1 clone
-# never checks that submodule out and the goodies provide their own KernelSU,
-# so drop the gitlink, the symlink and the two in-tree references by hand.
+# 711b146 wires in the KernelSU submodule; the goodies ship their own, so drop
+# the gitlink, the symlink and both in-tree references.
 echo "-- Removing ReSukiSU driver glue..."
 rm -rf KernelSU
 rm -f drivers/kernelsu
@@ -60,13 +51,9 @@ sed -i '\|^obj-$(CONFIG_KSU) += kernelsu/$|d' drivers/Makefile
 grep -qE 'drivers/kernelsu|kernelsu/' drivers/Kconfig drivers/Makefile && { echo "-- ERROR: ReSukiSU driver glue remains"; exit 1; }
 grep -q 'ReSukiSU\|KernelSU' .gitmodules && { echo "-- ERROR: ReSukiSU submodule entry remains"; exit 1; }
 
-# scripts/as-version.sh only shortcuts to "LLVM 0" when -fintegrated-as shows up
-# in CLANG_FLAGS; otherwise it probes $(CC) itself. This tree (unlike Lineage's)
-# never adds that flag when LLVM_IAS=1, so the builder's wrapped CC
-# ("ccache .../gcc-wrapper.py clang") gets probed instead of clang and Kconfig
-# aborts with "unknown assembler invoked" on every defconfig/syncconfig. Add the
-# flag the same way Lineage's Makefile does, so the integrated assembler is used
-# (and advertised) whenever LLVM_IAS=1.
+# Unlike Lineage's Makefile, this tree never adds -fintegrated-as for
+# LLVM_IAS=1, so as-version.sh probes the wrapped CC and Kconfig aborts with
+# "unknown assembler invoked".
 echo "-- Fixing integrated assembler detection for wrapped CC..."
 if ! grep -q -- '-fintegrated-as' Makefile; then
     sed -i 's/^ifneq (\$(LLVM_IAS),1)$/ifeq ($(LLVM_IAS),1)\nCLANG_FLAGS\t+= -fintegrated-as\nelse/' Makefile
@@ -80,27 +67,24 @@ sed -i "s/printf '%s' -dirty/:/g" scripts/setlocalversion
 echo "-- Disabling IKHeaders..."
 sed -i 's/CONFIG_IKHEADERS=y/# CONFIG_IKHEADERS is not set/g' "$FINAL_DEFCONFIG"
 
-# seccomp.c, fs/proc/array.c and KernelSU all use seccomp.filter_count, but
-# this tree still ships the 5.4 struct seccomp, so init_task.c does not build.
+# seccomp.c, fs/proc/array.c and KernelSU use seccomp.filter_count, but this
+# tree still ships the 5.4 struct seccomp.
 echo "-- Restoring struct seccomp filter_count..."
 if ! grep -q 'atomic_t filter_count;' include/linux/seccomp.h; then
     sed -i '/^struct seccomp {$/,/^};$/ s/^\([[:space:]]*\)int mode;$/\1int mode;\n\1atomic_t filter_count;/' include/linux/seccomp.h
 fi
 grep -q 'atomic_t filter_count;' include/linux/seccomp.h || { echo "-- ERROR: could not add filter_count to struct seccomp"; exit 1; }
 
-# struct request keeps its completion csd as a plain struct __call_single_data
-# (8-byte aligned), while call_single_data_t is 32-byte aligned, so clang 20+
-# rejects &rq->csd with -Walign-mismatch. Declare the member with the proper
-# type like the other csd users (netdevice.h's softnet_data, sched.h's rq).
+# rq->csd is a plain __call_single_data (8-byte aligned) while
+# call_single_data_t is 32-byte aligned, which trips -Walign-mismatch on clang 20+.
 echo "-- Aligning struct request csd..."
 if grep -q '^[[:space:]]*struct __call_single_data csd;$' include/linux/blkdev.h; then
     sed -i 's/^\([[:space:]]*\)struct __call_single_data csd;$/\1call_single_data_t csd;/' include/linux/blkdev.h
 fi
 grep -q '^[[:space:]]*call_single_data_t csd;$' include/linux/blkdev.h || { echo "-- ERROR: could not align struct request csd"; exit 1; }
 
-# scripts/gcc-wrapper.py turns every warning into a hard error, and clang 24
-# reports diagnostics this 5.4 tree predates. Keep suppressing the warnings
-# only (no -mllvm/polly flags, those stay out).
+# gcc-wrapper.py makes warnings fatal; silence the ones clang 24 added that
+# this 5.4 tree predates.
 echo "-- Silencing clang 24-only warnings..."
 if ! grep -q 'cc-disable-warning, default-const-init-var-unsafe' Makefile; then
     warn_flags=""

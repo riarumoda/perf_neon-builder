@@ -14,10 +14,8 @@ sed -i "s/printf '%s' -dirty/:/g" scripts/setlocalversion
 echo "-- Disabling IKHeaders..."
 sed -i 's/CONFIG_IKHEADERS=y/# CONFIG_IKHEADERS is not set/g' "$FINAL_DEFCONFIG"
 
-# struct request keeps its completion csd as a plain struct __call_single_data
-# (8-byte aligned), while call_single_data_t is 32-byte aligned, so clang 20+
-# rejects &rq->csd with -Walign-mismatch. Declare the member with the proper
-# type like the other csd users (netdevice.h's softnet_data, sched.h's rq).
+# rq->csd is a plain __call_single_data (8-byte aligned) while
+# call_single_data_t is 32-byte aligned, which trips -Walign-mismatch on clang 20+.
 echo "-- Aligning struct request csd..."
 if grep -q '^[[:space:]]*struct __call_single_data csd;$' include/linux/blkdev.h; then
     sed -i 's/^\([[:space:]]*\)struct __call_single_data csd;$/\1call_single_data_t csd;/' include/linux/blkdev.h
@@ -41,8 +39,7 @@ find techpack/audio techpack/camera -name "*.conf" -exec sed -i 's/^\([[:space:]
 
 # Fix qcacld-3.0
 echo "-- Fixing qcacld-3.0..."
-# Built-in qcacld never registers /dev/wlan (only the module_init path does),
-# so the WiFi HAL cannot load the driver. Register the chardev at init too.
+# Built-in qcacld never registers /dev/wlan, which the WiFi HAL needs
 bash "$EXTERNAL/patch-qcacld-builtin-devctl-sm7325.sh" ./ || { echo "-- ERROR: failed to register /dev/wlan for built-in qcacld"; exit 1; }
 find drivers/staging/qca-wifi-host-cmn drivers/staging/qcacld-3.0 -type f \( -name "*.c" -o -name "*.h" \) \
   -exec sed -i 's/\bnl80211hdr_put\b/qca_nl80211hdr_put/g' {} +
