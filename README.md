@@ -42,6 +42,7 @@ This kernel follows weekly builds of LineageOS, you will get a new kernel build 
 | Mi-Thorium (MSM8937) | ✅ w/ SUSFS | ✅ | ✅ | ✅ |
 | Mi-Thorium (SDM439) | ✅ w/ SUSFS | ✅ | ✅ | ✅ |
 | SouthWest-NG (SDM660) | ✅ w/ SUSFS | ✅ | ✅ | ✅ |
+| LineageOS (SDM660) | ✅ w/ SUSFS | ✅ | ✅ | ✅ |
 | MIUI (SM6150) | ✅ w/ SUSFS | ✅ | ✅ | 🟡 |
 | LineageOS (SM7325) | ✅ w/ SUSFS | ✅ | ✅ | ❌ |
 | BoneMachine (SM7325) | ✅ w/ SUSFS | ✅ | ✅ | ❌ |
@@ -70,6 +71,7 @@ This kernel follows weekly builds of LineageOS, you will get a new kernel build 
 | Mi-Thorium (MSM8937) | Redmi 3S (land), Redmi 4 (prada), Redmi 4X (santoni), Redmi Note 5A Prime/Y1 Prime (ugg), Redmi 4A (rolex), Redmi 5A (riva), Redmi Note 5A Lite/Y1 Lite (ugglite) | Android 11 ~ Android 17 |
 | Mi-Thorium (SDM439) | Redmi 7A (pine), Redmi 8 (olive), Redmi 8A (olivelite), Redmi 8A Dual (olivewood) | Android 11 ~ Android 17 |
 | SouthWest-NG (SDM660) | Xiaomi Mi Pad 4/4+ (clover), Redmi Note 7/7S (lavender) | Android 11 ~ Android 17 |
+| LineageOS (SDM660) | Samsung Galaxy A9 (2018) (a9y18qlte) | Android 15 ~ Android 17 |
 | MIUI (SM6150) | Redmi Note 10 Pro/Pro Max (sweet) | Android 11 ~ Android 17 |
 | LineageOS (SM7325) | Samsung Galaxy A52s 5G (a52sxq), Samsung Galaxy A73 (a73xq), Samsung Galaxy M52 (m52xq) | Android 13 ~ Android 17 |
 | BoneMachine (SM7325) | Samsung Galaxy A52s 5G (a52sxq) | Android 13 ~ Android 17 |
