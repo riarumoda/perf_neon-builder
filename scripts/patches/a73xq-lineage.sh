@@ -14,6 +14,11 @@ sed -i "s/printf '%s' -dirty/:/g" scripts/setlocalversion
 echo "-- Disabling IKHeaders..."
 sed -i 's/CONFIG_IKHEADERS=y/# CONFIG_IKHEADERS is not set/g' "$FINAL_DEFCONFIG"
 
+# SELinux: keep /sys/fs/selinux/enforce writable so the end user can switch the
+# policy. Port of bone-machine's 0e28b10, which does not apply to this tree.
+echo "-- Patching SELinux policy switching..."
+bash "$EXTERNAL/patch-selinux-switch-sm7325.sh" ./ || { echo "-- ERROR: failed to patch SELinux policy switching"; exit 1; }
+
 # rq->csd is a plain __call_single_data (8-byte aligned) while
 # call_single_data_t is 32-byte aligned, which trips -Walign-mismatch on clang 20+.
 echo "-- Aligning struct request csd..."
