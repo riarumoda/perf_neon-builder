@@ -167,6 +167,17 @@ if [[ "$KERNEL_VERSION" == "4.19" ]]; then
     echo "-- KernelSU: Fixing typos on fs/stat.c hooks..."
     sed -i 's/ksu_handle_stat(&dfd, &fname, &flag);/ksu_handle_stat(\&dfd, \&fname, \&flags);/g' fs/stat.c
 fi
+# pre-install UAPI headers for preinit_runner if needed
+if [ -f KernelSU/kernel/tools/code_generation/preinit_runner/preinit_runner.mk ] &&
+   grep -q '^CONFIG_HEADERS_INSTALL=y' "$FINAL_DEFCONFIG"; then
+    echo "-- KernelSU: Pre-installing UAPI headers for preinit..."
+    if ! make -j"$(nproc --all)" O=out "${MAKE_ARGS[@]}" headers > headers.log 2>&1; then
+        echo "-- KernelSU: UAPI header pre-install failed"
+        tail -n 40 headers.log
+        exit 1
+    fi
+    rm -f headers.log
+fi
 
 # Unstatic some symbols inside the kernel
 echo "-- KernelSU: Checking and exporting static SELinux symbols..."
