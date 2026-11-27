@@ -42,6 +42,13 @@ find techpack/ \( -name "Makefile" -o -name "Kbuild" \) -exec sed -i 's/\bobj-m\
 find techpack/audio -name "Makefile" -exec sed -i 's/\bobj-m\b/obj-y/g' {} +
 find techpack/audio techpack/camera -name "*.conf" -exec sed -i 's/^\([[:space:]]*export[[:space:]]\+CONFIG_[^=]*\)=m$/\1=y/' {} +
 
+# USB: the =m -> =y pass above turns CONFIG_USB_G_WEBCAM into a built-in.  Its
+# module_init then parks a composite driver in udc-core's pending list and
+# claims a600000.dwc3 before configfs can, so MTP and adb (both FunctionFS)
+# never enumerate while OTG keeps working.  Keep the UDC free for configfs.
+echo "-- Disabling the legacy g_webcam gadget..."
+bash "$EXTERNAL/patch-usb-legacy-webcam-sm7325.sh" ./ "$FINAL_DEFCONFIG" || { echo "-- ERROR: failed to free the USB gadget controller"; exit 1; }
+
 # Fix qcacld-3.0
 echo "-- Fixing qcacld-3.0..."
 # Built-in qcacld must load itself; the ROM only loads wlan.ko
