@@ -113,6 +113,14 @@ sed -i '/^CONFIG_/s/=m$/=y/' "$FINAL_DEFCONFIG"
 find techpack/ \( -name "Makefile" -o -name "Kbuild" \) -exec sed -i 's/\bobj-m\b/obj-y/g' {} +
 find techpack/audio techpack/camera techpack/video -name "*.conf" -exec sed -i 's/^\([[:space:]]*export[[:space:]]\+CONFIG_[^=]*\)=m$/\1=y/' {} +
 
+# USB: this tree keeps Samsung's lock-screen USB restriction enabled.  On an
+# AOSP/Lineage ROM nothing writes the usb_notify lock state, so the driver
+# blocks host at boot (NOTIFY_BLOCK_TYPE_HOST) and never releases it: OTG dies
+# while MTP/adb keep working.  Lineage's tree sets this config to y, which is
+# why OTG works there.
+echo "-- Enabling USB host/OTG..."
+bash "$EXTERNAL/patch-usb-otg-sm7325.sh" ./ "$FINAL_DEFCONFIG" || { echo "-- ERROR: failed to enable USB host/OTG"; exit 1; }
+
 # Fix qcacld-3.0
 echo "-- Fixing qcacld-3.0..."
 # Built-in qcacld must load itself; the ROM only loads wlan.ko
