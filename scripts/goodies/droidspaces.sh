@@ -183,6 +183,21 @@ ds_patch() {
     return 1
 }
 
+# Some kernel headers (fs/mount.h among them) have no include guard, so a file
+# that includes one twice fails to compile. Keep only the first occurrence.
+ds_dedupe_include() {
+    local f="$1" hdr="$2" n
+
+    [ -f "$f" ] || return 0
+    n=$(grep -cxF "#include \"$hdr\"" "$f")
+    [ "$n" -gt 1 ] || return 0
+    awk -v line="#include \"$hdr\"" '
+        $0 == line { if (seen++) next }
+        { print }
+    ' "$f" >"$f.ds-tmp" && mv "$f.ds-tmp" "$f"
+    ds_log "removed duplicate #include \"$hdr\" from $f."
+}
+
 ds_config() {
     local opt="${1#CONFIG_}" val="${2:-y}"
 
@@ -941,6 +956,11 @@ else
 fi
 
 ds_apply_backports
+
+# The statx mount-ID backport adds fs/mount.h to fs/stat.c, but the KernelSU
+# inline hook already did. fs/mount.h has no include guard, so the second copy
+# redefines its structs.
+ds_dedupe_include fs/stat.c mount.h
 
 ds_log "patches: $DS_PATCH_APPLIED applied, $DS_PATCH_SKIPPED skipped, $DS_PATCH_FAILED not applied."
 if [ "$DS_PATCH_FAILED" -gt 0 ]; then
