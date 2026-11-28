@@ -45,6 +45,17 @@ revert_commit() {
     done
 }
 
+# Config helper - 1.8
+# set_config <defconfig> KEY=VALUE...  (replaces any existing entry)
+set_config() {
+    cfg="$1"; shift
+    for kv in "$@"; do
+        key="${kv%%=*}"
+        sed -i -e "/^${key}=/d" -e "/^# ${key} is not set[[:space:]]*$/d" "$cfg"
+        echo "$kv" >>"$cfg"
+    done
+}
+
 # Patcher - 2.0
 echo " -- Applying device specific patches..."
 source "scripts/patches/$DEVICE-$OS.sh" || { echo "-- ERROR: could not load device patches"; exit 1; }

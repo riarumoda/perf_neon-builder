@@ -14,12 +14,9 @@ sed -i "s/printf '%s' -dirty/:/g" scripts/setlocalversion
 echo "-- Disabling IKHeaders..."
 sed -i 's/CONFIG_IKHEADERS=y/# CONFIG_IKHEADERS is not set/g' "$FINAL_DEFCONFIG"
 
-# /dev is a tmpfs and ueventd stores every device label in a security.selinux
-# xattr.  The Lineage defconfig disables CONFIG_TMPFS_XATTR, so the labels are
-# dropped and apexd-bootstrap cannot open /dev/loop-control (EACCES), which
-# ends in the bootstrap-apexd-failed bootloop.  bone-machine keeps it enabled.
-echo "-- Enabling tmpfs xattrs for SELinux labels..."
-bash "$EXTERNAL/patch-tmpfs-xattr-sm7325.sh" ./ "$FINAL_DEFCONFIG" || { echo "-- ERROR: failed to enable tmpfs xattrs"; exit 1; }
+# /dev is tmpfs: without TMPFS_XATTR the kernel can't store SELinux labels on
+# device nodes, so apexd can't open /dev/loop-control.
+set_config "$FINAL_DEFCONFIG" CONFIG_TMPFS_XATTR=y
 
 # SELinux: keep /sys/fs/selinux/enforce writable so the end user can switch the
 # policy. Port of bone-machine's 0e28b10, which does not apply to this tree.
